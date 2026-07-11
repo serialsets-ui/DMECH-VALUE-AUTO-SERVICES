@@ -108,11 +108,11 @@ export function EVSpotlight() {
 
         <div style={{ textAlign: "center", marginTop: 28 }}>
           <Link
-            href="/#calculator"
+            href="/vehicles?filter=ev"
             className="calc-btn"
             style={{ maxWidth: 280, margin: "0 auto", background: "#22C55E", display: "block" }}
           >
-            Calculate Your EV Import Cost ⚡
+            Browse EV Inventory ⚡
           </Link>
         </div>
       </div>

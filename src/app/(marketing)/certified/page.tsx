@@ -32,8 +32,8 @@ export default async function CertifiedPage() {
   const certifiedCount = nigerianUsed.filter(isCertified).length;
 
   return (
-    <>
-      <section className="section" style={{ paddingTop: 100, background: "#fff" }}>
+    <div className="page-fade">
+      <section className="section" style={{ background: "#fff" }}>
         <div className="section-inner center">
           <div className="section-eyebrow">Nigerian-Used, Verified</div>
           <div className="section-title">DMECH Certified</div>
@@ -133,6 +133,6 @@ export default async function CertifiedPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

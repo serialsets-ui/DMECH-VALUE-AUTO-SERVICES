@@ -1,0 +1,35 @@
+import type { Metadata } from "next";
+import { CTASection } from "@/components/marketing/CTASection";
+
+export const metadata: Metadata = {
+  title: "Contact DMECH — Import. Drive. Thrive.",
+  description: "Talk to DMECH on WhatsApp, by phone, or visit our hub in Lagos.",
+};
+
+const CONTACT_ITEMS = [
+  { icon: "📍", label: "Visit Us", value: "Sangotedo, Ajah Axis, Lagos, Nigeria" },
+  { icon: "📞", label: "Call", value: "0800-DMECH-00" },
+  { icon: "💬", label: "WhatsApp", value: "0800 000 0000" },
+  { icon: "🕒", label: "Hours", value: "Mon–Sat: 8am – 6pm" },
+];
+
+export default function ContactPage() {
+  return (
+    <div className="page-fade">
+      <CTASection />
+      <section className="section" style={{ background: "#fff" }}>
+        <div className="section-inner">
+          <div className="trust-grid contact-grid">
+            {CONTACT_ITEMS.map((item) => (
+              <div className="trust-card" key={item.label}>
+                <div className="trust-icon">{item.icon}</div>
+                <div className="trust-title">{item.label}</div>
+                <div className="trust-desc">{item.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

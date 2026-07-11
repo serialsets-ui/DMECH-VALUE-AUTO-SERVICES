@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/marketing/Hero";
-import { HowItWorks } from "@/components/marketing/HowItWorks";
-import { Trust } from "@/components/marketing/Trust";
+import { VehicleTeaser } from "@/components/marketing/VehicleTeaser";
+import { CertifiedTeaser } from "@/components/marketing/CertifiedTeaser";
 import { EVSpotlight } from "@/components/marketing/EVSpotlight";
-import { VehicleMarketplace } from "@/components/marketing/VehicleMarketplace";
-import { InstalmentPlans } from "@/components/marketing/InstalmentPlans";
-import { Testimonials } from "@/components/marketing/Testimonials";
-import { FAQ } from "@/components/marketing/FAQ";
+import { Reveal } from "@/components/marketing/Reveal";
+import { FinancingTeaser } from "@/components/marketing/FinancingTeaser";
 import { CTASection } from "@/components/marketing/CTASection";
 import { getPublicVehicles } from "@/lib/vehicles";
 import { getConfigValue } from "@/lib/platform-config";
@@ -18,29 +16,21 @@ export const metadata: Metadata = {
 };
 
 export default async function MarketingHome() {
-  const [vehicles, ngnRate, defaultDepositPct, defaultTenorMonths, marketPriceBenchmarks] =
-    await Promise.all([
-      getPublicVehicles(),
-      getConfigValue("ngn_usd_rate", 1580),
-      getConfigValue("default_deposit_pct", 40),
-      getConfigValue("default_tenor_months", 6),
-      getConfigValue<Record<string, number>>("market_price_benchmarks", {}),
-    ]);
+  const [vehicles, ngnRate, marketPriceBenchmarks] = await Promise.all([
+    getPublicVehicles(),
+    getConfigValue("ngn_usd_rate", 1580),
+    getConfigValue<Record<string, number>>("market_price_benchmarks", {}),
+  ]);
 
   return (
-    <main>
+    <main className="page-fade">
       <Hero ngnRate={ngnRate} marketPriceBenchmarks={marketPriceBenchmarks} />
-      <HowItWorks />
-      <Trust />
-      <EVSpotlight />
-      <VehicleMarketplace
-        vehicles={vehicles}
-        defaultDepositPct={defaultDepositPct}
-        defaultTenorMonths={defaultTenorMonths}
-      />
-      <InstalmentPlans />
-      <Testimonials />
-      <FAQ />
+      <VehicleTeaser vehicles={vehicles} />
+      <CertifiedTeaser vehicles={vehicles} />
+      <Reveal>
+        <EVSpotlight />
+      </Reveal>
+      <FinancingTeaser />
       <CTASection />
     </main>
   );

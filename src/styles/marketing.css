@@ -16,8 +16,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .nav-cta:hover{background:#1280C8!important}
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:4px}
 .nav-toggle span{width:22px;height:2px;background:var(--dark);border-radius:2px;transition:.3s}
-.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);padding:16px 20px;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-.mobile-menu.open{display:block}
+.mobile-menu{position:fixed;top:60px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);padding:0 20px;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+/* open/closed state (max-height/opacity transition) defined further down under MOTION & POLISH */
 .mobile-menu a{display:block;padding:12px 0;font-size:15px;color:var(--text);text-decoration:none;border-bottom:1px solid var(--border);font-weight:500}
 .mobile-menu a:last-child{border:none}
 
@@ -294,3 +294,45 @@ footer{background:var(--dark);color:#fff;padding:50px 20px 30px}
   .vs-card{min-width:100%}
   .ev-benefits{grid-template-columns:1fr!important}
 }
+
+/* MOTION & POLISH (Phase 1R) — hand-rolled, no animation library */
+
+/* Reveal.tsx toggles .visible once on first intersect */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* Per-page fade-in — replays on every route change since Next.js remounts
+   page.tsx content inside the persistent (marketing) layout. Zero JS. */
+@keyframes pageFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-fade{animation:pageFadeIn .35s ease both}
+@media(prefers-reduced-motion:reduce){
+  .page-fade{animation:none}
+}
+
+/* Nav active-link + hover polish (excludes .nav-cta — that's a solid button,
+   not a text link, an underline under it would look wrong) */
+.nav-links a:not(.nav-cta){position:relative}
+.nav-links a:not(.nav-cta)::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:2px;background:var(--blue);transform:scaleX(0);transition:transform .2s ease}
+.nav-links a:not(.nav-cta):hover::after,.nav-links a.active:not(.nav-cta)::after{transform:scaleX(1)}
+.nav-links a.active:not(.nav-cta){color:var(--blue)}
+.mobile-menu a.active{color:var(--blue)}
+
+/* Mobile menu — animated open/close instead of instant display:block/none */
+.mobile-menu{
+  display:block;max-height:0;overflow:hidden;opacity:0;padding-top:0;padding-bottom:0;
+  transition:max-height .3s ease,opacity .25s ease,padding .3s ease;
+}
+.mobile-menu.open{max-height:600px;opacity:1;padding-top:16px;padding-bottom:16px}
+
+/* Teaser cards (Phase 1R home page) share the existing v-card hover-lift language */
+.teaser-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;transition:box-shadow .25s,transform .25s}
+.teaser-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.08);transform:translateY(-2px)}
+.teaser-link{color:var(--blue);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:4px;transition:gap .2s ease}
+.teaser-link:hover{gap:8px}
+
+/* Contact page's 4-item grid — falls back to .trust-grid's own 1fr mobile
+   rule further down since that media query comes later in the cascade. */
+.contact-grid{grid-template-columns:repeat(4,1fr)}

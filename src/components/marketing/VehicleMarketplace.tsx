@@ -13,6 +13,18 @@ import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
 const FILTERS = ["All", "Available", "In Transit", "At Port", "⚡ EVs", "✅ Certified Local"] as const;
 type Filter = (typeof FILTERS)[number];
 
+// Plain lowercase keys for ?filter= deep links (e.g. from the Home page's EV
+// teaser) — kept separate from the emoji-labeled display strings so URLs
+// stay clean and don't need encoding.
+const FILTER_FROM_QUERY: Record<string, Filter> = {
+  all: "All",
+  available: "Available",
+  "in-transit": "In Transit",
+  "at-port": "At Port",
+  ev: "⚡ EVs",
+  certified: "✅ Certified Local",
+};
+
 const STATUS_CLASS: Record<PublicDisplayStatus, string> = {
   Available: "status-available",
   Reserved: "status-available",
@@ -24,10 +36,18 @@ interface Props {
   vehicles: PublicVehicle[];
   defaultDepositPct: number;
   defaultTenorMonths: number;
+  initialFilterKey?: string;
 }
 
-export function VehicleMarketplace({ vehicles, defaultDepositPct, defaultTenorMonths }: Props) {
-  const [filter, setFilter] = useState<Filter>("All");
+export function VehicleMarketplace({
+  vehicles,
+  defaultDepositPct,
+  defaultTenorMonths,
+  initialFilterKey,
+}: Props) {
+  const [filter, setFilter] = useState<Filter>(
+    (initialFilterKey && FILTER_FROM_QUERY[initialFilterKey]) || "All",
+  );
   const [selected, setSelected] = useState<PublicVehicle | null>(null);
 
   const filtered = vehicles.filter((v) => {

@@ -14,19 +14,19 @@ export function Footer() {
         </div>
         <div className="footer-col">
           <h4>Services</h4>
-          <Link href="/#vehicles">Vehicle Import</Link>
+          <Link href="/vehicles">Vehicle Import</Link>
           <Link href="/certified">Certified Nigerian-Used</Link>
-          <Link href="/#instalment">Instalment Plans</Link>
+          <Link href="/financing">Instalment Plans</Link>
           <Link href="/#calculator">Cost Calculator</Link>
           <Link href="/service">Vehicle Service</Link>
         </div>
         <div className="footer-col">
           <h4>Company</h4>
-          <Link href="/#why">Why DMECH</Link>
-          <Link href="/#how">How It Works</Link>
-          <Link href="/#testimonials">Reviews</Link>
-          <Link href="/#faq">FAQ</Link>
-          <Link href="/#contact">Contact Us</Link>
+          <Link href="/about">Why DMECH</Link>
+          <Link href="/about#how">How It Works</Link>
+          <Link href="/about#testimonials">Reviews</Link>
+          <Link href="/faq">FAQ</Link>
+          <Link href="/contact">Contact Us</Link>
         </div>
         <div className="footer-col">
           <h4>Get In Touch</h4>

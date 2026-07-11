@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ServicePage() {
   return (
-    <section className="section" style={{ paddingTop: 100 }}>
+    <section className="section page-fade">
       <div className="section-inner">
         <div className="section-eyebrow" style={{ textAlign: "center" }}>
           Workshop

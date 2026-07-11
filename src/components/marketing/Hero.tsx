@@ -1,4 +1,5 @@
 import { Calculator } from "@/components/marketing/Calculator";
+import { AnimatedCounter } from "@/components/marketing/AnimatedCounter";
 
 interface HeroProps {
   ngnRate: number;
@@ -23,15 +24,15 @@ export function Hero({ ngnRate, marketPriceBenchmarks }: HeroProps) {
           </p>
           <div className="hero-stats">
             <div>
-              <div className="hero-stat-value">5%</div>
+              <AnimatedCounter value={5} suffix="%" className="hero-stat-value" />
               <div className="hero-stat-label">Used Levy (was 15%)</div>
             </div>
             <div>
-              <div className="hero-stat-value">10%</div>
+              <AnimatedCounter value={10} suffix="%" className="hero-stat-value" />
               <div className="hero-stat-label">New Levy (was 20%)</div>
             </div>
             <div>
-              <div className="hero-stat-value">40%</div>
+              <AnimatedCounter value={40} suffix="%" className="hero-stat-value" />
               <div className="hero-stat-label">Tariff (was 70%)</div>
             </div>
           </div>

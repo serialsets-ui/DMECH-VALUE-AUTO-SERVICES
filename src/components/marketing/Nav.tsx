@@ -2,21 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/marketing/Logo";
 
 const LINKS = [
-  { href: "/#calculator", label: "Cost Calculator" },
-  { href: "/#ev", label: "⚡ EVs" },
-  { href: "/#vehicles", label: "Vehicles" },
+  { href: "/vehicles", label: "Vehicles" },
   { href: "/certified", label: "Certified" },
-  { href: "/#how", label: "How It Works" },
-  { href: "/#why", label: "Why DMECH" },
-  { href: "/#faq", label: "FAQ" },
+  { href: "/financing", label: "Financing" },
+  { href: "/about", label: "About" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/service", label: "Book a Service" },
 ];
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -33,11 +34,15 @@ export function Nav() {
           </Link>
           <div className="nav-links">
             {LINKS.map((link) => (
-              <Link key={link.href} href={link.href}>
+              <Link
+                key={link.href}
+                href={link.href}
+                className={pathname === link.href ? "active" : ""}
+              >
                 {link.label}
               </Link>
             ))}
-            <Link href="/#contact" className="nav-cta">
+            <Link href="/contact" className="nav-cta">
               Get Started
             </Link>
           </div>
@@ -54,14 +59,16 @@ export function Nav() {
       </nav>
       <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
         {LINKS.map((link) => (
-          <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
+          <Link
+            key={link.href}
+            href={link.href}
+            className={pathname === link.href ? "active" : ""}
+            onClick={() => setMenuOpen(false)}
+          >
             {link.label}
           </Link>
         ))}
-        <Link href="/service" onClick={() => setMenuOpen(false)}>
-          Book a Service
-        </Link>
-        <Link href="/#contact" onClick={() => setMenuOpen(false)}>
+        <Link href="/contact" onClick={() => setMenuOpen(false)}>
           Get Started
         </Link>
       </div>

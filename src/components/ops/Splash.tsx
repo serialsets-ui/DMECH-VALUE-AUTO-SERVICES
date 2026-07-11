@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 
+// Matches the real top-level ops modules (sidebar groups), not the
+// original mockup's slightly generic splash list — Parts and Shipments are
+// genuinely distinct modules from Instalments/Logistics, so this reads
+// more accurately as "what's actually loading."
 const MODULES = [
   { icon: "🚗", label: "Vehicles" },
-  { icon: "💰", label: "Instalments" },
+  { icon: "🔧", label: "Parts" },
   { icon: "⚙️", label: "Workshop" },
-  { icon: "🚢", label: "Logistics" },
+  { icon: "🚢", label: "Shipments" },
   { icon: "👥", label: "Customers" },
   { icon: "📊", label: "Reports" },
 ];
@@ -25,16 +29,14 @@ interface SplashProps {
   onEnter: () => void;
 }
 
-// Ported from the Operations Platform mockup's splash screen: module icons
-// light up in sequence with a cycling status message, then an "Enter
-// Platform" button appears (click or Enter key) which fades the splash out
-// before handing off to the caller. Timings match the original (1600ms
-// start delay, 420ms per module, 400ms before the button appears).
+// Module icons light up in sequence with a cycling status message, then
+// auto-advances into the dashboard once "Platform ready" shows — no click
+// required. Timings: 1600ms start delay, 420ms per module, a 700ms pause on
+// "Platform ready" before the fade-out begins.
 export function Splash({ onEnter }: SplashProps) {
   const [litCount, setLitCount] = useState(0);
   const [status, setStatus] = useState("Initializing systems...");
   const [ready, setReady] = useState(false);
-  const [showEnter, setShowEnter] = useState(false);
   const [hiding, setHiding] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,10 @@ export function Splash({ onEnter }: SplashProps) {
       } else {
         setReady(true);
         setStatus("Platform ready");
-        timer = setTimeout(() => setShowEnter(true), 400);
+        timer = setTimeout(() => {
+          setHiding(true);
+          setTimeout(onEnter, 600);
+        }, 700);
       }
     };
 
@@ -59,21 +64,7 @@ export function Splash({ onEnter }: SplashProps) {
       clearTimeout(start);
       clearTimeout(timer);
     };
-  }, []);
-
-  function handleEnter() {
-    setHiding(true);
-    setTimeout(onEnter, 600);
-  }
-
-  useEffect(() => {
-    function onKeydown(e: KeyboardEvent) {
-      if (e.key === "Enter" && showEnter) handleEnter();
-    }
-    window.addEventListener("keydown", onKeydown);
-    return () => window.removeEventListener("keydown", onKeydown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showEnter]);
+  }, [onEnter]);
 
   return (
     <div className={`splash ${hiding ? "hide" : ""}`}>
@@ -100,11 +91,6 @@ export function Splash({ onEnter }: SplashProps) {
           style={ready ? { color: "var(--green)", fontWeight: 600 } : undefined}
         >
           {status}
-        </div>
-        <div className={`splash-enter ${showEnter ? "show" : ""}`}>
-          <button className="splash-enter-btn" onClick={handleEnter}>
-            Enter Platform <span className="arrow">→</span>
-          </button>
         </div>
       </div>
       <div className="splash-ft">

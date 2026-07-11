@@ -42,16 +42,6 @@
 .splash-ring:nth-child(2){animation-delay:1.3s}
 @keyframes splashRing{0%{transform:scale(.9);opacity:.6;border-color:rgba(24,153,231,.15)}100%{transform:scale(1.85);opacity:0;border-color:rgba(24,153,231,0)}}
 
-.splash-enter{margin-top:8px;opacity:0;pointer-events:none;transition:opacity .5s ease}
-.splash-enter.show{opacity:1;pointer-events:auto}
-.splash-enter-btn{background:linear-gradient(135deg,var(--blue),#1280c8);color:#fff;border:none;border-radius:10px;padding:13px 44px;font-family:var(--font-heading);font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 20px rgba(24,153,231,.3);display:flex;align-items:center;gap:8px}
-.splash-enter-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(24,153,231,.45)}
-.splash-enter-btn:active{transform:translateY(0)}
-.splash-enter-btn .arrow{transition:transform .2s ease}
-.splash-enter-btn:hover .arrow{transform:translateX(4px)}
-@keyframes enterPulse{0%,100%{box-shadow:0 4px 20px rgba(24,153,231,.3)}50%{box-shadow:0 4px 28px rgba(24,153,231,.6)}}
-.splash-enter.show .splash-enter-btn{animation:enterPulse 2s ease-in-out infinite}
-
 @media(prefers-reduced-motion:reduce){
   .splash-logo,.splash-tag,.splash-bar-wrap,.splash-status,.splash-ft,.splash-ring,.splash-bar{animation:none;opacity:1;transform:none}
   .splash-bar{width:100%}

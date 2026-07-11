@@ -15,7 +15,7 @@ export function Footer() {
         <div className="footer-col">
           <h4>Services</h4>
           <Link href="/vehicles">Vehicle Import</Link>
-          <Link href="/certified">Certified Nigerian-Used</Link>
+          <Link href="/vehicles/certified">Certified Nigerian-Used</Link>
           <Link href="/financing">Instalment Plans</Link>
           <Link href="/#calculator">Cost Calculator</Link>
           <Link href="/service">Vehicle Service</Link>

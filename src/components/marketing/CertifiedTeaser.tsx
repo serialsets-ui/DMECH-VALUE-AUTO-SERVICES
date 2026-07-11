@@ -20,14 +20,18 @@ export function CertifiedTeaser({ vehicles }: { vehicles: PublicVehicle[] }) {
                 Nigerian-Used, Verified
               </div>
               <div className="section-title" style={{ color: "#fff" }}>
-                DMECH Certified
+                DMECH Certified Nigerian-Used
               </div>
               <p style={{ color: "#8BADC0", fontSize: 15, lineHeight: 1.7, maxWidth: 480, marginBottom: 20 }}>
                 Vehicles already in Nigeria — inspected, title-checked, and sold with a real
                 warranty backed by a dedicated reserve fund. Not every listing is certified yet;
                 the ones that are, are clearly labeled.
               </p>
-              <Link href="/certified" className="teaser-link" style={{ fontSize: 15, color: "#4ADE80" }}>
+              <Link
+                href="/vehicles/certified"
+                className="teaser-link"
+                style={{ fontSize: 15, color: "#4ADE80" }}
+              >
                 Learn More →
               </Link>
             </div>

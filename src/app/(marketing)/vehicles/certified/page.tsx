@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getPublicVehicles, isCertified } from "@/lib/vehicles";
 
 export const metadata: Metadata = {
@@ -26,17 +27,25 @@ const CERTIFIED_FAQS = [
   },
 ];
 
-export default async function CertifiedPage() {
+export default async function CertifiedNigerianUsedPage() {
   const vehicles = await getPublicVehicles();
   const nigerianUsed = vehicles.filter((v) => v.source_region === "nigeria");
   const certifiedCount = nigerianUsed.filter(isCertified).length;
 
   return (
     <div className="page-fade">
+      <section className="section" style={{ background: "#fff", paddingBottom: 0 }}>
+        <div className="section-inner">
+          <Link href="/vehicles" className="teaser-link" style={{ fontSize: 13 }}>
+            ← All Vehicles
+          </Link>
+        </div>
+      </section>
+
       <section className="section" style={{ background: "#fff" }}>
         <div className="section-inner center">
           <div className="section-eyebrow">Nigerian-Used, Verified</div>
-          <div className="section-title">DMECH Certified</div>
+          <div className="section-title">DMECH Certified Nigerian-Used</div>
           <div className="section-subtitle" style={{ margin: "0 auto" }}>
             Real Nigerian-used vehicles — inspected, title-checked, and sold with a warranty
             DMECH actually stands behind.

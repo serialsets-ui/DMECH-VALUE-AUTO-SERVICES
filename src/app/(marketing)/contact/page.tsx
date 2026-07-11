@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CTASection } from "@/components/marketing/CTASection";
 
 export const metadata: Metadata = {
-  title: "Contact DMECH — Import. Drive. Thrive.",
+  title: "Contact Us — DMECH Value Auto Services",
   description: "Talk to DMECH on WhatsApp, by phone, or visit our hub in Lagos.",
 };
 

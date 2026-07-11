@@ -5,14 +5,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/marketing/Logo";
 
+// "Certified" is deliberately not a flat top-level link — DMECH Certified
+// Nigerian-Used vehicles are still vehicles (lives at /vehicles/certified),
+// not a separate destination competing with "Vehicles" in the nav. It's
+// surfaced instead via a banner on the Vehicles page itself.
 const LINKS = [
   { href: "/vehicles", label: "Vehicles" },
-  { href: "/certified", label: "Certified" },
   { href: "/financing", label: "Financing" },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
   { href: "/service", label: "Book a Service" },
 ];
+
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -37,7 +44,7 @@ export function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={pathname === link.href ? "active" : ""}
+                className={isActive(pathname, link.href) ? "active" : ""}
               >
                 {link.label}
               </Link>

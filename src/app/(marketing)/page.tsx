@@ -10,7 +10,7 @@ import { getPublicVehicles } from "@/lib/vehicles";
 import { getConfigValue } from "@/lib/platform-config";
 
 export const metadata: Metadata = {
-  title: "DMECH Value Services — Import. Drive. Thrive.",
+  title: "DMECH Value Auto Services — Import. Drive. Thrive.",
   description:
     "Import your vehicle from the USA, Europe, or China with transparent pricing and instalment plans, or buy a DMECH Certified Nigerian-used vehicle with a real warranty.",
 };

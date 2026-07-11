@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { formatNaira } from "@/lib/money";
 import {
   isCertified,
@@ -10,7 +11,14 @@ import {
 } from "@/lib/vehicle-display";
 import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
 
-const FILTERS = ["All", "Available", "In Transit", "At Port", "⚡ EVs", "✅ Certified Local"] as const;
+const FILTERS = [
+  "All",
+  "Available",
+  "In Transit",
+  "At Port",
+  "⚡ EVs",
+  "✅ Certified Nigerian-Used",
+] as const;
 type Filter = (typeof FILTERS)[number];
 
 // Plain lowercase keys for ?filter= deep links (e.g. from the Home page's EV
@@ -22,7 +30,7 @@ const FILTER_FROM_QUERY: Record<string, Filter> = {
   "in-transit": "In Transit",
   "at-port": "At Port",
   ev: "⚡ EVs",
-  certified: "✅ Certified Local",
+  certified: "✅ Certified Nigerian-Used",
 };
 
 const STATUS_CLASS: Record<PublicDisplayStatus, string> = {
@@ -53,7 +61,7 @@ export function VehicleMarketplace({
   const filtered = vehicles.filter((v) => {
     if (filter === "All") return true;
     if (filter === "⚡ EVs") return v.fuel_type === "electric";
-    if (filter === "✅ Certified Local") return isCertified(v);
+    if (filter === "✅ Certified Nigerian-Used") return isCertified(v);
     return displayStatus(v) === filter;
   });
 
@@ -66,6 +74,30 @@ export function VehicleMarketplace({
           Verified vehicles with full history reports. Every car comes with DMECH documentation
           and inspection guarantee.
         </div>
+
+        <Link
+          href="/vehicles/certified"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            background: "var(--green-d)",
+            border: "1px solid #BBF7D0",
+            borderRadius: 12,
+            padding: "14px 18px",
+            marginBottom: 24,
+            textDecoration: "none",
+          }}
+        >
+          <span style={{ fontSize: 20 }}>✅</span>
+          <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>
+            <strong style={{ color: "var(--green)" }}>DMECH Certified Nigerian-Used</strong> —
+            vehicles already in Nigeria, inspected, title-checked, and sold with a real warranty.
+          </span>
+          <span className="teaser-link" style={{ fontSize: 13, flexShrink: 0 }}>
+            Learn More →
+          </span>
+        </Link>
 
         <div className="vehicle-filters">
           {FILTERS.map((f) => (

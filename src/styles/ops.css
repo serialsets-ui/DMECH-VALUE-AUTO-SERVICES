@@ -11,13 +11,6 @@
 .splash-logo{opacity:0;transform:scale(.82);animation:splashLogo 1s ease-out .2s forwards;filter:drop-shadow(0 0 40px rgba(24,153,231,.15))}
 @keyframes splashLogo{0%{opacity:0;transform:scale(.82)}60%{opacity:1;transform:scale(1.03);filter:drop-shadow(0 0 60px rgba(24,153,231,.28))}100%{opacity:1;transform:scale(1);filter:drop-shadow(0 0 30px rgba(24,153,231,.12))}}
 
-/* Logo's "splash" variant — larger, centered, light-on-dark (like the
-   footer variant) since it sits on the splash's dark background */
-.logo-splash{display:flex;flex-direction:column;align-items:center;line-height:1.1}
-.logo-splash .logo-primary{font-family:var(--font-heading);font-size:34px;font-weight:700;color:#fff}
-.logo-splash .logo-primary span{color:var(--orange)}
-.logo-splash .logo-sub{font-size:13px;font-weight:600;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-top:6px}
-
 .splash-tag{font-family:var(--font-heading);font-size:12px;font-weight:600;color:var(--subtle);letter-spacing:4px;text-transform:uppercase;opacity:0;animation:splashUp .8s ease-out .9s forwards}
 @keyframes splashUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 

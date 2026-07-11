@@ -1,25 +1,29 @@
-// Text wordmark placeholder — the real logo (mark + "DMECH value services"
-// wordmark) hasn't landed in the repo as a static asset yet. This is a
-// CSS-only stand-in; once the file's in public/, swap this for a real
-// <Image> — every call site (nav, footer, ops splash) goes through this one
-// component, so that's a one-file change when it happens.
-//
-// Stacked so the full company name ("DMECH Value Auto Services") is
-// actually represented, not truncated to "DMECH Value" — the primary mark
-// stays compact for the nav bar, "Auto Services" rides underneath as a
-// small caption. "splash" is a larger, centered variant for the Ops
-// Platform's loading screen (dark background, so it reuses the
-// light-on-dark treatment from the footer variant rather than nav's
-// dark-on-light one).
+import Image from "next/image";
+
+// Real logo asset (public/logo.png), cropped tight to content and made
+// transparent so it sits cleanly on both light (nav) and dark
+// (footer/splash) backgrounds. Original file was a 1080x1080 JPEG with a
+// large baked-in white canvas — cropped to its actual 718x190 content
+// bounding box and had its white background converted to alpha via Pillow.
+const ASPECT_RATIO = 718 / 190;
+
+const HEIGHT: Record<"nav" | "footer" | "splash", number> = {
+  nav: 30,
+  footer: 32,
+  splash: 64,
+};
+
 export function Logo({ variant = "nav" }: { variant?: "nav" | "footer" | "splash" }) {
-  const className =
-    variant === "nav" ? "nav-logo" : variant === "footer" ? "footer-logo" : "logo-splash";
+  const height = HEIGHT[variant];
+  const width = Math.round(height * ASPECT_RATIO);
   return (
-    <span className={className}>
-      <span className="logo-primary">
-        DMECH <span>Value</span>
-      </span>
-      <span className="logo-sub">Auto Services</span>
-    </span>
+    <Image
+      src="/logo.png"
+      alt="DMECH Value Services"
+      width={width}
+      height={height}
+      style={{ height, width: "auto" }}
+      priority={variant === "nav"}
+    />
   );
 }

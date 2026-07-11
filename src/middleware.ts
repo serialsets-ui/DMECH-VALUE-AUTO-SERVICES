@@ -22,11 +22,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const redirectToAuth = () => {
+    const redirectPath = path.startsWith("/ops") ? "/login" : "/verify";
+    const url = request.nextUrl.clone();
+    url.pathname = redirectPath;
+    url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
+  };
+
+  // Without Supabase configured, production still fails closed (redirect to
+  // login — there's no real auth to enforce, so there's nothing to gain from
+  // letting the request through, and it's the safe default if this somehow
+  // ships misconfigured). Local dev fails open instead: no real user data
+  // exists behind /ops or /portal yet anyway before Phase 2's auth lands,
+  // and failing closed here would block previewing UI-only work (like the
+  // ops splash screen) with nothing more than a crash to show for it.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return process.env.NODE_ENV === "development" ? NextResponse.next() : redirectToAuth();
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -48,11 +67,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const redirectPath = path.startsWith("/ops") ? "/login" : "/verify";
-    const url = request.nextUrl.clone();
-    url.pathname = redirectPath;
-    url.searchParams.set("next", path);
-    return NextResponse.redirect(url);
+    return redirectToAuth();
   }
 
   return response;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Logo } from "@/components/marketing/Logo";
+import { Logo } from "@/components/Logo";
 
 // "Certified" is deliberately not a flat top-level link — DMECH Certified
 // Nigerian-Used vehicles are still vehicles (lives at /vehicles/certified),

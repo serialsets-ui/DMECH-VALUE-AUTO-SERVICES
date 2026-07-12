@@ -332,3 +332,27 @@ footer{background:var(--dark);color:#fff;padding:50px 20px 30px}
 /* Contact page's 4-item grid — falls back to .trust-grid's own 1fr mobile
    rule further down since that media query comes later in the cascade. */
 .contact-grid{grid-template-columns:repeat(4,1fr)}
+
+/* Marketing site loading screen — full-bleed rotating photo backdrop,
+   shown once per session (see MarketingShell.tsx) before the site loads.
+   Six stacked layers crossfade via staggered animation-delay on one shared
+   keyframe rather than a JS-driven timer. */
+.msplash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .6s ease,visibility .6s ease}
+.msplash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.msplash-photos{position:absolute;inset:0}
+.msplash-photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;animation:msplashFade 12s ease-in-out infinite}
+.msplash-photo:nth-child(1){animation-delay:-0.5s}
+.msplash-photo:nth-child(2){animation-delay:2s}
+.msplash-photo:nth-child(3){animation-delay:4s}
+.msplash-photo:nth-child(4){animation-delay:6s}
+.msplash-photo:nth-child(5){animation-delay:8s}
+.msplash-photo:nth-child(6){animation-delay:10s}
+@keyframes msplashFade{0%{opacity:0}4%{opacity:1}14%{opacity:1}20%{opacity:0}100%{opacity:0}}
+.msplash-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,25,35,.75),rgba(15,25,35,.55) 40%,rgba(15,25,35,.85))}
+.msplash-content{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.msplash-tagline{font-family:var(--font-heading);font-size:14px;font-weight:600;color:#fff;letter-spacing:3px;text-transform:uppercase;opacity:.85}
+
+@media(prefers-reduced-motion:reduce){
+  .msplash-photo{animation:none;opacity:0}
+  .msplash-photo:nth-child(1){opacity:1}
+}

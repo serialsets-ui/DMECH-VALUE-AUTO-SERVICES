@@ -40,9 +40,9 @@
 
 .splash-status{font-size:11px;color:var(--subtle);min-height:16px;opacity:0;animation:splashUp .5s ease-out 1.6s forwards;font-family:var(--font-heading);letter-spacing:.5px}
 
-.splash-ft{position:absolute;bottom:40px;text-align:center;opacity:0;animation:splashUp .6s ease-out 1s forwards}
-.splash-ft-l{font-size:9px;color:var(--border);letter-spacing:1.5px;text-transform:uppercase}
-.splash-ft-b{font-size:12px;color:var(--orange);font-weight:600;letter-spacing:1px;margin-top:2px}
+.splash-ft{position:absolute;bottom:40px;text-align:center;opacity:0;animation:splashUp .6s ease-out 1s forwards;font-size:11px;color:var(--subtle);letter-spacing:.5px}
+.splash-ft-b{color:var(--serialsets);font-weight:600;letter-spacing:1px;text-decoration:none;pointer-events:auto}
+.splash-ft-b:hover{text-decoration:underline}
 
 .splash-ring{position:absolute;width:340px;height:130px;border-radius:50%;border:1px solid rgba(24,153,231,.08);animation:splashRing 2.6s ease-out .5s infinite}
 .splash-ring:nth-child(2){animation-delay:1.3s}

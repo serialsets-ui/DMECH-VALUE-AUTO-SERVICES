@@ -10,6 +10,10 @@
   --dmech-blue: #1899e7;
   --dmech-blue-m: rgba(24, 153, 231, 0.25);
   --dmech-orange: #e68d4c;
+  /* SERIALSETS (technology partner) accent — from the SSL co-branded logo,
+     kept distinct from DMECH's own blue/orange so the credit line reads as
+     a different entity, not another DMECH brand color. */
+  --serialsets: #0fb8c4;
 
   /* light theme (marketing site, client portal) */
   --bg: #fafcfe;

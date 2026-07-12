@@ -94,8 +94,16 @@ export function Splash({ onEnter }: SplashProps) {
         </div>
       </div>
       <div className="splash-ft">
-        <div className="splash-ft-l">Powered by</div>
-        <div className="splash-ft-b">SERIALSETS LIMITED</div>
+        Developed and Managed by{" "}
+        <a
+          href="https://serialsets.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="splash-ft-b"
+          onClick={(e) => e.stopPropagation()}
+        >
+          SERIALSETS
+        </a>
       </div>
     </div>
   );

@@ -55,7 +55,10 @@ export function Footer() {
       <div className="footer-bottom">
         <div>&copy; {new Date().getFullYear()} DMECH Value Services. All rights reserved.</div>
         <div>
-          Technology by <a href="https://serialsets.com">SERIALSETS LIMITED</a>
+          Developed and Managed by{" "}
+          <a href="https://serialsets.com" target="_blank" rel="noopener noreferrer">
+            SERIALSETS
+          </a>
         </div>
       </div>
     </footer>

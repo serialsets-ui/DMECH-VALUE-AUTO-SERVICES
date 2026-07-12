@@ -36,7 +36,11 @@ create policy "staff read all users" on users for select using (dmech_is_staff()
 create policy "self read own user row" on users for select using (auth_user_id = auth.uid());
 create policy "self update own user row" on users for update using (auth_user_id = auth.uid());
 
--- leads — public calculator capture, no auth required to insert
+-- leads — public calculator capture, no auth required to insert.
+-- Explicit GRANT alongside the policy: RLS policies alone don't substitute
+-- for base table privileges — anon/authenticated need INSERT granted at the
+-- table level before the policy's `with check` even gets evaluated.
+grant insert on leads to anon, authenticated;
 create policy "anyone can create a lead" on leads
   for insert to anon, authenticated with check (true);
 create policy "staff read leads" on leads for select using (dmech_is_staff());

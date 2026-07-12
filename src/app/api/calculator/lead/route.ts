@@ -5,6 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 // instead of pretending to. Uses the cookie-bound (anon) client, not
 // service-role: the "anyone can create a lead" RLS policy already permits
 // this insert, so there's no reason to bypass RLS for a public form.
+//
+// Don't chain .select() onto this insert: anon has no SELECT policy on
+// `leads` (staff-only), and PostgREST's `return=representation` (which
+// .select() triggers) needs a SELECT-level RLS pass to hand the row back —
+// without it, the whole request fails with a misleading RLS-violation error
+// even though the insert itself would have succeeded.
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const phone = typeof body?.phone === "string" ? body.phone.trim() : "";

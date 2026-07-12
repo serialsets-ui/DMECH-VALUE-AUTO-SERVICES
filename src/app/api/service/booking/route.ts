@@ -7,6 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 // real job_card (Ops Customer Hub's Workshop Walk-in flow, Phase 3) — it
 // isn't a confirmed appointment yet, matching the "workshop manager will
 // WhatsApp within 30 minutes" copy from the spec.
+//
+// Don't chain .select() onto this insert — see the same note in
+// api/calculator/lead/route.ts: anon has no SELECT policy on `leads`, so
+// requesting the row back (.select()'s return=representation) fails even
+// though the insert itself succeeds.
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const phone = typeof body?.phone === "string" ? body.phone.trim() : "";

@@ -1,33 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ServiceBookingForm } from "@/components/marketing/ServiceBookingForm";
+import { SERVICE_PAGES, WHAT_TO_EXPECT } from "@/lib/service-pages";
 
 export const metadata: Metadata = {
   title: "Book a Service — DMECH Value Auto Services",
   description: "Book workshop service for your vehicle — diagnostics, repairs, and maintenance.",
 };
-
-const WHAT_TO_EXPECT = [
-  {
-    icon: "📞",
-    title: "Confirmation within 30 minutes",
-    desc: "We'll call or WhatsApp to confirm your booking and give you a time slot.",
-  },
-  {
-    icon: "🧾",
-    title: "A clear quote before work starts",
-    desc: "No work begins until you've agreed a price — no surprise charges at pickup.",
-  },
-  {
-    icon: "🔧",
-    title: "Updates while it's in the workshop",
-    desc: "You'll hear from us if anything changes once the job is underway, not just when it's done.",
-  },
-  {
-    icon: "🚗",
-    title: "Your vehicle back on schedule",
-    desc: "We tell you when to expect it and stick to it.",
-  },
-];
 
 export default function ServicePage() {
   return (
@@ -58,6 +37,33 @@ export default function ServicePage() {
               <div className="trust-title">{item.title}</div>
               <div className="trust-desc">{item.desc}</div>
             </div>
+          ))}
+        </div>
+
+        <div className="section-eyebrow" style={{ textAlign: "center", marginTop: 56 }}>
+          Browse By Service
+        </div>
+        <div className="section-title" style={{ textAlign: "center", fontSize: 26 }}>
+          What Do You Need Done?
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+            gap: 12,
+            marginTop: 24,
+          }}
+        >
+          {SERVICE_PAGES.map((s) => (
+            <Link
+              key={s.slug}
+              href={`/service/${s.slug}`}
+              className="teaser-card"
+              style={{ textAlign: "center", textDecoration: "none" }}
+            >
+              <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: "var(--text)" }}>{s.name}</div>
+            </Link>
           ))}
         </div>
       </div>

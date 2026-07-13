@@ -27,8 +27,10 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .ticker-dot.orange{background:var(--orange)}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-/* HERO */
-.hero{padding:50px 20px 50px;background:linear-gradient(135deg,#0F1923 0%,#162840 50%,#1A3050 100%);position:relative;overflow:hidden}
+/* HERO — dark gradient layered over a real photo (public/splash/01_cars_road.jpg,
+   already vetted for the marketing splash) so the gradient/glow treatment below
+   is kept exactly, just with imagery showing through it rather than flat color. */
+.hero{padding:50px 20px 50px;background-image:linear-gradient(135deg,rgba(15,25,35,.88) 0%,rgba(22,40,64,.85) 50%,rgba(26,48,80,.9) 100%),url('/splash/01_cars_road.jpg');background-size:cover;background-position:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 500px at 20% 50%,rgba(24,153,231,.08),transparent),radial-gradient(ellipse 600px 400px at 80% 30%,rgba(230,141,76,.05),transparent)}
 .hero-inner{max-width:1200px;margin:0 auto;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(24,153,231,.12);border:1px solid rgba(24,153,231,.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#5CB8F0;margin-bottom:20px}
@@ -76,7 +78,11 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .savings-label{font-size:12px;color:#6B8DA0;margin-top:2px}
 .savings-pct{display:inline-block;background:rgba(22,163,74,.2);padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;color:#4ADE80;margin-left:6px}
 .calc-result-title{font-size:12px;color:#6B8DA0;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.calc-result-total{font-family:'Space Grotesk';font-size:30px;font-weight:700;color:#22C55E;margin-bottom:12px}
+.calc-result-total{font-family:'Space Grotesk';font-size:30px;font-weight:700;color:#22C55E;margin-bottom:12px;border-radius:8px;animation:calcResultPulse .9s ease-out}
+@keyframes calcResultPulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.35)}70%{box-shadow:0 0 0 14px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+@media(prefers-reduced-motion:reduce){
+  .calc-result-total{animation:none}
+}
 .calc-breakdown{font-size:12px;color:#8BADC0;line-height:1.8}
 .calc-breakdown .line{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .calc-breakdown .line-label{color:#6B8DA0}
@@ -97,7 +103,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 
 /* HOW IT WORKS */
 .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.step-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;transition:box-shadow .25s,transform .25s}
+.step-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.08);transform:translateY(-2px)}
 .step-num{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-size:16px;font-weight:700;margin:0 auto 14px}
 .step-icon{font-size:32px;margin-bottom:10px}
 .step-title{font-family:'Space Grotesk';font-size:15px;font-weight:700;margin-bottom:6px}
@@ -105,7 +112,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 
 /* TRUST */
 .trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.trust-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px}
+.trust-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;transition:box-shadow .25s,transform .25s}
+.trust-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.08);transform:translateY(-2px)}
 .trust-icon{width:48px;height:48px;border-radius:12px;background:var(--blue-d);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px}
 .trust-title{font-family:'Space Grotesk';font-size:17px;font-weight:700;margin-bottom:8px}
 .trust-desc{font-size:14px;color:var(--muted);line-height:1.6}
@@ -203,8 +211,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .faq-q:hover{background:var(--bg)}
 .faq-icon{flex-shrink:0;font-size:20px;color:var(--blue);transition:transform .3s}
 .faq-item.open .faq-icon{transform:rotate(45deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;color:var(--muted);font-size:14px;line-height:1.7}
-.faq-item.open .faq-a{max-height:400px}
+.faq-a{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .25s ease;color:var(--muted);font-size:14px;line-height:1.7}
+.faq-item.open .faq-a{max-height:400px;opacity:1}
 .faq-a-inner{padding:0 20px 18px}
 
 /* CTA */
@@ -352,3 +360,20 @@ footer{background:var(--dark);color:#fff;padding:50px 20px 30px}
   .msplash-photo{animation:none;opacity:0}
   .msplash-photo:nth-child(1){opacity:1}
 }
+
+/* PHOTO BANNERS (visual richness pass) — static, in-flow reuse of the
+   .msplash photo+scrim technique for section intro/hero backgrounds on
+   pages that previously had no imagery. One photo, no crossfade (these
+   aren't loading screens); the dark scrim keeps text readable regardless
+   of the photo's own content. Reuses the same six vetted photos already
+   shipped in public/splash/ — no new sourcing. */
+.photo-banner{position:relative;background-size:cover;background-position:center;overflow:hidden}
+.photo-banner::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,25,35,.82),rgba(15,25,35,.6) 45%,rgba(15,25,35,.88))}
+.photo-banner .section-inner{position:relative;z-index:1}
+.photo-banner .section-eyebrow{color:#7DD3FC}
+.photo-banner .section-title{color:#fff}
+.photo-banner .section-subtitle{color:#C0D0E0}
+.photo-banner.pb-cargo{background-image:url('/splash/02_cargo_port.jpg')}
+.photo-banner.pb-carlot{background-image:url('/splash/03-car-lot.jpg')}
+.photo-banner.pb-workshop{background-image:url('/splash/04-workshop.jpg')}
+.photo-banner.pb-transport{background-image:url('/splash/06-car-transport.jpg')}

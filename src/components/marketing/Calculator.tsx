@@ -269,7 +269,7 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
       </button>
 
       {result && (
-        <div className="calc-result show">
+        <div className="calc-result show" key={`${result.totalLandedKobo}-${result.dutyKobo}`}>
           {marketPriceKobo ? (
             <>
               <div className="calc-compare">

@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/marketing/Reveal";
+
 const STEPS = [
   {
     icon: "🔍",
@@ -25,19 +27,23 @@ export function HowItWorks() {
   return (
     <section className="section" id="how" style={{ background: "#fff" }}>
       <div className="section-inner">
-        <div className="section-eyebrow">How It Works</div>
-        <div className="section-title">From Auction to Your Driveway</div>
-        <div className="section-subtitle">
-          We handle the entire process. You choose the car, we handle the rest.
-        </div>
+        <Reveal>
+          <div className="section-eyebrow">How It Works</div>
+          <div className="section-title">From Auction to Your Driveway</div>
+          <div className="section-subtitle">
+            We handle the entire process. You choose the car, we handle the rest.
+          </div>
+        </Reveal>
         <div className="steps-grid">
           {STEPS.map((step, i) => (
-            <div className="step-card" key={step.title}>
-              <div className="step-num">{i + 1}</div>
-              <div className="step-icon">{step.icon}</div>
-              <div className="step-title">{step.title}</div>
-              <div className="step-desc">{step.desc}</div>
-            </div>
+            <Reveal key={step.title} delayMs={i * 80}>
+              <div className="step-card">
+                <div className="step-num">{i + 1}</div>
+                <div className="step-icon">{step.icon}</div>
+                <div className="step-title">{step.title}</div>
+                <div className="step-desc">{step.desc}</div>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublicVehicles, isCertified } from "@/lib/vehicles";
+import { Reveal } from "@/components/marketing/Reveal";
 
 export const metadata: Metadata = {
   title: "DMECH Certified Nigerian-Used — DMECH Value Auto Services",
@@ -42,8 +43,8 @@ export default async function CertifiedNigerianUsedPage() {
         </div>
       </section>
 
-      <section className="section" style={{ background: "#fff" }}>
-        <div className="section-inner center">
+      <section className="section photo-banner pb-carlot center">
+        <div className="section-inner">
           <div className="section-eyebrow">Nigerian-Used, Verified</div>
           <div className="section-title">DMECH Certified Nigerian-Used</div>
           <div className="section-subtitle" style={{ margin: "0 auto" }}>
@@ -95,31 +96,37 @@ export default async function CertifiedNigerianUsedPage() {
       <section className="section">
         <div className="section-inner">
           <div className="trust-grid">
-            <div className="trust-card">
-              <div className="trust-icon">🔍</div>
-              <div className="trust-title">Title &amp; Provenance Check</div>
-              <div className="trust-desc">
-                Ownership history, lien checks, and prior registration status are verified before
-                a vehicle can be certified — the same discipline that protects our import
-                pipeline, applied to vehicles we didn&apos;t import.
+            <Reveal delayMs={0}>
+              <div className="trust-card">
+                <div className="trust-icon">🔍</div>
+                <div className="trust-title">Title &amp; Provenance Check</div>
+                <div className="trust-desc">
+                  Ownership history, lien checks, and prior registration status are verified
+                  before a vehicle can be certified — the same discipline that protects our
+                  import pipeline, applied to vehicles we didn&apos;t import.
+                </div>
               </div>
-            </div>
-            <div className="trust-card">
-              <div className="trust-icon">🛠️</div>
-              <div className="trust-title">Full Inspection</div>
-              <div className="trust-desc">
-                Every system is checked and documented before certification — the same condition
-                report format you see on our imported vehicles.
+            </Reveal>
+            <Reveal delayMs={80}>
+              <div className="trust-card">
+                <div className="trust-icon">🛠️</div>
+                <div className="trust-title">Full Inspection</div>
+                <div className="trust-desc">
+                  Every system is checked and documented before certification — the same condition
+                  report format you see on our imported vehicles.
+                </div>
               </div>
-            </div>
-            <div className="trust-card">
-              <div className="trust-icon">🛡️</div>
-              <div className="trust-title">A Real Warranty</div>
-              <div className="trust-desc">
-                Backed by a dedicated reserve fund, not just a line in the ad copy. Coverage tier
-                and duration are shown on every certified vehicle before you buy.
+            </Reveal>
+            <Reveal delayMs={160}>
+              <div className="trust-card">
+                <div className="trust-icon">🛡️</div>
+                <div className="trust-title">A Real Warranty</div>
+                <div className="trust-desc">
+                  Backed by a dedicated reserve fund, not just a line in the ad copy. Coverage tier
+                  and duration are shown on every certified vehicle before you buy.
+                </div>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>

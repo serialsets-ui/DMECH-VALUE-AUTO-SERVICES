@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CTASection } from "@/components/marketing/CTASection";
+import { Reveal } from "@/components/marketing/Reveal";
 
 export const metadata: Metadata = {
   title: "Contact Us — DMECH Value Auto Services",
@@ -20,12 +21,14 @@ export default function ContactPage() {
       <section className="section" style={{ background: "#fff" }}>
         <div className="section-inner">
           <div className="trust-grid contact-grid">
-            {CONTACT_ITEMS.map((item) => (
-              <div className="trust-card" key={item.label}>
-                <div className="trust-icon">{item.icon}</div>
-                <div className="trust-title">{item.label}</div>
-                <div className="trust-desc">{item.value}</div>
-              </div>
+            {CONTACT_ITEMS.map((item, i) => (
+              <Reveal key={item.label} delayMs={i * 80}>
+                <div className="trust-card">
+                  <div className="trust-icon">{item.icon}</div>
+                  <div className="trust-title">{item.label}</div>
+                  <div className="trust-desc">{item.value}</div>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>

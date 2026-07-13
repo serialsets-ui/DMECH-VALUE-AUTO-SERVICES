@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServicePage, SERVICE_PAGES, WHAT_TO_EXPECT } from "@/lib/service-pages";
+import { Reveal } from "@/components/marketing/Reveal";
 
 export function generateStaticParams() {
   return SERVICE_PAGES.map((s) => ({ slug: s.slug }));
@@ -96,12 +97,14 @@ export default async function ServiceCategoryPage({
             After You Book
           </div>
           <div className="trust-grid contact-grid" style={{ marginTop: 24 }}>
-            {WHAT_TO_EXPECT.map((item) => (
-              <div className="trust-card" key={item.title}>
-                <div className="trust-icon">{item.icon}</div>
-                <div className="trust-title">{item.title}</div>
-                <div className="trust-desc">{item.desc}</div>
-              </div>
+            {WHAT_TO_EXPECT.map((item, i) => (
+              <Reveal key={item.title} delayMs={i * 80}>
+                <div className="trust-card">
+                  <div className="trust-icon">{item.icon}</div>
+                  <div className="trust-title">{item.title}</div>
+                  <div className="trust-desc">{item.desc}</div>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>

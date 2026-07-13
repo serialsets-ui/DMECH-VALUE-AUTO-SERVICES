@@ -13,12 +13,18 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="page-fade">
-      <Reveal>
-        <HowItWorks />
-      </Reveal>
-      <Reveal>
-        <Trust />
-      </Reveal>
+      <section className="section photo-banner pb-cargo center">
+        <div className="section-inner">
+          <div className="section-eyebrow">About DMECH</div>
+          <div className="section-title">Built To Fix The Informal Car Market</div>
+          <div className="section-subtitle" style={{ margin: "0 auto" }}>
+            From sourcing to delivery, every step is designed to replace guesswork with verified
+            documentation — here&apos;s exactly how it works, and why it&apos;s different.
+          </div>
+        </div>
+      </section>
+      <HowItWorks />
+      <Trust />
       <Reveal>
         <Testimonials />
       </Reveal>

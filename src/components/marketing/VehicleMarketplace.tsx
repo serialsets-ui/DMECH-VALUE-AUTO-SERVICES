@@ -10,6 +10,7 @@ import {
   type PublicDisplayStatus,
 } from "@/lib/vehicle-display";
 import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
+import { Reveal } from "@/components/marketing/Reveal";
 
 const FILTERS = [
   "All",
@@ -125,11 +126,12 @@ export function VehicleMarketplace({
           <div className="vehicle-empty">No vehicles match this filter right now — check back soon.</div>
         ) : (
           <div className="vehicle-grid">
-            {filtered.map((v) => {
+            {filtered.map((v, i) => {
               const status = displayStatus(v);
               const certified = isCertified(v);
               return (
-                <div className="v-card" key={v.id} onClick={() => setSelected(v)}>
+                <Reveal key={v.id} delayMs={Math.min(i * 40, 400)}>
+                <div className="v-card" onClick={() => setSelected(v)}>
                   <div className="v-card-img">
                     {v.fuel_type === "electric" ? "⚡" : "🚗"}
                     <div className={`v-card-status ${STATUS_CLASS[status]}`}>{status}</div>
@@ -168,6 +170,7 @@ export function VehicleMarketplace({
                     </div>
                   </div>
                 </div>
+                </Reveal>
               );
             })}
           </div>

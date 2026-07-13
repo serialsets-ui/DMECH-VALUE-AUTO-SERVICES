@@ -1,38 +1,48 @@
+import { Reveal } from "@/components/marketing/Reveal";
+
 export function Trust() {
   return (
     <section className="section" id="why">
       <div className="section-inner">
-        <div className="section-eyebrow">Why DMECH</div>
-        <div className="section-title">Buy With Confidence, Not Guesswork</div>
-        <div className="section-subtitle">
-          The informal car market runs on trust you can&apos;t verify. We built DMECH to change
-          that.
-        </div>
+        <Reveal>
+          <div className="section-eyebrow">Why DMECH</div>
+          <div className="section-title">Buy With Confidence, Not Guesswork</div>
+          <div className="section-subtitle">
+            The informal car market runs on trust you can&apos;t verify. We built DMECH to change
+            that.
+          </div>
+        </Reveal>
         <div className="trust-grid">
-          <div className="trust-card">
-            <div className="trust-icon">📋</div>
-            <div className="trust-title">Full Documentation</div>
-            <div className="trust-desc">
-              Every vehicle comes with original title, verified history report, pre-shipment
-              inspection, and customs clearance papers. Nothing hidden.
+          <Reveal delayMs={0}>
+            <div className="trust-card">
+              <div className="trust-icon">📋</div>
+              <div className="trust-title">Full Documentation</div>
+              <div className="trust-desc">
+                Every vehicle comes with original title, verified history report, pre-shipment
+                inspection, and customs clearance papers. Nothing hidden.
+              </div>
             </div>
-          </div>
-          <div className="trust-card">
-            <div className="trust-icon">🔎</div>
-            <div className="trust-title">Verified Vehicle History</div>
-            <div className="trust-desc">
-              We check accident records, mileage, and title status before purchase. You know
-              exactly what you&apos;re buying — no surprises after payment.
+          </Reveal>
+          <Reveal delayMs={80}>
+            <div className="trust-card">
+              <div className="trust-icon">🔎</div>
+              <div className="trust-title">Verified Vehicle History</div>
+              <div className="trust-desc">
+                We check accident records, mileage, and title status before purchase. You know
+                exactly what you&apos;re buying — no surprises after payment.
+              </div>
             </div>
-          </div>
-          <div className="trust-card">
-            <div className="trust-icon">🎯</div>
-            <div className="trust-title">Transparent Pricing</div>
-            <div className="trust-desc">
-              Our calculator shows every naira — vehicle cost, shipping, duties, and our fee. The
-              price we quote is the price you pay.
+          </Reveal>
+          <Reveal delayMs={160}>
+            <div className="trust-card">
+              <div className="trust-icon">🎯</div>
+              <div className="trust-title">Transparent Pricing</div>
+              <div className="trust-desc">
+                Our calculator shows every naira — vehicle cost, shipping, duties, and our fee. The
+                price we quote is the price you pay.
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
         <div className="vs-row">
           <div className="vs-card them">

@@ -11,6 +11,16 @@ export const metadata: Metadata = {
 export default function FinancingPage() {
   return (
     <div className="page-fade">
+      <section className="section photo-banner pb-transport center">
+        <div className="section-inner">
+          <div className="section-eyebrow">Own It Sooner</div>
+          <div className="section-title">Start Paying While It Ships</div>
+          <div className="section-subtitle" style={{ margin: "0 auto" }}>
+            DMECH Direct Finance and Partner Finance both let your instalments begin the moment
+            your vehicle is purchased — not after it clears customs.
+          </div>
+        </div>
+      </section>
       <Reveal>
         <InstalmentPlans />
       </Reveal>

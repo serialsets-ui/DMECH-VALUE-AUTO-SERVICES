@@ -9,6 +9,10 @@ interface HeroProps {
 export function Hero({ ngnRate, marketPriceBenchmarks }: HeroProps) {
   return (
     <section className="hero">
+      <div className="hero-headlights" aria-hidden="true">
+        <span className="hero-headlight-glow hl-1" />
+        <span className="hero-headlight-glow hl-2" />
+      </div>
       <div className="hero-inner">
         <div>
           <div className="hero-badge">

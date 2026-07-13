@@ -115,9 +115,13 @@ export function Sidebar({ staff }: { staff: DmechUser }) {
 
   return (
     <aside className="ops-sidebar">
-      <div className="ops-sidebar-logo">
+      {/* Plain <a>, not <Link> — a real navigation so the splash (OpsShell,
+          gated by client useState that only resets on a fresh mount)
+          actually replays instead of silently no-op'ing on a client-side
+          route that doesn't remount the layout. */}
+      <a href="/ops/dashboard" className="ops-sidebar-logo">
         <Logo variant="sidebar" />
-      </div>
+      </a>
 
       <nav className="ops-nav">
         {NAV.map((group) => {

@@ -36,9 +36,14 @@ export function Nav() {
     <>
       <nav className={scrolled ? "scrolled" : ""}>
         <div className="nav-inner">
-          <Link href="/">
+          {/* Plain <a>, not <Link> — a real navigation (not client-side
+              routing) so MarketingSplash actually replays. The layout that
+              renders the splash persists across Link clicks, so only a
+              real page load remounts it. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/">
             <Logo variant="nav" />
-          </Link>
+          </a>
           <div className="nav-links">
             {LINKS.map((link) => (
               <Link

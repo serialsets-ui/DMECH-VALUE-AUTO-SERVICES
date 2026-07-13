@@ -12,9 +12,9 @@ import { Logo } from "@/components/Logo";
 const LINKS = [
   { href: "/vehicles", label: "Vehicles" },
   { href: "/financing", label: "Financing" },
+  { href: "/service", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
-  { href: "/service", label: "Book a Service" },
 ];
 
 function isActive(pathname: string, href: string) {

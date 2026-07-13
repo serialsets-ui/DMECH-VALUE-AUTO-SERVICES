@@ -1,3 +1,4 @@
+import { MessageCircle, Phone } from "lucide-react";
 import { CONTACT, whatsappHref } from "@/lib/contact";
 
 export function CTASection() {
@@ -15,10 +16,10 @@ export function CTASection() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          💬 Chat on WhatsApp
+          <MessageCircle size={16} strokeWidth={2} /> Chat on WhatsApp
         </a>
         <a className="cta-secondary" href={`tel:${CONTACT.phoneHref}`}>
-          📞 Call: {CONTACT.phoneDisplay}
+          <Phone size={16} strokeWidth={2} /> Call: {CONTACT.phoneDisplay}
         </a>
       </div>
     </section>

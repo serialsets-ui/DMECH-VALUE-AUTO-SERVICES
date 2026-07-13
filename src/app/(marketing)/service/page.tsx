@@ -46,7 +46,9 @@ export default function ServicePage() {
                   className="teaser-card"
                   style={{ textAlign: "center", textDecoration: "none", display: "block" }}
                 >
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
+                  <div style={{ color: "var(--blue)", marginBottom: 8 }}>
+                    <s.icon size={24} strokeWidth={1.5} style={{ margin: "0 auto" }} />
+                  </div>
                   <div style={{ fontWeight: 600, fontSize: 14, color: "var(--text)" }}>
                     {s.name}
                   </div>
@@ -81,7 +83,9 @@ export default function ServicePage() {
             {WHAT_TO_EXPECT.map((item, i) => (
               <Reveal key={item.title} delayMs={i * 80}>
                 <div className="trust-card">
-                  <div className="trust-icon">{item.icon}</div>
+                  <div className="trust-icon">
+                    <item.icon size={24} strokeWidth={1.75} />
+                  </div>
                   <div className="trust-title">{item.title}</div>
                   <div className="trust-desc">{item.desc}</div>
                 </div>

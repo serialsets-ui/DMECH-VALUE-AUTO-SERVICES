@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin, Phone, MessageCircle, Clock } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { CONTACT } from "@/lib/contact";
 
@@ -32,7 +33,9 @@ export function Footer() {
         <div className="footer-col">
           <h4>Get In Touch</h4>
           <div className="footer-contact-item">
-            <span className="fc-icon">📍</span>
+            <span className="fc-icon">
+              <MapPin size={16} strokeWidth={1.75} />
+            </span>
             <span>
               {CONTACT.addressLine1}
               <br />
@@ -40,15 +43,21 @@ export function Footer() {
             </span>
           </div>
           <div className="footer-contact-item">
-            <span className="fc-icon">📞</span>
+            <span className="fc-icon">
+              <Phone size={16} strokeWidth={1.75} />
+            </span>
             <span>{CONTACT.phoneDisplay}</span>
           </div>
           <div className="footer-contact-item">
-            <span className="fc-icon">💬</span>
+            <span className="fc-icon">
+              <MessageCircle size={16} strokeWidth={1.75} />
+            </span>
             <span>WhatsApp: {CONTACT.whatsappDisplay}</span>
           </div>
           <div className="footer-contact-item">
-            <span className="fc-icon">🕒</span>
+            <span className="fc-icon">
+              <Clock size={16} strokeWidth={1.75} />
+            </span>
             <span>{CONTACT.hours}</span>
           </div>
         </div>

@@ -1,9 +1,11 @@
+import { Zap } from "lucide-react";
+
 const TICKER_ITEMS = [
-  { text: "⚡ New: Certified Nigerian-used vehicles now available", orange: false },
+  { text: "New: Certified Nigerian-used vehicles now available", orange: false, icon: Zap },
   { text: "3 Vehicles Cleared Customs This Week", orange: true },
   { text: "🇨🇳 Now Importing from China — New Cars & EVs", orange: false },
   { text: "Import Duties Reduced — Save More in 2026", orange: true },
-  { text: "⚡ EVs: 10% Duty, Zero Green Tax — Ask Us How", orange: false },
+  { text: "EVs: 10% Duty, Zero Green Tax — Ask Us How", orange: false, icon: Zap },
   { text: "Chery Tiggo 7 Pro 2024 — Brand New In Stock", orange: true },
   { text: "Financing Available — Pay While Shipping", orange: false },
   { text: "DMECH Certified — Verified History, Real Warranty", orange: true },
@@ -17,6 +19,7 @@ export function Ticker() {
         {items.map((item, i) => (
           <span className="ticker-item" key={i}>
             <span className={`ticker-dot ${item.orange ? "orange" : ""}`} />
+            {item.icon && <item.icon size={13} strokeWidth={2.5} style={{ marginRight: 4 }} />}
             {item.text}
           </span>
         ))}

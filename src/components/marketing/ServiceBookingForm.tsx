@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
+import { CheckCircle2, Check } from "lucide-react";
 
 const SERVICES = [
   "Diagnostics",
@@ -74,7 +75,9 @@ export function ServiceBookingForm() {
   if (status === "sent") {
     return (
       <div className="booking-card" style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
+        <div style={{ display: "flex", justifyContent: "center", color: "var(--green)", marginBottom: 12 }}>
+          <CheckCircle2 size={40} strokeWidth={1.5} />
+        </div>
         <div style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 700, marginBottom: 8 }}>
           Request Received
         </div>
@@ -92,7 +95,7 @@ export function ServiceBookingForm() {
         {[1, 2, 3].map((s, i) => (
           <Fragment key={s}>
             <div className={`step-dot ${step === s ? "active" : step > s ? "done" : ""}`}>
-              {step > s ? "✓" : s}
+              {step > s ? <Check size={14} strokeWidth={2.5} /> : s}
             </div>
             {i < 2 && <div className="step-line" />}
           </Fragment>

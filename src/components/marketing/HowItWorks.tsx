@@ -1,23 +1,24 @@
+import { Search, Wallet, Ship, Car } from "lucide-react";
 import { Reveal } from "@/components/marketing/Reveal";
 
 const STEPS = [
   {
-    icon: "🔍",
+    icon: Search,
     title: "Choose Your Vehicle",
     desc: "Browse landed stock or tell us exactly what you want. We source from verified dealers and auctions in the USA and Europe.",
   },
   {
-    icon: "💰",
+    icon: Wallet,
     title: "Pay Your Way",
     desc: "Pay in full or choose an instalment plan. Start paying while your vehicle ships — by the time it arrives, you're already ahead.",
   },
   {
-    icon: "🚢",
+    icon: Ship,
     title: "Track It Live",
     desc: "Follow your vehicle from port of origin to Lagos. Real-time updates via our portal and WhatsApp. No surprises.",
   },
   {
-    icon: "🚗",
+    icon: Car,
     title: "Drive Home",
     desc: "We clear customs, inspect the vehicle, and prepare all documentation. Pick up from our hub or get it delivered.",
   },
@@ -39,7 +40,9 @@ export function HowItWorks() {
             <Reveal key={step.title} delayMs={i * 80}>
               <div className="step-card">
                 <div className="step-num">{i + 1}</div>
-                <div className="step-icon">{step.icon}</div>
+                <div className="step-icon">
+                  <step.icon size={32} strokeWidth={1.75} />
+                </div>
                 <div className="step-title">{step.title}</div>
                 <div className="step-desc">{step.desc}</div>
               </div>

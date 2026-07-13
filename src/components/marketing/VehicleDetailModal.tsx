@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { X, CheckCircle2, TriangleAlert, MessageCircle } from "lucide-react";
 import { formatNaira } from "@/lib/money";
 import { isCertified, activeWarranty, displayStatus, type PublicVehicle } from "@/lib/vehicle-display";
 import { whatsappHref } from "@/lib/contact";
@@ -61,7 +62,7 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
         onClick={(e) => e.stopPropagation()}
       >
         <button className="modal-close" onClick={onClose} aria-label="Close" ref={closeRef}>
-          ✕
+          <X size={16} strokeWidth={2} />
         </button>
         <div className="modal-tabs">
           {TABS.map((t) => (
@@ -175,7 +176,9 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
             (certified && warranty ? (
               <div>
                 <div className="cert-badge-row">
-                  <span style={{ fontSize: 22 }}>✅</span>
+                  <span style={{ display: "flex", color: "#16A34A" }}>
+                    <CheckCircle2 size={22} strokeWidth={1.75} />
+                  </span>
                   <div>
                     <div style={{ fontWeight: 700, color: "#16A34A" }}>DMECH Certified</div>
                     <div style={{ fontSize: 12, color: "var(--muted)" }}>
@@ -213,11 +216,14 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
                 </div>
               </div>
             ) : (
-              <div className="uncert-notice">
-                ⚠️ This vehicle has not yet completed DMECH&apos;s certification program — it is
-                sold as-is, with no warranty attached. Full maintenance/service records are
-                still shared where available. Ask us about the certification timeline for this
-                specific vehicle.
+              <div className="uncert-notice" style={{ display: "flex", gap: 8 }}>
+                <TriangleAlert size={16} strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} />
+                <span>
+                  This vehicle has not yet completed DMECH&apos;s certification program — it is
+                  sold as-is, with no warranty attached. Full maintenance/service records are
+                  still shared where available. Ask us about the certification timeline for this
+                  specific vehicle.
+                </span>
               </div>
             ))}
 
@@ -271,14 +277,14 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
           <div style={{ display: "flex", gap: 8, marginTop: 24 }}>
             <a
               className="v-card-btn btn-primary"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
               href={whatsappHref(
                 `Hi DMECH, I'm interested in the ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
               )}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Ask on WhatsApp
+              <MessageCircle size={16} strokeWidth={2} /> Ask on WhatsApp
             </a>
           </div>
         </div>

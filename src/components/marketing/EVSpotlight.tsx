@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Zap, Leaf, PiggyBank, Wrench, Lightbulb } from "lucide-react";
 
 export function EVSpotlight() {
   return (
@@ -21,8 +22,11 @@ export function EVSpotlight() {
         }}
       />
       <div className="section-inner" style={{ position: "relative" }}>
-        <div className="section-eyebrow" style={{ color: "#4ADE80" }}>
-          ⚡ Electric Vehicles
+        <div
+          className="section-eyebrow"
+          style={{ color: "#4ADE80", display: "flex", alignItems: "center", gap: 6 }}
+        >
+          <Zap size={13} strokeWidth={2.5} /> Electric Vehicles
         </div>
         <div className="section-title" style={{ color: "#fff" }}>
           Go Electric, Pay Less Tax
@@ -43,17 +47,17 @@ export function EVSpotlight() {
         >
           {[
             {
-              icon: "🍃",
+              icon: Leaf,
               title: "Green Tax Exempt",
               body: "Every EV is 100% exempt from the Green Tax Surcharge, and attracts a reduced 10% import duty instead of 20%. The savings are real and immediate.",
             },
             {
-              icon: "💸",
+              icon: PiggyBank,
               title: "No Fuel, Lower Running Cost",
               body: "Skip the fuel queues and the pump price. Charge at home or at work. For high-mileage drivers, the running-cost savings add up fast.",
             },
             {
-              icon: "🔧",
+              icon: Wrench,
               title: "We Service What We Sell",
               body: "EV support in Nigeria is thin — so DMECH built it in. Our hub services and maintains the EVs we import, so you're never stranded.",
             },
@@ -67,7 +71,9 @@ export function EVSpotlight() {
                 padding: 24,
               }}
             >
-              <div style={{ fontSize: 28, marginBottom: 10 }}>{card.icon}</div>
+              <div style={{ color: "#4ADE80", marginBottom: 10 }}>
+                <card.icon size={28} strokeWidth={1.75} />
+              </div>
               <div
                 style={{
                   fontFamily: "var(--font-heading)",
@@ -95,7 +101,9 @@ export function EVSpotlight() {
             alignItems: "flex-start",
           }}
         >
-          <span style={{ fontSize: 22, flexShrink: 0 }}>💡</span>
+          <span style={{ color: "#F5A623", flexShrink: 0, display: "flex" }}>
+            <Lightbulb size={22} strokeWidth={1.75} />
+          </span>
           <div style={{ fontSize: 13, color: "#C0D0E0", lineHeight: 1.6 }}>
             <strong style={{ color: "#F5A623" }}>Straight talk on charging:</strong> Public
             charging in Nigeria is still limited, so EVs work best if you can charge at home or
@@ -110,9 +118,17 @@ export function EVSpotlight() {
           <Link
             href="/vehicles?filter=ev"
             className="calc-btn"
-            style={{ maxWidth: 280, margin: "0 auto", background: "#22C55E", display: "block" }}
+            style={{
+              maxWidth: 280,
+              margin: "0 auto",
+              background: "#22C55E",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
           >
-            Browse EV Inventory ⚡
+            Browse EV Inventory <Zap size={16} strokeWidth={2.5} />
           </Link>
         </div>
       </div>

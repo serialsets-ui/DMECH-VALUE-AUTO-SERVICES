@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FileText, Search, Target } from "lucide-react";
 import { Reveal } from "@/components/marketing/Reveal";
 
 // Condensed Home-page version of Trust.tsx's "Why DMECH" section — same
@@ -6,17 +7,17 @@ import { Reveal } from "@/components/marketing/Reveal";
 // comparison table, plus a link to the full story on /about.
 const ITEMS = [
   {
-    icon: "📋",
+    icon: FileText,
     title: "Full Documentation",
     desc: "Original title, verified history report, pre-shipment inspection, and customs clearance papers on every vehicle.",
   },
   {
-    icon: "🔎",
+    icon: Search,
     title: "Verified Vehicle History",
     desc: "Accident records, mileage, and title status checked before purchase — no surprises after payment.",
   },
   {
-    icon: "🎯",
+    icon: Target,
     title: "Transparent Pricing",
     desc: "Every naira itemised — vehicle cost, shipping, duties, and our fee. The price we quote is the price you pay.",
   },
@@ -38,7 +39,9 @@ export function TrustTeaser() {
           {ITEMS.map((item, i) => (
             <Reveal key={item.title} delayMs={i * 80}>
               <div className="trust-card">
-                <div className="trust-icon">{item.icon}</div>
+                <div className="trust-icon">
+                  <item.icon size={24} strokeWidth={1.75} />
+                </div>
                 <div className="trust-title">{item.title}</div>
                 <div className="trust-desc">{item.desc}</div>
               </div>

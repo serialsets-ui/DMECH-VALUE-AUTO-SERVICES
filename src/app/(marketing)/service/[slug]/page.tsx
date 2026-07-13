@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServicePage, SERVICE_PAGES, WHAT_TO_EXPECT } from "@/lib/service-pages";
 import { Reveal } from "@/components/marketing/Reveal";
+import { Check } from "lucide-react";
 
 export function generateStaticParams() {
   return SERVICE_PAGES.map((s) => ({ slug: s.slug }));
@@ -40,7 +41,9 @@ export default async function ServiceCategoryPage({
 
       <section className="section" style={{ background: "#fff" }}>
         <div className="section-inner center">
-          <div style={{ fontSize: 40, marginBottom: 8 }}>{page.icon}</div>
+          <div style={{ color: "var(--blue)", marginBottom: 8, display: "flex", justifyContent: "center" }}>
+            <page.icon size={40} strokeWidth={1.5} />
+          </div>
           <div className="section-eyebrow">Workshop · Lagos</div>
           <div className="section-title">{page.name}</div>
           <div className="section-subtitle" style={{ maxWidth: 620, margin: "0 auto" }}>
@@ -75,7 +78,9 @@ export default async function ServiceCategoryPage({
                   color: "var(--text)",
                 }}
               >
-                <span style={{ color: "var(--green)", flexShrink: 0 }}>✓</span>
+                <span style={{ color: "var(--green)", flexShrink: 0, display: "flex", marginTop: 2 }}>
+                  <Check size={16} strokeWidth={2.5} />
+                </span>
                 {item}
               </li>
             ))}
@@ -100,7 +105,9 @@ export default async function ServiceCategoryPage({
             {WHAT_TO_EXPECT.map((item, i) => (
               <Reveal key={item.title} delayMs={i * 80}>
                 <div className="trust-card">
-                  <div className="trust-icon">{item.icon}</div>
+                  <div className="trust-icon">
+                    <item.icon size={24} strokeWidth={1.75} />
+                  </div>
                   <div className="trust-title">{item.title}</div>
                   <div className="trust-desc">{item.desc}</div>
                 </div>

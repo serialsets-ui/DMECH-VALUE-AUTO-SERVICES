@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Zap, Car, CheckCircle2 } from "lucide-react";
 import { formatNaira } from "@/lib/money";
 import { isCertified, displayStatus, type PublicVehicle } from "@/lib/vehicle-display";
 import { Reveal } from "@/components/marketing/Reveal";
@@ -23,7 +24,9 @@ export function VehicleTeaser({ vehicles }: { vehicles: PublicVehicle[] }) {
         {top.length === 0 ? (
           <Reveal>
             <div className="vehicle-empty">
-              <div style={{ fontSize: 32, marginBottom: 12 }}>🚗</div>
+              <div style={{ display: "flex", justifyContent: "center", color: "var(--subtle)", marginBottom: 12 }}>
+                <Car size={32} strokeWidth={1.5} />
+              </div>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>New inventory added regularly</div>
               <div style={{ fontSize: 14 }}>
                 We&apos;re onboarding our first verified vehicles now. WhatsApp us for current
@@ -40,7 +43,11 @@ export function VehicleTeaser({ vehicles }: { vehicles: PublicVehicle[] }) {
                 <Reveal key={v.id} delayMs={i * 80}>
                   <Link href="/vehicles" className="v-card" style={{ display: "block" }}>
                     <div className="v-card-img">
-                      {v.fuel_type === "electric" ? "⚡" : "🚗"}
+                      {v.fuel_type === "electric" ? (
+                        <Zap size={56} strokeWidth={1.25} />
+                      ) : (
+                        <Car size={56} strokeWidth={1.25} />
+                      )}
                       <div
                         className={`v-card-status ${
                           status === "In Transit"
@@ -52,7 +59,11 @@ export function VehicleTeaser({ vehicles }: { vehicles: PublicVehicle[] }) {
                       >
                         {status}
                       </div>
-                      {certified && <div className="v-card-cert">✅ Certified</div>}
+                      {certified && (
+                        <div className="v-card-cert" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <CheckCircle2 size={13} strokeWidth={2} /> Certified
+                        </div>
+                      )}
                     </div>
                     <div className="v-card-body">
                       <div className="v-card-name">

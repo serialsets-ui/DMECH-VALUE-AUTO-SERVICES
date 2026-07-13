@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MapPin, Phone, MessageCircle, Clock } from "lucide-react";
 import { CTASection } from "@/components/marketing/CTASection";
 import { Reveal } from "@/components/marketing/Reveal";
 import { CONTACT, ADDRESS_FULL } from "@/lib/contact";
@@ -9,10 +10,10 @@ export const metadata: Metadata = {
 };
 
 const CONTACT_ITEMS = [
-  { icon: "📍", label: "Visit Us", value: ADDRESS_FULL },
-  { icon: "📞", label: "Call", value: CONTACT.phoneDisplay },
-  { icon: "💬", label: "WhatsApp", value: CONTACT.whatsappDisplay },
-  { icon: "🕒", label: "Hours", value: CONTACT.hours },
+  { icon: MapPin, label: "Visit Us", value: ADDRESS_FULL },
+  { icon: Phone, label: "Call", value: CONTACT.phoneDisplay },
+  { icon: MessageCircle, label: "WhatsApp", value: CONTACT.whatsappDisplay },
+  { icon: Clock, label: "Hours", value: CONTACT.hours },
 ];
 
 export default function ContactPage() {
@@ -25,7 +26,9 @@ export default function ContactPage() {
             {CONTACT_ITEMS.map((item, i) => (
               <Reveal key={item.label} delayMs={i * 80}>
                 <div className="trust-card">
-                  <div className="trust-icon">{item.icon}</div>
+                  <div className="trust-icon">
+                    <item.icon size={24} strokeWidth={1.75} />
+                  </div>
                   <div className="trust-title">{item.label}</div>
                   <div className="trust-desc">{item.value}</div>
                 </div>

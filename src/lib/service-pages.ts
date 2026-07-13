@@ -4,11 +4,25 @@
 // Copy stays honest and generic (what's covered, no fabricated
 // certifications) matching the honesty-gate convention used everywhere
 // else on this site.
+import {
+  Search,
+  Cog,
+  Zap,
+  Snowflake,
+  Car,
+  Disc,
+  Paintbrush,
+  BatteryCharging,
+  Wrench,
+  Phone,
+  Receipt,
+  type LucideIcon,
+} from "lucide-react";
 
 export interface ServicePageData {
   slug: string;
   name: string;
-  icon: string;
+  icon: LucideIcon;
   seoTitle: string;
   seoDescription: string;
   intro: string;
@@ -19,7 +33,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "diagnostics",
     name: "Car Diagnostics",
-    icon: "🔍",
+    icon: Search,
     seoTitle: "Car Diagnostics in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Computerized car diagnostics in Lagos — find the real fault before you pay for repairs. Book a diagnostic check with DMECH's workshop.",
@@ -35,7 +49,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "engine",
     name: "Engine Repair",
-    icon: "🔧",
+    icon: Cog,
     seoTitle: "Engine Repair in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Engine repair and overhaul in Lagos — knocking, overheating, oil leaks, and full engine replacement. Book with DMECH's workshop.",
@@ -51,7 +65,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "electrical",
     name: "Auto Electrical Repair",
-    icon: "⚡",
+    icon: Zap,
     seoTitle: "Car Electrical Repair in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Car battery, alternator, starter motor, and ignition repair in Lagos. Book an auto electrical diagnosis with DMECH's workshop.",
@@ -67,7 +81,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "ac",
     name: "Car AC Repair",
-    icon: "❄️",
+    icon: Snowflake,
     seoTitle: "Car AC Repair in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Car air conditioning repair and regas in Lagos — blowing warm, weak airflow, or AC not turning on. Book with DMECH's workshop.",
@@ -83,7 +97,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "suspension",
     name: "Suspension Repair",
-    icon: "🚙",
+    icon: Car,
     seoTitle: "Suspension Repair in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Shock absorber, strut, and suspension repair in Lagos — for a smoother ride and safer handling on Lagos roads. Book with DMECH.",
@@ -99,7 +113,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "brakes",
     name: "Brake Repair",
-    icon: "🛑",
+    icon: Disc,
     seoTitle: "Brake Repair in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Brake pad, disc, and fluid service in Lagos — squealing, grinding, or a soft brake pedal. Book a brake inspection with DMECH's workshop.",
@@ -115,7 +129,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "body-paint",
     name: "Body & Paint",
-    icon: "🎨",
+    icon: Paintbrush,
     seoTitle: "Car Body Repair & Paint in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Dent repair, scratch removal, panel beating, and paint matching in Lagos. Book a body and paint job with DMECH's workshop.",
@@ -131,7 +145,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "ev-service",
     name: "EV Service",
-    icon: "🔋",
+    icon: BatteryCharging,
     seoTitle: "EV Service & Repair in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Electric vehicle servicing in Lagos — battery health checks, charging issues, and EV-specific maintenance. Book with DMECH's workshop.",
@@ -147,7 +161,7 @@ export const SERVICE_PAGES: ServicePageData[] = [
   {
     slug: "routine-maintenance",
     name: "Routine Maintenance",
-    icon: "🛠️",
+    icon: Wrench,
     seoTitle: "Car Servicing in Lagos — DMECH Value Auto Services",
     seoDescription:
       "Interim and full car servicing in Lagos — oil change, fluid checks, and scheduled maintenance. Book a service with DMECH's workshop.",
@@ -168,24 +182,24 @@ export function getServicePage(slug: string): ServicePageData | undefined {
 
 // Shared "What To Expect" checklist — used on the main /service page and
 // every category page for consistency.
-export const WHAT_TO_EXPECT = [
+export const WHAT_TO_EXPECT: { icon: LucideIcon; title: string; desc: string }[] = [
   {
-    icon: "📞",
+    icon: Phone,
     title: "Confirmation within 30 minutes",
     desc: "We'll call or WhatsApp to confirm your booking and give you a time slot.",
   },
   {
-    icon: "🧾",
+    icon: Receipt,
     title: "A clear quote before work starts",
     desc: "No work begins until you've agreed a price — no surprise charges at pickup.",
   },
   {
-    icon: "🔧",
+    icon: Wrench,
     title: "Updates while it's in the workshop",
     desc: "You'll hear from us if anything changes once the job is underway, not just when it's done.",
   },
   {
-    icon: "🚗",
+    icon: Car,
     title: "Your vehicle back on schedule",
     desc: "We tell you when to expect it and stick to it.",
   },

@@ -1,3 +1,5 @@
+import { MessageCircle } from "lucide-react";
+
 // Honesty gate: DMECH has no real customers yet, so this never shows
 // fabricated named quotes as if real — same pattern as the certified
 // program's "launching soon" empty state elsewhere on the site. Replace
@@ -12,7 +14,9 @@ export function Testimonials() {
           We&apos;re just getting started — this is where verified customer experiences will live.
         </div>
         <div className="vehicle-empty" style={{ maxWidth: 560, margin: "0 auto" }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>💬</div>
+          <div style={{ display: "flex", justifyContent: "center", color: "var(--subtle)", marginBottom: 12 }}>
+            <MessageCircle size={32} strokeWidth={1.5} />
+          </div>
           <div style={{ fontWeight: 600, marginBottom: 6 }}>No reviews yet</div>
           <div style={{ fontSize: 14 }}>
             The first customers to import through DMECH will have their stories featured here.

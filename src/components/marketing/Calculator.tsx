@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { MapPin, Lightbulb, Zap, Leaf, TriangleAlert, Check } from "lucide-react";
 import {
   VEHICLE_CATALOG,
   catalogMakes,
@@ -38,6 +39,7 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
   const [engine, setEngine] = useState<EngineSize>("small");
   const [isEV, setIsEV] = useState(false);
   const [estimateNote, setEstimateNote] = useState<string | null>(null);
+  const [estimateFlag, setEstimateFlag] = useState<"ev" | "hybrid" | null>(null);
 
   const [result, setResult] = useState<DutyBreakdown | null>(null);
   const [phone, setPhone] = useState("");
@@ -53,6 +55,7 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
     setModel("");
     setYear("");
     setEstimateNote(null);
+    setEstimateFlag(null);
     if (r) setShipping(VEHICLE_CATALOG[r].shipping);
   }
 
@@ -62,6 +65,7 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
     setModel("");
     setYear("");
     setEstimateNote(null);
+    setEstimateFlag(null);
   }
 
   function onMakeChange(next: string) {
@@ -69,12 +73,14 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
     setModel("");
     setYear("");
     setEstimateNote(null);
+    setEstimateFlag(null);
   }
 
   function onModelChange(next: string) {
     setModel(next);
     setYear("");
     setEstimateNote(null);
+    setEstimateFlag(null);
   }
 
   function onYearChange(next: string) {
@@ -90,13 +96,9 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
     if (spec.cc) setEngine(engineSizeFromCc(spec.cc));
 
     const specLabel = ev ? `${spec.range} range` : spec.cc;
-    const flag = ev
-      ? " ⚡ EV — GREEN TAX EXEMPT"
-      : spec.fuel === "hybrid"
-        ? " 🌿 HYBRID"
-        : "";
+    setEstimateFlag(ev ? "ev" : spec.fuel === "hybrid" ? "hybrid" : null);
     setEstimateNote(
-      `Estimated value for a ${y} ${make} ${model} (${specLabel} ${spec.type}): ${formatUsd(estPrice)}${flag}. You can adjust the price above.`,
+      `Estimated value for a ${y} ${make} ${model} (${specLabel} ${spec.type}): ${formatUsd(estPrice)}. You can adjust the price above.`,
     );
   }
 
@@ -175,8 +177,11 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
       </div>
 
       {region && (
-        <div className="calc-region-note show">
-          📍 <strong>{region}:</strong> {VEHICLE_CATALOG[region].note}
+        <div className="calc-region-note show" style={{ display: "flex", gap: 8 }}>
+          <MapPin size={14} strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} />
+          <span>
+            <strong>{region}:</strong> {VEHICLE_CATALOG[region].note}
+          </span>
         </div>
       )}
 
@@ -221,7 +226,24 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
         </div>
       </div>
 
-      {estimateNote && <div className="calc-est-price show">💡 {estimateNote}</div>}
+      {estimateNote && (
+        <div className="calc-est-price show" style={{ display: "flex", gap: 8 }}>
+          <Lightbulb size={14} strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} />
+          <span>
+            {estimateNote}
+            {estimateFlag === "ev" && (
+              <span className="ev-flag" style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+                <Zap size={10} strokeWidth={2.5} /> EV — GREEN TAX EXEMPT
+              </span>
+            )}
+            {estimateFlag === "hybrid" && (
+              <span className="ev-flag" style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+                <Leaf size={10} strokeWidth={2.5} /> HYBRID
+              </span>
+            )}
+          </span>
+        </div>
+      )}
 
       <div className="calc-row">
         <div className="calc-field">
@@ -399,11 +421,14 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
             </div>
           </div>
 
-          <div className="calc-disclaimer">
-            ⚠️ <strong>This is an estimate.</strong> Final cost depends on the specific
-            vehicle&apos;s condition, mileage, accident history, and the day&apos;s exchange
-            rate (calculated at ₦{ngnRate}/$). Get an exact quote below and a DMECH rep will
-            confirm the real auction price and total.
+          <div className="calc-disclaimer" style={{ display: "flex", gap: 8 }}>
+            <TriangleAlert size={14} strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} />
+            <span>
+              <strong>This is an estimate.</strong> Final cost depends on the specific
+              vehicle&apos;s condition, mileage, accident history, and the day&apos;s exchange
+              rate (calculated at ₦{ngnRate}/$). Get an exact quote below and a DMECH rep will
+              confirm the real auction price and total.
+            </span>
           </div>
 
           <div className="calc-lead">
@@ -415,7 +440,13 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
               onChange={(e) => setPhone(e.target.value)}
             />
             <button onClick={submitLead} disabled={leadStatus === "submitting"}>
-              {leadStatus === "sent" ? "Sent ✓" : "Get Exact Quote"}
+              {leadStatus === "sent" ? (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  Sent <Check size={14} strokeWidth={2.5} />
+                </span>
+              ) : (
+                "Get Exact Quote"
+              )}
             </button>
           </div>
           {leadStatus === "sent" && (

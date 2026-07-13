@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Wrench, FileSearch, ClipboardCheck, ShieldCheck } from "lucide-react";
 import { getPublicVehicles, isCertified } from "@/lib/vehicles";
 import { Reveal } from "@/components/marketing/Reveal";
 
@@ -54,7 +55,9 @@ export default async function CertifiedNigerianUsedPage() {
 
           {nigerianUsed.length === 0 ? (
             <div className="vehicle-empty" style={{ maxWidth: 560, margin: "0 auto" }}>
-              <div style={{ fontSize: 32, marginBottom: 12 }}>🔧</div>
+              <div style={{ display: "flex", justifyContent: "center", color: "var(--subtle)", marginBottom: 12 }}>
+                <Wrench size={32} strokeWidth={1.5} />
+              </div>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>
                 Certification program launching soon
               </div>
@@ -98,7 +101,9 @@ export default async function CertifiedNigerianUsedPage() {
           <div className="trust-grid">
             <Reveal delayMs={0}>
               <div className="trust-card">
-                <div className="trust-icon">🔍</div>
+                <div className="trust-icon">
+                  <FileSearch size={24} strokeWidth={1.75} />
+                </div>
                 <div className="trust-title">Title &amp; Provenance Check</div>
                 <div className="trust-desc">
                   Ownership history, lien checks, and prior registration status are verified
@@ -109,7 +114,9 @@ export default async function CertifiedNigerianUsedPage() {
             </Reveal>
             <Reveal delayMs={80}>
               <div className="trust-card">
-                <div className="trust-icon">🛠️</div>
+                <div className="trust-icon">
+                  <ClipboardCheck size={24} strokeWidth={1.75} />
+                </div>
                 <div className="trust-title">Full Inspection</div>
                 <div className="trust-desc">
                   Every system is checked and documented before certification — the same condition
@@ -119,7 +126,9 @@ export default async function CertifiedNigerianUsedPage() {
             </Reveal>
             <Reveal delayMs={160}>
               <div className="trust-card">
-                <div className="trust-icon">🛡️</div>
+                <div className="trust-icon">
+                  <ShieldCheck size={24} strokeWidth={1.75} />
+                </div>
                 <div className="trust-title">A Real Warranty</div>
                 <div className="trust-desc">
                   Backed by a dedicated reserve fund, not just a line in the ad copy. Coverage tier

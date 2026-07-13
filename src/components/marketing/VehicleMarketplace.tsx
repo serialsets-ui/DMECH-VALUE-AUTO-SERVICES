@@ -9,30 +9,23 @@ import {
   type PublicVehicle,
   type PublicDisplayStatus,
 } from "@/lib/vehicle-display";
+import { Zap, CheckCircle2, Car, type LucideIcon } from "lucide-react";
 import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
 import { Reveal } from "@/components/marketing/Reveal";
 
-const FILTERS = [
-  "All",
-  "Available",
-  "In Transit",
-  "At Port",
-  "⚡ EVs",
-  "✅ Certified Nigerian-Used",
-] as const;
-type Filter = (typeof FILTERS)[number];
+type Filter = "all" | "available" | "in-transit" | "at-port" | "ev" | "certified";
 
-// Plain lowercase keys for ?filter= deep links (e.g. from the Home page's EV
-// teaser) — kept separate from the emoji-labeled display strings so URLs
-// stay clean and don't need encoding.
-const FILTER_FROM_QUERY: Record<string, Filter> = {
-  all: "All",
-  available: "Available",
-  "in-transit": "In Transit",
-  "at-port": "At Port",
-  ev: "⚡ EVs",
-  certified: "✅ Certified Nigerian-Used",
-};
+// Filter state is keyed on the plain lowercase `key` (also used for the
+// ?filter= deep link, e.g. from the Home page's EV teaser) — the icon and
+// label are display-only, kept separate from the key itself.
+const FILTERS: { key: Filter; label: string; icon?: LucideIcon }[] = [
+  { key: "all", label: "All" },
+  { key: "available", label: "Available" },
+  { key: "in-transit", label: "In Transit" },
+  { key: "at-port", label: "At Port" },
+  { key: "ev", label: "EVs", icon: Zap },
+  { key: "certified", label: "Certified Nigerian-Used", icon: CheckCircle2 },
+];
 
 const STATUS_CLASS: Record<PublicDisplayStatus, string> = {
   Available: "status-available",
@@ -54,16 +47,18 @@ export function VehicleMarketplace({
   defaultTenorMonths,
   initialFilterKey,
 }: Props) {
+  const isValidFilter = (k: string): k is Filter => FILTERS.some((f) => f.key === k);
   const [filter, setFilter] = useState<Filter>(
-    (initialFilterKey && FILTER_FROM_QUERY[initialFilterKey]) || "All",
+    (initialFilterKey && isValidFilter(initialFilterKey) && initialFilterKey) || "all",
   );
   const [selected, setSelected] = useState<PublicVehicle | null>(null);
 
   const filtered = vehicles.filter((v) => {
-    if (filter === "All") return true;
-    if (filter === "⚡ EVs") return v.fuel_type === "electric";
-    if (filter === "✅ Certified Nigerian-Used") return isCertified(v);
-    return displayStatus(v) === filter;
+    if (filter === "all") return true;
+    if (filter === "ev") return v.fuel_type === "electric";
+    if (filter === "certified") return isCertified(v);
+    const statusKey = displayStatus(v).toLowerCase().replace(" ", "-");
+    return statusKey === filter;
   });
 
   return (
@@ -90,7 +85,9 @@ export function VehicleMarketplace({
             textDecoration: "none",
           }}
         >
-          <span style={{ fontSize: 20 }}>✅</span>
+          <span style={{ display: "flex", color: "var(--green)" }}>
+            <CheckCircle2 size={20} strokeWidth={1.75} />
+          </span>
           <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>
             <strong style={{ color: "var(--green)" }}>DMECH Certified Nigerian-Used</strong> —
             vehicles already in Nigeria, inspected, title-checked, and sold with a real warranty.
@@ -103,18 +100,22 @@ export function VehicleMarketplace({
         <div className="vehicle-filters">
           {FILTERS.map((f) => (
             <button
-              key={f}
-              className={`vf-btn ${filter === f ? "active" : ""}`}
-              onClick={() => setFilter(f)}
+              key={f.key}
+              className={`vf-btn ${filter === f.key ? "active" : ""}`}
+              onClick={() => setFilter(f.key)}
+              style={f.icon ? { display: "inline-flex", alignItems: "center", gap: 6 } : undefined}
             >
-              {f}
+              {f.icon && <f.icon size={14} strokeWidth={2} />}
+              {f.label}
             </button>
           ))}
         </div>
 
         {vehicles.length === 0 ? (
           <div className="vehicle-empty">
-            <div style={{ fontSize: 32, marginBottom: 12 }}>🚗</div>
+            <div style={{ display: "flex", justifyContent: "center", color: "var(--subtle)", marginBottom: 12 }}>
+              <Car size={32} strokeWidth={1.5} />
+            </div>
             <div style={{ fontWeight: 600, marginBottom: 6 }}>New inventory added regularly</div>
             <div style={{ fontSize: 14 }}>
               We&apos;re currently onboarding our first verified vehicles, including our DMECH
@@ -133,9 +134,17 @@ export function VehicleMarketplace({
                 <Reveal key={v.id} delayMs={Math.min(i * 40, 400)}>
                 <div className="v-card" onClick={() => setSelected(v)}>
                   <div className="v-card-img">
-                    {v.fuel_type === "electric" ? "⚡" : "🚗"}
+                    {v.fuel_type === "electric" ? (
+                      <Zap size={56} strokeWidth={1.25} />
+                    ) : (
+                      <Car size={56} strokeWidth={1.25} />
+                    )}
                     <div className={`v-card-status ${STATUS_CLASS[status]}`}>{status}</div>
-                    {certified && <div className="v-card-cert">✅ Certified</div>}
+                    {certified && (
+                      <div className="v-card-cert" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <CheckCircle2 size={13} strokeWidth={2} /> Certified
+                      </div>
+                    )}
                   </div>
                   <div className="v-card-body">
                     <div className="v-card-name">

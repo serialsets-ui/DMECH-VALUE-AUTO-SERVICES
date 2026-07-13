@@ -131,3 +131,15 @@
   .ops-sidebar-footer{border-top:none;border-left:1px solid var(--border);flex-shrink:0}
   .ops-content{padding:16px}
 }
+
+/* Route loading state (src/app/ops/loading.tsx) — a spinning wheel, shown
+   inside <main class="ops-main"> (the sidebar stays put) while a
+   client-side navigation's data-fetch is in flight. Separate from the
+   OpsShell splash, which only plays on a full page load. */
+.ops-route-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--muted)}
+.ops-route-loading-wheel{color:var(--blue);animation:opsWheelSpin 0.9s linear infinite}
+@keyframes opsWheelSpin{to{transform:rotate(360deg)}}
+.ops-route-loading-label{font-size:12px;font-weight:600;color:var(--subtle);letter-spacing:1px;text-transform:uppercase}
+@media(prefers-reduced-motion:reduce){
+  .ops-route-loading-wheel{animation:none}
+}

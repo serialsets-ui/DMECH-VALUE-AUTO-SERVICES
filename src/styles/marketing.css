@@ -395,3 +395,17 @@ footer{background:var(--dark);color:#fff;padding:50px 20px 30px}
 .photo-banner.pb-carlot{background-image:url('/splash/03-car-lot.jpg')}
 .photo-banner.pb-workshop{background-image:url('/splash/04-workshop.jpg')}
 .photo-banner.pb-transport{background-image:url('/splash/06-car-transport.jpg')}
+
+/* Route loading state (src/app/(marketing)/loading.tsx) — a car driving
+   back and forth along a dashed road, shown by Next.js while a client-side
+   navigation's data-fetch is in flight. Separate from MarketingSplash,
+   which only plays on a full page load. */
+.route-loading{min-height:50vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.route-loading-track{position:relative;width:220px;height:40px}
+.route-loading-road{position:absolute;bottom:6px;left:0;right:0;height:2px;background:repeating-linear-gradient(90deg,var(--border) 0 12px,transparent 12px 24px)}
+.route-loading-car{position:absolute;bottom:10px;left:0;color:var(--blue);animation:routeCarDrive 1.6s ease-in-out infinite}
+@keyframes routeCarDrive{0%{left:0}50%{left:calc(100% - 30px)}100%{left:0}}
+.route-loading-label{font-size:12px;font-weight:600;color:var(--subtle);letter-spacing:1px;text-transform:uppercase}
+@media(prefers-reduced-motion:reduce){
+  .route-loading-car{animation:none;left:calc(50% - 15px)}
+}

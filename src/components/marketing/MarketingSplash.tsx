@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 
 const PHOTOS = [
@@ -12,33 +9,17 @@ const PHOTOS = [
   "/splash/06-car-transport.jpg",
 ];
 
-interface MarketingSplashProps {
-  onEnter: () => void;
-}
-
 // Full-bleed backdrop of six real vehicle/shipping/workshop photos,
-// crossfading via CSS (no JS timer driving the rotation — just staggered
-// animation-delays on stacked layers). Auto-dismisses after a brief pause;
-// unlike the ops splash this can't gate on a click — a public marketing
-// site loses visitors to every extra second before real content shows.
-//
-// Duration is deliberately long enough to see 2-3 photo transitions and
-// the progress bar fill — the original 2.2s (against a 12s crossfade
-// cycle) was too short to read as anything more than a flash before it
-// vanished.
-export function MarketingSplash({ onEnter }: MarketingSplashProps) {
-  const [hiding, setHiding] = useState(false);
-
-  useEffect(() => {
-    const dismiss = setTimeout(() => {
-      setHiding(true);
-      setTimeout(onEnter, 600);
-    }, 3400);
-    return () => clearTimeout(dismiss);
-  }, [onEnter]);
-
+// crossfading via CSS. Rendered unconditionally in the server HTML (no
+// client state gating it) and hidden entirely by its own CSS animation
+// after ~3.4s — a JS-driven "show after hydration" version of this let the
+// real page content paint first on content-heavy pages before the splash
+// caught up, which is backwards. See the blocking script in
+// (marketing)/layout.tsx for the once-per-session skip logic, which runs
+// before first paint for the same reason.
+export function MarketingSplash() {
   return (
-    <div className={`msplash ${hiding ? "hide" : ""}`}>
+    <div className="msplash">
       <div className="msplash-photos">
         {PHOTOS.map((src) => (
           <div key={src} className="msplash-photo" style={{ backgroundImage: `url(${src})` }} />

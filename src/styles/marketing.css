@@ -326,8 +326,12 @@ footer{background:var(--dark);color:#fff;padding:50px 20px 30px}
    shown once per session (see MarketingShell.tsx) before the site loads.
    Six stacked layers crossfade via staggered animation-delay on one shared
    keyframe rather than a JS-driven timer. */
-.msplash{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .6s ease,visibility .6s ease}
-.msplash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.msplash{position:fixed;inset:0;z-index:99999;overflow:hidden;animation:msplashLifecycle 3.9s ease forwards}
+/* Set synchronously by the blocking script in (marketing)/layout.tsx before
+   first paint — display:none here means the splash never renders at all
+   for a repeat page load in the same session, not even for one frame. */
+html.msplash-skip .msplash{display:none}
+@keyframes msplashLifecycle{0%{opacity:1;visibility:visible}87%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden;pointer-events:none}}
 .msplash-photos{position:absolute;inset:0}
 .msplash-photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;animation:msplashFade 6s ease-in-out infinite}
 .msplash-photo:nth-child(1){animation-delay:-0.25s}

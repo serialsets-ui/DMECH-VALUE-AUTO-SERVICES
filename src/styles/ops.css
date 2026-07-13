@@ -52,3 +52,82 @@
   .splash-logo,.splash-tag,.splash-bar-wrap,.splash-status,.splash-ft,.splash-ring,.splash-bar{animation:none;opacity:1;transform:none}
   .splash-bar{width:100%}
 }
+
+/* ── Shell: sidebar + topbar (Phase 2 shell/Dashboard/Vehicles pass) ──
+   Layout shape follows oro-energy-management-hub's shell; colours come
+   from this file's own dark-theme tokens (--card/--border/--text/--muted/
+   --blue), not a separate token system. */
+.ops-layout{display:flex;height:100vh;overflow:hidden}
+.ops-sidebar{width:240px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.ops-sidebar-logo{display:flex;align-items:center;padding:20px 20px 16px}
+.ops-nav{flex:1;padding:8px 12px}
+.ops-nav-section{margin-bottom:18px}
+.ops-nav-section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--subtle);padding:0 12px;margin-bottom:6px}
+.ops-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;transition:background .15s,color .15s}
+.ops-nav-item:hover{background:var(--card2);color:var(--text)}
+.ops-nav-item.active{background:var(--blue-d);color:var(--blue);font-weight:600}
+.ops-sidebar-footer{border-top:1px solid var(--border);padding:14px 16px}
+.ops-user-block{display:flex;align-items:center;gap:10px}
+.ops-user-avatar{width:34px;height:34px;border-radius:50%;background:var(--blue-d);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.ops-user-info{flex:1;min-width:0}
+.ops-user-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ops-user-role{font-size:11px;color:var(--subtle)}
+.ops-logout-btn{background:none;border:none;color:var(--subtle);cursor:pointer;padding:6px;border-radius:6px;display:flex;flex-shrink:0}
+.ops-logout-btn:hover{background:var(--card2);color:var(--red)}
+
+.ops-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.ops-topbar{height:56px;flex-shrink:0;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;background:var(--card)}
+.ops-topbar-title{font-family:var(--font-heading);font-size:16px;font-weight:700;color:var(--text)}
+.ops-content{flex:1;overflow-y:auto;padding:28px}
+
+/* Dashboard aggregate cards */
+.ops-stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.ops-stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.ops-stat-value{font-family:var(--font-heading);font-size:28px;font-weight:700;color:var(--text)}
+.ops-stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* List tables */
+.ops-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto}
+.ops-table{width:100%;border-collapse:collapse}
+.ops-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--subtle);padding:12px 16px;border-bottom:1px solid var(--border);white-space:nowrap}
+.ops-table td{padding:14px 16px;font-size:13.5px;color:var(--text);border-bottom:1px solid var(--border);white-space:nowrap}
+.ops-table tr:last-child td{border-bottom:none}
+.ops-row-link{cursor:pointer;transition:background .15s}
+.ops-row-link:hover{background:var(--card2)}
+
+/* Status badges */
+.ops-badge{display:inline-block;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.ops-badge-muted{background:var(--card2);color:var(--subtle)}
+.ops-badge-blue{background:var(--blue-d);color:var(--blue)}
+.ops-badge-green{background:var(--green-d);color:var(--green)}
+.ops-badge-amber{background:var(--amber-d);color:var(--amber)}
+
+/* Vehicle detail lifecycle stepper */
+.ops-stage-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:24px}
+.ops-stage-dot{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);color:var(--subtle);white-space:nowrap}
+.ops-stage-dot.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.ops-stage-dot.done{background:var(--green-d);border-color:var(--green);color:var(--green)}
+
+.ops-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:16px}
+.ops-field-label{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.ops-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13.5px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .2s}
+.ops-input:focus{border-color:var(--blue)}
+.ops-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.ops-btn:hover{background:#1280c8}
+.ops-btn:disabled{opacity:.6;cursor:not-allowed}
+.ops-panel-title{font-family:var(--font-heading);font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px}
+.ops-info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.ops-info-row:last-child{border-bottom:none}
+.ops-info-label{color:var(--muted)}
+.ops-info-value{color:var(--text);font-weight:600}
+
+@media(max-width:900px){
+  .ops-layout{flex-direction:column;height:auto;min-height:100vh;overflow:visible}
+  .ops-sidebar{width:100%;flex-direction:row;align-items:center;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .ops-sidebar-logo{padding:12px 16px;flex-shrink:0}
+  .ops-nav{display:flex;flex:none;padding:8px}
+  .ops-nav-section{display:flex;align-items:center;gap:4px;margin-bottom:0}
+  .ops-nav-section-label{display:none}
+  .ops-sidebar-footer{border-top:none;border-left:1px solid var(--border);flex-shrink:0}
+  .ops-content{padding:16px}
+}

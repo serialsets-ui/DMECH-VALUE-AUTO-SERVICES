@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import "@/styles/ops.css";
 import { OpsShell } from "@/components/ops/OpsShell";
+import { Sidebar } from "@/components/ops/Sidebar";
 import { staffGuard } from "@/lib/guards";
 
 // Redundant with middleware's coarse "is there a session" check by design —
@@ -13,7 +14,12 @@ export default async function OpsLayout({ children }: { children: React.ReactNod
 
   return (
     <div data-theme="dark">
-      <OpsShell>{children}</OpsShell>
+      <OpsShell>
+        <div className="ops-layout">
+          <Sidebar staff={staff} />
+          <main className="ops-main">{children}</main>
+        </div>
+      </OpsShell>
     </div>
   );
 }

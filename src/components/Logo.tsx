@@ -7,13 +7,14 @@ import Image from "next/image";
 // bounding box and had its white background converted to alpha via Pillow.
 const ASPECT_RATIO = 718 / 190;
 
-const HEIGHT: Record<"nav" | "footer" | "splash", number> = {
+const HEIGHT: Record<"nav" | "footer" | "splash" | "sidebar", number> = {
   nav: 30,
   footer: 32,
   splash: 64,
+  sidebar: 26,
 };
 
-export function Logo({ variant = "nav" }: { variant?: "nav" | "footer" | "splash" }) {
+export function Logo({ variant = "nav" }: { variant?: "nav" | "footer" | "splash" | "sidebar" }) {
   const height = HEIGHT[variant];
   const width = Math.round(height * ASPECT_RATIO);
   return (

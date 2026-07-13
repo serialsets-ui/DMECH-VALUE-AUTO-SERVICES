@@ -153,8 +153,8 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
 
       <div className="calc-row">
         <div className="calc-field">
-          <label>Import From</label>
-          <select value={region} onChange={(e) => onRegionChange(e.target.value)}>
+          <label htmlFor="calc-region">Import From</label>
+          <select id="calc-region" value={region} onChange={(e) => onRegionChange(e.target.value)}>
             <option value="">Select source region</option>
             {(Object.keys(VEHICLE_CATALOG) as CatalogRegionName[]).map((r) => (
               <option key={r} value={r}>
@@ -164,8 +164,8 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
           </select>
         </div>
         <div className="calc-field">
-          <label>Fuel Type</label>
-          <select value={fuel} onChange={(e) => onFuelChange(e.target.value)}>
+          <label htmlFor="calc-fuel">Fuel Type</label>
+          <select id="calc-fuel" value={fuel} onChange={(e) => onFuelChange(e.target.value)}>
             <option value="all">All Types</option>
             <option value="petrol">Petrol</option>
             <option value="hybrid">Hybrid</option>
@@ -182,8 +182,8 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
 
       <div className="calc-row three">
         <div className="calc-field">
-          <label>Make</label>
-          <select value={make} onChange={(e) => onMakeChange(e.target.value)} disabled={!region}>
+          <label htmlFor="calc-make">Make</label>
+          <select id="calc-make" value={make} onChange={(e) => onMakeChange(e.target.value)} disabled={!region}>
             <option value="">Select make</option>
             {Object.keys(makes).map((m) => (
               <option key={m} value={m}>
@@ -193,8 +193,8 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
           </select>
         </div>
         <div className="calc-field">
-          <label>Model</label>
-          <select value={model} onChange={(e) => onModelChange(e.target.value)} disabled={!make}>
+          <label htmlFor="calc-model">Model</label>
+          <select id="calc-model" value={model} onChange={(e) => onModelChange(e.target.value)} disabled={!make}>
             <option value="">Select model</option>
             {Object.keys(models).map((m) => (
               <option key={m} value={m}>
@@ -204,8 +204,9 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
           </select>
         </div>
         <div className="calc-field">
-          <label>Year</label>
+          <label htmlFor="calc-year">Year</label>
           <select
+            id="calc-year"
             value={year}
             onChange={(e) => onYearChange(e.target.value)}
             disabled={!model}
@@ -224,8 +225,9 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
 
       <div className="calc-row">
         <div className="calc-field">
-          <label>Vehicle Price (USD)</label>
+          <label htmlFor="calc-price">Vehicle Price (USD)</label>
           <input
+            id="calc-price"
             type="number"
             placeholder="Auto-filled — editable"
             value={price}
@@ -233,8 +235,8 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
           />
         </div>
         <div className="calc-field">
-          <label>Condition</label>
-          <select value={condition} onChange={(e) => setCondition(e.target.value as VehicleCondition)}>
+          <label htmlFor="calc-condition">Condition</label>
+          <select id="calc-condition" value={condition} onChange={(e) => setCondition(e.target.value as VehicleCondition)}>
             <option value="used">Used (Tokunbo)</option>
             <option value="new">Brand New</option>
           </select>
@@ -243,16 +245,18 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
 
       <div className="calc-row">
         <div className="calc-field">
-          <label>Shipping Estimate (USD)</label>
+          <label htmlFor="calc-shipping">Shipping Estimate (USD)</label>
           <input
+            id="calc-shipping"
             type="number"
             value={shipping}
             onChange={(e) => setShipping(parseFloat(e.target.value) || 0)}
           />
         </div>
         <div className="calc-field" style={{ opacity: isEV ? 0.5 : 1 }}>
-          <label>Engine Size</label>
+          <label htmlFor="calc-engine">Engine Size</label>
           <select
+            id="calc-engine"
             value={engine}
             onChange={(e) => setEngine(e.target.value as EngineSize)}
             disabled={isEV}
@@ -405,6 +409,7 @@ export function Calculator({ ngnRate = 1580, marketPriceBenchmarks = {} }: Calcu
           <div className="calc-lead">
             <input
               type="tel"
+              aria-label="Phone number for exact quote"
               placeholder="Enter phone for exact quote"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}

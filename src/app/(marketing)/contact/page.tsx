@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CTASection } from "@/components/marketing/CTASection";
 import { Reveal } from "@/components/marketing/Reveal";
+import { CONTACT, ADDRESS_FULL } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Contact Us — DMECH Value Auto Services",
@@ -8,10 +9,10 @@ export const metadata: Metadata = {
 };
 
 const CONTACT_ITEMS = [
-  { icon: "📍", label: "Visit Us", value: "Sangotedo, Ajah Axis, Lagos, Nigeria" },
-  { icon: "📞", label: "Call", value: "0800-DMECH-00" },
-  { icon: "💬", label: "WhatsApp", value: "0800 000 0000" },
-  { icon: "🕒", label: "Hours", value: "Mon–Sat: 8am – 6pm" },
+  { icon: "📍", label: "Visit Us", value: ADDRESS_FULL },
+  { icon: "📞", label: "Call", value: CONTACT.phoneDisplay },
+  { icon: "💬", label: "WhatsApp", value: CONTACT.whatsappDisplay },
+  { icon: "🕒", label: "Hours", value: CONTACT.hours },
 ];
 
 export default function ContactPage() {

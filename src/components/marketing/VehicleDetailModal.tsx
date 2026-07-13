@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatNaira } from "@/lib/money";
 import { isCertified, activeWarranty, displayStatus, type PublicVehicle } from "@/lib/vehicle-display";
+import { whatsappHref } from "@/lib/contact";
 
 type Tab = "condition" | "specs" | "history" | "financing" | "certification";
 
@@ -30,6 +31,17 @@ interface Props {
 export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaultTenorMonths }: Props) {
   const [tab, setTab] = useState<Tab>("condition");
   const [plan, setPlan] = useState<"dmech_direct" | "partner_finance">("dmech_direct");
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const titleId = "vehicle-modal-title";
+
+  useEffect(() => {
+    closeRef.current?.focus();
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
 
   const certified = isCertified(vehicle);
   const warranty = activeWarranty(vehicle);
@@ -41,8 +53,14 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close">
+      <div
+        className="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal-close" onClick={onClose} aria-label="Close" ref={closeRef}>
           ✕
         </button>
         <div className="modal-tabs">
@@ -58,7 +76,7 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
         </div>
         <div className="modal-body">
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 700 }}>
+            <div id={titleId} style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 700 }}>
               {vehicle.make} {vehicle.model} {vehicle.year}
             </div>
             <div style={{ fontSize: 13, color: "var(--muted)" }}>
@@ -254,9 +272,9 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
             <a
               className="v-card-btn btn-primary"
               style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-              href={`https://wa.me/2348000000000?text=${encodeURIComponent(
+              href={whatsappHref(
                 `Hi DMECH, I'm interested in the ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
-              )}`}
+              )}
               target="_blank"
               rel="noopener noreferrer"
             >

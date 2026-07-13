@@ -1,3 +1,5 @@
+import { CONTACT, whatsappHref } from "@/lib/contact";
+
 export function CTASection() {
   return (
     <section className="cta-section" id="contact">
@@ -9,14 +11,14 @@ export function CTASection() {
       <div className="cta-buttons">
         <a
           className="cta-main cta-wa"
-          href="https://wa.me/2348000000000?text=Hi%20DMECH%2C%20I%20want%20to%20import%20a%20vehicle"
+          href={whatsappHref("Hi DMECH, I want to import a vehicle")}
           target="_blank"
           rel="noopener noreferrer"
         >
           💬 Chat on WhatsApp
         </a>
-        <a className="cta-secondary" href="tel:08000000000">
-          📞 Call: 0800-DMECH-00
+        <a className="cta-secondary" href={`tel:${CONTACT.phoneHref}`}>
+          📞 Call: {CONTACT.phoneDisplay}
         </a>
       </div>
     </section>

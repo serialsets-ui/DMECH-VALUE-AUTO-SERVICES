@@ -20,9 +20,28 @@ const inter = Inter({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dmechvalueautoservices.netlify.app";
+const OG_IMAGE = "/splash/01_cars_road.jpg";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "DMECH Value Auto Services",
   description: "Import. Drive. Thrive.",
+  openGraph: {
+    title: "DMECH Value Auto Services",
+    description: "Import. Drive. Thrive.",
+    siteName: "DMECH Value Auto Services",
+    url: SITE_URL,
+    images: [{ url: OG_IMAGE, width: 1080, height: 720 }],
+    locale: "en_NG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DMECH Value Auto Services",
+    description: "Import. Drive. Thrive.",
+    images: [OG_IMAGE],
+  },
 };
 
 export default function RootLayout({

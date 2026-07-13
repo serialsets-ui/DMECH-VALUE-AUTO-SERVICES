@@ -22,10 +22,15 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 /* TICKER */
 .ticker{background:var(--dark);color:#fff;overflow:hidden;white-space:nowrap;padding:9px 0;font-size:13px;position:relative;margin-top:60px}
 .ticker-track{display:inline-block;animation:scroll 32s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
 .ticker-item{display:inline-flex;align-items:center;gap:8px;margin:0 24px}
 .ticker-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
 .ticker-dot.orange{background:var(--orange)}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){
+  .ticker{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ticker-track{animation:none;display:flex}
+}
 
 /* HERO — dark gradient layered over a real photo (public/splash/01_cars_road.jpg,
    already vetted for the marketing splash) so the gradient/glow treatment below
@@ -64,7 +69,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .calc-result{display:none;margin-top:16px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.15);border-radius:12px;padding:16px}
 .calc-result.show{display:block}
 .calc-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.calc-compare-card{border-radius:10px;padding:16px;text-align:center}
+.calc-compare-card{border-radius:14px;padding:16px;text-align:center}
 .calc-compare-card.market{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.15)}
 .calc-compare-card.dmech{background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.15)}
 .compare-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
@@ -160,8 +165,8 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 .modal-overlay{position:fixed;inset:0;background:rgba(15,25,35,.6);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal-card{background:var(--surface);border-radius:16px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
 .modal-close{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.06);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;z-index:2}
-.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;background:var(--surface);z-index:1}
-.modal-tab{background:none;border:none;border-bottom:2px solid transparent;padding:16px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit}
+.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;background:var(--surface);z-index:1;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.modal-tab{background:none;border:none;border-bottom:2px solid transparent;padding:16px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
 .modal-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
 .modal-body{padding:24px}
 .cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -200,7 +205,7 @@ nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
 /* WORKED EXAMPLE */
 .example-card{background:linear-gradient(135deg,#0F1923,#1A3050);border-radius:16px;padding:32px;color:#fff}
 .example-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
-.ex-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px;text-align:center}
+.ex-step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;text-align:center}
 .ex-month{font-size:11px;color:var(--orange);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
 .ex-amount{font-family:'Space Grotesk';font-size:22px;font-weight:700;color:#fff}
 .ex-label{font-size:11px;color:#8BADC0;margin-top:4px}

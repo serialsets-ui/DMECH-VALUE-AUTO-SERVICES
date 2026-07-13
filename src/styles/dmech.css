@@ -20,7 +20,10 @@
   --surface: #ffffff;
   --dark: #0f1923;
   --text: #2a3444;
-  --muted: #6b7a8d;
+  /* #5a6b7e (not the original mockup's #6b7a8d) — the original computed to
+     ~4.3:1 against --bg, just under WCAG AA's 4.5:1 for normal-size text,
+     and this token drives most of the site's secondary copy. */
+  --muted: #5a6b7e;
   --subtle: #a0adb8;
   --border: #e2e8f0;
   --green: #16a34a;
@@ -71,6 +74,10 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* Marketing nav is a fixed 60px bar (see .nav-inner in marketing.css) —
+     without this, any #anchor jump (footer links, calculator/testimonials
+     deep links) lands with the target's heading hidden underneath it. */
+  scroll-padding-top: 76px;
 }
 
 body {

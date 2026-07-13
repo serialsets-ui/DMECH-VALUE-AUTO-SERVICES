@@ -102,8 +102,8 @@ export function ServiceBookingForm() {
       {step === 1 && (
         <div>
           <div style={{ fontWeight: 700, marginBottom: 16 }}>Vehicle Details</div>
-          <label className="field-label">Make</label>
-          <select className="field-input" value={vehicleMake} onChange={(e) => setVehicleMake(e.target.value)}>
+          <label className="field-label" htmlFor="svc-make">Make</label>
+          <select id="svc-make" className="field-input" value={vehicleMake} onChange={(e) => setVehicleMake(e.target.value)}>
             <option value="">Select make</option>
             {MAKES.map((m) => (
               <option key={m} value={m}>
@@ -111,23 +111,26 @@ export function ServiceBookingForm() {
               </option>
             ))}
           </select>
-          <label className="field-label">Model</label>
+          <label className="field-label" htmlFor="svc-model">Model</label>
           <input
+            id="svc-model"
             className="field-input"
             placeholder="e.g. Camry, Accord, RX350"
             value={vehicleModel}
             onChange={(e) => setVehicleModel(e.target.value)}
           />
-          <label className="field-label">Year</label>
+          <label className="field-label" htmlFor="svc-year">Year</label>
           <input
+            id="svc-year"
             className="field-input"
             type="number"
             placeholder="e.g. 2019"
             value={vehicleYear}
             onChange={(e) => setVehicleYear(e.target.value)}
           />
-          <label className="field-label">Plate Number (optional)</label>
+          <label className="field-label" htmlFor="svc-plate">Plate Number (optional)</label>
           <input
+            id="svc-plate"
             className="field-input"
             placeholder="e.g. LSD 123 AA"
             value={plateNumber}
@@ -155,8 +158,9 @@ export function ServiceBookingForm() {
               </button>
             ))}
           </div>
-          <label className="field-label">Describe the issue</label>
+          <label className="field-label" htmlFor="svc-complaint">Describe the issue</label>
           <textarea
+            id="svc-complaint"
             className="field-input"
             rows={3}
             style={{ resize: "none" }}
@@ -191,10 +195,11 @@ export function ServiceBookingForm() {
       {step === 3 && (
         <div>
           <div style={{ fontWeight: 700, marginBottom: 16 }}>Contact &amp; Confirm</div>
-          <label className="field-label">Your Name</label>
-          <input className="field-input" value={name} onChange={(e) => setName(e.target.value)} />
-          <label className="field-label">WhatsApp Phone Number</label>
+          <label className="field-label" htmlFor="svc-name">Your Name</label>
+          <input id="svc-name" className="field-input" value={name} onChange={(e) => setName(e.target.value)} />
+          <label className="field-label" htmlFor="svc-phone">WhatsApp Phone Number</label>
           <input
+            id="svc-phone"
             className="field-input"
             type="tel"
             placeholder="e.g. 0803 456 7890"
@@ -203,8 +208,9 @@ export function ServiceBookingForm() {
           />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <label className="field-label">Preferred Date</label>
+              <label className="field-label" htmlFor="svc-date">Preferred Date</label>
               <input
+                id="svc-date"
                 className="field-input"
                 type="date"
                 value={preferredDate}
@@ -212,8 +218,9 @@ export function ServiceBookingForm() {
               />
             </div>
             <div>
-              <label className="field-label">Preferred Time</label>
+              <label className="field-label" htmlFor="svc-time">Preferred Time</label>
               <input
+                id="svc-time"
                 className="field-input"
                 type="time"
                 value={preferredTime}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { CONTACT } from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -33,22 +34,22 @@ export function Footer() {
           <div className="footer-contact-item">
             <span className="fc-icon">📍</span>
             <span>
-              Sangotedo, Ajah Axis,
+              {CONTACT.addressLine1}
               <br />
-              Lagos, Nigeria
+              {CONTACT.addressLine2}
             </span>
           </div>
           <div className="footer-contact-item">
             <span className="fc-icon">📞</span>
-            <span>0800-DMECH-00</span>
+            <span>{CONTACT.phoneDisplay}</span>
           </div>
           <div className="footer-contact-item">
             <span className="fc-icon">💬</span>
-            <span>WhatsApp: 0800 000 0000</span>
+            <span>WhatsApp: {CONTACT.whatsappDisplay}</span>
           </div>
           <div className="footer-contact-item">
             <span className="fc-icon">🕒</span>
-            <span>Mon–Sat: 8am – 6pm</span>
+            <span>{CONTACT.hours}</span>
           </div>
         </div>
       </div>

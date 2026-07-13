@@ -11,12 +11,11 @@ const PHOTOS = [
 
 // Full-bleed backdrop of six real vehicle/shipping/workshop photos,
 // crossfading via CSS. Rendered unconditionally in the server HTML (no
-// client state gating it) and hidden entirely by its own CSS animation
-// after ~3.4s — a JS-driven "show after hydration" version of this let the
-// real page content paint first on content-heavy pages before the splash
-// caught up, which is backwards. See the blocking script in
-// (marketing)/layout.tsx for the once-per-session skip logic, which runs
-// before first paint for the same reason.
+// client state gating it, no session tracking — plays on every load, same
+// as the ops splash) and hidden entirely by its own CSS animation once it's
+// done. A JS-driven "show after hydration" version of this let the real
+// page content paint first on content-heavy pages before the splash caught
+// up, which is backwards — this version has no such dependency.
 export function MarketingSplash() {
   return (
     <div className="msplash">

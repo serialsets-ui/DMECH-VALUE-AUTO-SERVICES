@@ -71,6 +71,8 @@ export default async function CertifiedNigerianUsedPage() {
             <div
               style={{
                 display: "inline-flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
                 gap: 24,
                 background: "var(--bg)",
                 border: "1px solid var(--border)",

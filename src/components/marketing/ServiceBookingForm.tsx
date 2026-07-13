@@ -209,7 +209,7 @@ export function ServiceBookingForm() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="svc-datetime-row">
             <div>
               <label className="field-label" htmlFor="svc-date">Preferred Date</label>
               <input

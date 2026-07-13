@@ -14,7 +14,7 @@ export function CertifiedTeaser({ vehicles }: { vehicles: PublicVehicle[] }) {
     >
       <div className="section-inner">
         <Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 32, alignItems: "center" }}>
+          <div className="certified-teaser-grid">
             <div>
               <div className="section-eyebrow" style={{ color: "#4ADE80" }}>
                 Nigerian-Used, Verified

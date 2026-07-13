@@ -139,7 +139,10 @@ export function VehicleIntakeForm({ customers }: Props) {
           <input id="in-source-detail" className="ops-input" value={sourceDetail} onChange={(e) => setSourceDetail(e.target.value)} />
           <label className="ops-field-label" htmlFor="in-condition">Condition</label>
           <select id="in-condition" className="ops-input" value={condition} onChange={(e) => setCondition(e.target.value as VehicleCondition)}>
-            <option value="used">Used (Tokunbo)</option>
+            {/* "Tokunbo" specifically means foreign-used — wrong label for a
+                Nigerian-sourced vehicle, so it's derived from the Source
+                Region picked above (see lib/vehicle-display.ts). */}
+            <option value="used">{sourceRegion === "nigeria" ? "Used (Nigerian Used)" : "Used (Tokunbo)"}</option>
             <option value="new">Brand New</option>
           </select>
 

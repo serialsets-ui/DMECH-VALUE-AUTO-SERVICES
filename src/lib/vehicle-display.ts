@@ -48,3 +48,24 @@ export function publicPhotos(vehicle: Vehicle): VehiclePhoto[] {
     .filter((p) => !p.is_internal)
     .sort((a, b) => a.sort_order - b.sort_order);
 }
+
+export type ConditionCategory = "brand_new" | "foreign_used" | "nigerian_used";
+
+export function conditionCategory(vehicle: Pick<Vehicle, "condition" | "source_region">): ConditionCategory {
+  if (vehicle.condition === "new") return "brand_new";
+  return vehicle.source_region === "nigeria" ? "nigerian_used" : "foreign_used";
+}
+
+// "Tokunbo" specifically means foreign-used in Nigerian usage — showing it
+// for a Nigerian-sourced vehicle would misdescribe it. Derive the label from
+// source_region rather than hardcoding "Used (Tokunbo)" for every used car.
+export function conditionLabel(vehicle: Pick<Vehicle, "condition" | "source_region">): string {
+  switch (conditionCategory(vehicle)) {
+    case "brand_new":
+      return "Brand New";
+    case "nigerian_used":
+      return "Nigerian Used";
+    case "foreign_used":
+      return "Foreign Used (Tokunbo)";
+  }
+}

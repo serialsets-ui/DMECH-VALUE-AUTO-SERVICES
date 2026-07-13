@@ -7,6 +7,7 @@ import {
   isCertified,
   displayStatus,
   publicPhotos,
+  conditionCategory,
   type PublicVehicle,
   type PublicDisplayStatus,
 } from "@/lib/vehicle-display";
@@ -14,7 +15,15 @@ import { Zap, CheckCircle2, Car, type LucideIcon } from "lucide-react";
 import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
 import { Reveal } from "@/components/marketing/Reveal";
 
-type Filter = "all" | "available" | "in-transit" | "at-port" | "ev" | "certified";
+type Filter =
+  | "all"
+  | "available"
+  | "in-transit"
+  | "at-port"
+  | "foreign-used"
+  | "nigerian-used"
+  | "ev"
+  | "certified";
 
 // Filter state is keyed on the plain lowercase `key` (also used for the
 // ?filter= deep link, e.g. from the Home page's EV teaser) — the icon and
@@ -24,6 +33,8 @@ const FILTERS: { key: Filter; label: string; icon?: LucideIcon }[] = [
   { key: "available", label: "Available" },
   { key: "in-transit", label: "In Transit" },
   { key: "at-port", label: "At Port" },
+  { key: "foreign-used", label: "Foreign Used" },
+  { key: "nigerian-used", label: "Nigerian Used" },
   { key: "ev", label: "EVs", icon: Zap },
   { key: "certified", label: "Certified Nigerian-Used", icon: CheckCircle2 },
 ];
@@ -58,6 +69,8 @@ export function VehicleMarketplace({
     if (filter === "all") return true;
     if (filter === "ev") return v.fuel_type === "electric";
     if (filter === "certified") return isCertified(v);
+    if (filter === "foreign-used") return conditionCategory(v) === "foreign_used";
+    if (filter === "nigerian-used") return conditionCategory(v) === "nigerian_used";
     const statusKey = displayStatus(v).toLowerCase().replace(" ", "-");
     return statusKey === filter;
   });

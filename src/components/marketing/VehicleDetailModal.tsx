@@ -3,7 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { X, CheckCircle2, TriangleAlert, MessageCircle } from "lucide-react";
 import { formatNaira } from "@/lib/money";
-import { isCertified, activeWarranty, displayStatus, publicPhotos, type PublicVehicle } from "@/lib/vehicle-display";
+import {
+  isCertified,
+  activeWarranty,
+  displayStatus,
+  publicPhotos,
+  conditionLabel,
+  type PublicVehicle,
+} from "@/lib/vehicle-display";
 import { whatsappHref } from "@/lib/contact";
 
 type Tab = "condition" | "specs" | "history" | "financing" | "certification";
@@ -164,7 +171,7 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
                 [vehicle.fuel_type === "electric" ? "Range" : "Engine", vehicle.fuel_type === "electric" ? `${vehicle.battery_range_km ?? "—"} km` : `${vehicle.engine_cc ?? "—"}cc`],
                 ["Colour", vehicle.colour ?? "—"],
                 ["Fuel Type", vehicle.fuel_type ?? "—"],
-                ["Condition", vehicle.condition === "new" ? "Brand New" : "Used (Tokunbo)"],
+                ["Condition", conditionLabel(vehicle)],
                 ["Source", vehicle.source_region === "nigeria" ? "Nigeria (locally sourced)" : `Imported — ${vehicle.source_region ?? "—"}`],
                 ["VIN Status", vehicle.vin ? "On file" : "Pending"],
               ].map(([label, value]) => (

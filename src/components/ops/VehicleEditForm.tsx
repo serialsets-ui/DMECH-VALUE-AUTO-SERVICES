@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fromKobo, toKobo } from "@/lib/money";
 import { stageLabel } from "@/lib/ops/vehicle-stage";
-import type { LifecycleStage, VehicleCondition } from "@/types";
+import type { LifecycleStage, VehicleCondition, SourceRegion } from "@/types";
 
 interface Props {
   vehicleId: string;
@@ -12,6 +12,7 @@ interface Props {
   lifecycleStage: LifecycleStage;
   salePriceKobo: number | null;
   condition: VehicleCondition | null;
+  sourceRegion: SourceRegion | null;
   colour: string | null;
   videoUrl: string | null;
   isPublished: boolean;
@@ -34,6 +35,7 @@ export function VehicleEditForm({
   lifecycleStage,
   salePriceKobo,
   condition,
+  sourceRegion,
   colour,
   videoUrl,
   isPublished,
@@ -124,7 +126,10 @@ export function VehicleEditForm({
         value={cond}
         onChange={(e) => setCond(e.target.value as VehicleCondition)}
       >
-        <option value="used">Used (Tokunbo)</option>
+        {/* "Tokunbo" specifically means foreign-used — wrong label for a
+            Nigerian-sourced vehicle, so it's derived from sourceRegion
+            rather than a fixed string (see lib/vehicle-display.ts). */}
+        <option value="used">{sourceRegion === "nigeria" ? "Used (Nigerian Used)" : "Used (Tokunbo)"}</option>
         <option value="new">Brand New</option>
       </select>
 

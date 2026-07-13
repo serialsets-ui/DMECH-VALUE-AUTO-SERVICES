@@ -8,7 +8,7 @@ import type { PublicVehicle } from "@/lib/vehicle-display";
 // why: bundling this file's next/headers dependency into the client breaks
 // the build).
 export type { PublicVehicle } from "@/lib/vehicle-display";
-export { isCertified, activeWarranty, displayStatus, publicPhotos } from "@/lib/vehicle-display";
+export { isCertified, activeWarranty, displayStatus, publicPhotos, conditionCategory, conditionLabel } from "@/lib/vehicle-display";
 
 // Mirrors the "public read pipeline vehicles" RLS policy — shown all the
 // way from 'shipped' (pipeline-activity marketing value, like the original

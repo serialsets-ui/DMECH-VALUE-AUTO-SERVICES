@@ -8,6 +8,7 @@ import { TradeInCreditForm } from "@/components/ops/TradeInCreditForm";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira, formatUsd, usdCentsToDollars } from "@/lib/money";
+import { conditionLabel } from "@/lib/vehicle-display";
 import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
 import { LIFECYCLE_STAGES_BY_CHANNEL } from "@/types";
 import type { Vehicle, StaffRole } from "@/types";
@@ -110,7 +111,7 @@ export default async function VehicleDetailPage({
             <div className="ops-info-row">
               <span className="ops-info-label">Condition</span>
               <span className="ops-info-value">
-                {vehicle.condition === "new" ? "Brand New" : "Used (Tokunbo)"}
+                {conditionLabel(vehicle)}
               </span>
             </div>
             <div className="ops-info-row">
@@ -216,6 +217,7 @@ export default async function VehicleDetailPage({
             lifecycleStage={vehicle.lifecycle_stage}
             salePriceKobo={vehicle.sale_price_kobo}
             condition={vehicle.condition}
+            sourceRegion={vehicle.source_region}
             colour={vehicle.colour}
             videoUrl={vehicle.video_url}
             isPublished={vehicle.is_published}

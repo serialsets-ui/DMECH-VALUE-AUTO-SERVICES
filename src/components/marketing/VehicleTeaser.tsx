@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Zap, Car, CheckCircle2 } from "lucide-react";
 import { formatNaira } from "@/lib/money";
-import { isCertified, displayStatus, type PublicVehicle } from "@/lib/vehicle-display";
+import { isCertified, displayStatus, publicPhotos, type PublicVehicle } from "@/lib/vehicle-display";
 import { Reveal } from "@/components/marketing/Reveal";
 
 // Condensed Home-page version of the full /vehicles marketplace — top few
@@ -39,18 +39,19 @@ export function VehicleTeaser({ vehicles }: { vehicles: PublicVehicle[] }) {
             {top.map((v, i) => {
               const status = displayStatus(v);
               const certified = isCertified(v);
+              const heroPhoto = publicPhotos(v)[0]?.url;
               return (
                 <Reveal key={v.id} delayMs={i * 80}>
                   <Link href="/vehicles" className="v-card" style={{ display: "block" }}>
                     <div
                       className="v-card-img"
                       style={
-                        v.photos[0]
-                          ? { backgroundImage: `url(${v.photos[0]})`, backgroundSize: "cover", backgroundPosition: "center" }
+                        heroPhoto
+                          ? { backgroundImage: `url(${heroPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }
                           : undefined
                       }
                     >
-                      {!v.photos[0] &&
+                      {!heroPhoto &&
                         (v.fuel_type === "electric" ? (
                           <Zap size={56} strokeWidth={1.25} />
                         ) : (

@@ -62,9 +62,9 @@ export default async function VehicleDetailPage({
             <div className="ops-panel">
               <div className="ops-panel-title">Photos</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 10 }}>
-                {vehicle.photos.map((url) => (
+                {vehicle.photos.map((photo) => (
                   // eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL
-                  <img key={url} src={url} alt="Vehicle" style={{ width: "100%", height: 90, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)" }} />
+                  <img key={photo.id} src={photo.url} alt="Vehicle" style={{ width: "100%", height: 90, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)" }} />
                 ))}
               </div>
             </div>
@@ -74,6 +74,9 @@ export default async function VehicleDetailPage({
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <span className={`ops-badge ${stageBadgeClass(vehicle.lifecycle_stage)}`}>
             {stageLabel(vehicle.lifecycle_stage)}
+          </span>
+          <span className={`ops-badge ${vehicle.is_published ? "ops-badge-blue" : "ops-badge-muted"}`}>
+            {vehicle.is_published ? "Published" : "Unpublished"}
           </span>
           {vehicle.vin && (
             <span style={{ color: "var(--subtle)", fontSize: 12 }}>VIN: {vehicle.vin}</span>
@@ -128,6 +131,12 @@ export default async function VehicleDetailPage({
               <span className="ops-info-label">Colour</span>
               <span className="ops-info-value">{vehicle.colour ?? "—"}</span>
             </div>
+            {vehicle.lot_number && (
+              <div className="ops-info-row">
+                <span className="ops-info-label">Lot Number</span>
+                <span className="ops-info-value">{vehicle.lot_number}</span>
+              </div>
+            )}
           </div>
 
           <div className="ops-panel">
@@ -209,6 +218,10 @@ export default async function VehicleDetailPage({
             condition={vehicle.condition}
             colour={vehicle.colour}
             videoUrl={vehicle.video_url}
+            isPublished={vehicle.is_published}
+            lotNumber={vehicle.lot_number}
+            seoTitle={vehicle.seo_title}
+            seoDescription={vehicle.seo_description}
           />
         )}
 

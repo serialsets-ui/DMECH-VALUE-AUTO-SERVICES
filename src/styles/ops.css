@@ -121,6 +121,21 @@
 .ops-info-label{color:var(--muted)}
 .ops-info-value{color:var(--text);font-weight:600}
 
+/* Vehicle photo manager — dropzone, thumbnail grid, and the crop modal
+   (src/components/ops/VehiclePhotoManager.tsx, ImageCropModal.tsx). */
+.ops-dropzone{border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;transition:border-color .2s,background .2s}
+.ops-dropzone:hover,.ops-dropzone.drag-over{border-color:var(--blue);background:var(--blue-d)}
+.photo-thumb{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg);cursor:grab}
+.photo-thumb:active{cursor:grabbing}
+.photo-thumb-tag{width:100%;background:var(--card2);border:none;color:var(--text);font-size:11px;padding:4px 6px;font-family:inherit}
+.photo-thumb-internal{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);padding:4px 6px;background:var(--card2)}
+
+.ops-modal-overlay{position:fixed;inset:0;background:rgba(8,12,18,.72);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.ops-modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:92vw;max-height:90vh;overflow:auto}
+.crop-stage{position:relative;touch-action:none;user-select:none}
+.crop-rect{position:absolute;border:2px solid var(--blue);background:rgba(24,153,231,.12);cursor:move}
+.crop-handle{position:absolute;right:-7px;bottom:-7px;width:16px;height:16px;border-radius:50%;background:var(--blue);border:2px solid #fff;cursor:nwse-resize}
+
 @media(max-width:900px){
   .ops-layout{flex-direction:column;height:auto;min-height:100vh;overflow:visible}
   .ops-sidebar{width:100%;flex-direction:row;align-items:center;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border)}

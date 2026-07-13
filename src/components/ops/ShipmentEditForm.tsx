@@ -10,6 +10,8 @@ interface Props {
   vesselName: string | null;
   trackingUrl: string | null;
   departedAt: string | null;
+  containerNumber: string | null;
+  billOfLading: string | null;
 }
 
 function toDateInputValue(iso: string | null): string {
@@ -23,6 +25,8 @@ export function ShipmentEditForm({
   vesselName,
   trackingUrl,
   departedAt,
+  containerNumber,
+  billOfLading,
 }: Props) {
   const router = useRouter();
   const [progress, setProgress] = useState(String(progressPct));
@@ -30,6 +34,8 @@ export function ShipmentEditForm({
   const [vessel, setVessel] = useState(vesselName ?? "");
   const [tracking, setTracking] = useState(trackingUrl ?? "");
   const [departed, setDeparted] = useState(toDateInputValue(departedAt));
+  const [container, setContainer] = useState(containerNumber ?? "");
+  const [bol, setBol] = useState(billOfLading ?? "");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   async function save() {
@@ -44,6 +50,8 @@ export function ShipmentEditForm({
           vessel_name: vessel || null,
           tracking_url: tracking || null,
           departed_at: departed || null,
+          container_number: container || null,
+          bill_of_lading: bol || null,
         }),
       });
       if (!res.ok) {
@@ -85,6 +93,16 @@ export function ShipmentEditForm({
         Tracking URL
       </label>
       <input id="ship-tracking" className="ops-input" value={tracking} onChange={(e) => setTracking(e.target.value)} />
+
+      <label className="ops-field-label" htmlFor="ship-container">
+        Container Number
+      </label>
+      <input id="ship-container" className="ops-input" value={container} onChange={(e) => setContainer(e.target.value)} />
+
+      <label className="ops-field-label" htmlFor="ship-bol">
+        Bill of Lading
+      </label>
+      <input id="ship-bol" className="ops-input" value={bol} onChange={(e) => setBol(e.target.value)} />
 
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button className="ops-btn" onClick={save} disabled={status === "saving"}>

@@ -14,6 +14,10 @@ interface Props {
   condition: VehicleCondition | null;
   colour: string | null;
   videoUrl: string | null;
+  isPublished: boolean;
+  lotNumber: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
 }
 
 type Status = "idle" | "saving" | "saved" | "error";
@@ -32,6 +36,10 @@ export function VehicleEditForm({
   condition,
   colour,
   videoUrl,
+  isPublished,
+  lotNumber,
+  seoTitle,
+  seoDescription,
 }: Props) {
   const router = useRouter();
   const [stage, setStage] = useState<LifecycleStage>(lifecycleStage);
@@ -41,6 +49,10 @@ export function VehicleEditForm({
   const [cond, setCond] = useState<VehicleCondition | "">(condition ?? "");
   const [colourValue, setColourValue] = useState(colour ?? "");
   const [video, setVideo] = useState(videoUrl ?? "");
+  const [published, setPublished] = useState(isPublished);
+  const [lotNumberValue, setLotNumberValue] = useState(lotNumber ?? "");
+  const [seoTitleValue, setSeoTitleValue] = useState(seoTitle ?? "");
+  const [seoDescriptionValue, setSeoDescriptionValue] = useState(seoDescription ?? "");
   const [status, setStatus] = useState<Status>("idle");
 
   async function save() {
@@ -55,6 +67,10 @@ export function VehicleEditForm({
           condition: cond || null,
           colour: colourValue || null,
           video_url: video || null,
+          is_published: published,
+          lot_number: lotNumberValue || null,
+          seo_title: seoTitleValue || null,
+          seo_description: seoDescriptionValue || null,
         }),
       });
       if (!res.ok) {
@@ -131,6 +147,53 @@ export function VehicleEditForm({
         placeholder="https://youtube.com/..."
         value={video}
         onChange={(e) => setVideo(e.target.value)}
+      />
+
+      <label className="ops-field-label" htmlFor="veh-lot">
+        Lot Number (optional — auction reference)
+      </label>
+      <input
+        id="veh-lot"
+        className="ops-input"
+        value={lotNumberValue}
+        onChange={(e) => setLotNumberValue(e.target.value)}
+      />
+
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, fontSize: 13.5 }}>
+        <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
+        Published — visible on the marketing site
+      </label>
+
+      <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14, marginBottom: 4 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "var(--subtle)", letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 10 }}>
+          SEO (not yet live)
+        </div>
+        <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>
+          There is no public per-vehicle page yet (vehicle detail is a modal on /vehicles), so
+          these fields don&apos;t show up anywhere for a customer or search engine yet — saved
+          here so the data exists once that page is built.
+        </div>
+      </div>
+
+      <label className="ops-field-label" htmlFor="veh-seo-title">
+        SEO Title
+      </label>
+      <input
+        id="veh-seo-title"
+        className="ops-input"
+        value={seoTitleValue}
+        onChange={(e) => setSeoTitleValue(e.target.value)}
+      />
+
+      <label className="ops-field-label" htmlFor="veh-seo-desc">
+        SEO Description
+      </label>
+      <textarea
+        id="veh-seo-desc"
+        className="ops-input"
+        rows={2}
+        value={seoDescriptionValue}
+        onChange={(e) => setSeoDescriptionValue(e.target.value)}
       />
 
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

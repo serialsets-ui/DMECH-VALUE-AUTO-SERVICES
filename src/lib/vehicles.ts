@@ -8,7 +8,7 @@ import type { PublicVehicle } from "@/lib/vehicle-display";
 // why: bundling this file's next/headers dependency into the client breaks
 // the build).
 export type { PublicVehicle } from "@/lib/vehicle-display";
-export { isCertified, activeWarranty, displayStatus } from "@/lib/vehicle-display";
+export { isCertified, activeWarranty, displayStatus, publicPhotos } from "@/lib/vehicle-display";
 
 // Mirrors the "public read pipeline vehicles" RLS policy — shown all the
 // way from 'shipped' (pipeline-activity marketing value, like the original
@@ -45,6 +45,7 @@ export async function getPublicVehicles(): Promise<PublicVehicle[]> {
       .from("vehicles")
       .select("*, warranty_policies(*)")
       .in("lifecycle_stage", [...PUBLIC_LIFECYCLE_STAGES])
+      .eq("is_published", true)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
 

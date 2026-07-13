@@ -147,6 +147,49 @@ export type FuelType = "petrol" | "diesel" | "hybrid" | "electric";
 export type SourceRegion = "usa" | "europe" | "china" | "nigeria";
 export type VehicleCondition = "used" | "new";
 
+export type PhotoTag =
+  | "hero"
+  | "front"
+  | "rear"
+  | "left_side"
+  | "right_side"
+  | "interior_front"
+  | "dashboard"
+  | "steering"
+  | "seats"
+  | "engine_bay"
+  | "boot"
+  | "wheels"
+  | "chassis"
+  | "vin_plate"
+  | "damage";
+
+export const PHOTO_TAGS: { value: PhotoTag; label: string }[] = [
+  { value: "hero", label: "Hero / Featured" },
+  { value: "front", label: "Front View" },
+  { value: "rear", label: "Rear View" },
+  { value: "left_side", label: "Left Side" },
+  { value: "right_side", label: "Right Side" },
+  { value: "interior_front", label: "Interior Front" },
+  { value: "dashboard", label: "Dashboard" },
+  { value: "steering", label: "Steering" },
+  { value: "seats", label: "Seats" },
+  { value: "engine_bay", label: "Engine Bay" },
+  { value: "boot", label: "Boot" },
+  { value: "wheels", label: "Wheels" },
+  { value: "chassis", label: "Chassis" },
+  { value: "vin_plate", label: "VIN Plate" },
+  { value: "damage", label: "Damage (internal only)" },
+];
+
+export interface VehiclePhoto {
+  id: string;
+  url: string;
+  tag: PhotoTag | null;
+  is_internal: boolean;
+  sort_order: number;
+}
+
 export interface Vehicle {
   id: string;
   make: string;
@@ -171,7 +214,7 @@ export interface Vehicle {
   buyer_id: string | null;
   shipment_id: string | null;
   condition_report: Array<{ area: string; score: string; notes: string; photo_urls: string[] }>;
-  photos: string[];
+  photos: VehiclePhoto[];
   video_url: string | null;
   inspection_score: number | null;
 
@@ -184,6 +227,13 @@ export interface Vehicle {
   trade_in_credit_kobo: number | null;
   trade_in_applied_to_instalment_id: string | null;
   title_verification: TitleVerificationCheck[];
+
+  // Publish gate + catalog metadata (see migration 006)
+  is_published: boolean;
+  lot_number: string | null;
+  // Inert until a public /vehicles/[id] page exists — see migration 006's comment.
+  seo_title: string | null;
+  seo_description: string | null;
 
   created_at: string;
   updated_at: string;
@@ -248,6 +298,8 @@ export interface Shipment {
   progress_pct: number;
   vessel_name: string | null;
   tracking_url: string | null;
+  container_number: string | null;
+  bill_of_lading: string | null;
   created_at: string;
   updated_at: string;
 }

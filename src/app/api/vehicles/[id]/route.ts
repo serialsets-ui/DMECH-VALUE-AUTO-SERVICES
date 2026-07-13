@@ -15,6 +15,10 @@ const ALLOWED = [
   "condition",
   "colour",
   "video_url",
+  "is_published",
+  "lot_number",
+  "seo_title",
+  "seo_description",
 ] as const;
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];

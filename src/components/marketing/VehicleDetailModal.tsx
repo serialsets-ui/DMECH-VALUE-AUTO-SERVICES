@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X, CheckCircle2, TriangleAlert, MessageCircle } from "lucide-react";
 import { formatNaira } from "@/lib/money";
-import { isCertified, activeWarranty, displayStatus, type PublicVehicle } from "@/lib/vehicle-display";
+import { isCertified, activeWarranty, displayStatus, publicPhotos, type PublicVehicle } from "@/lib/vehicle-display";
 import { whatsappHref } from "@/lib/contact";
 
 type Tab = "condition" | "specs" | "history" | "financing" | "certification";
@@ -47,6 +47,7 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
 
   const certified = isCertified(vehicle);
   const warranty = activeWarranty(vehicle);
+  const photos = publicPhotos(vehicle);
   const price = vehicle.sale_price_kobo ?? 0;
   const deposit = plan === "dmech_direct" ? Math.max(defaultDepositPct, 30) : 25;
   const tenor = plan === "dmech_direct" ? defaultTenorMonths : 18;
@@ -77,21 +78,21 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
           ))}
         </div>
         <div className="modal-body">
-          {vehicle.photos.length > 0 && (
+          {photos.length > 0 && (
             <div style={{ marginBottom: 16 }}>
               {/* eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL, not a local /public asset */}
               <img
-                src={vehicle.photos[photoIndex]}
+                src={photos[photoIndex]?.url}
                 alt={`${vehicle.make} ${vehicle.model}`}
                 style={{ width: "100%", height: 220, objectFit: "cover", borderRadius: 10, display: "block" }}
               />
-              {vehicle.photos.length > 1 && (
+              {photos.length > 1 && (
                 <div style={{ display: "flex", gap: 6, marginTop: 8, overflowX: "auto" }}>
-                  {vehicle.photos.map((url, i) => (
+                  {photos.map((photo, i) => (
                     // eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL
                     <img
-                      key={url}
-                      src={url}
+                      key={photo.id}
+                      src={photo.url}
                       alt=""
                       onClick={() => setPhotoIndex(i)}
                       style={{

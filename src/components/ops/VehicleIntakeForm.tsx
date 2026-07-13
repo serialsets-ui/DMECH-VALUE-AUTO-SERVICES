@@ -22,6 +22,7 @@ export function VehicleIntakeForm({ customers }: Props) {
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [vin, setVin] = useState("");
+  const [lotNumber, setLotNumber] = useState("");
   const [colour, setColour] = useState("");
   const [fuelType, setFuelType] = useState<FuelType>("petrol");
   const [engineCc, setEngineCc] = useState("");
@@ -59,6 +60,7 @@ export function VehicleIntakeForm({ customers }: Props) {
           model,
           year: parseInt(year, 10),
           vin: vin || null,
+          lot_number: lotNumber || null,
           colour: colour || null,
           fuel_type: fuelType,
           engine_cc: fuelType === "electric" ? null : engineCc ? parseInt(engineCc, 10) : null,
@@ -104,6 +106,8 @@ export function VehicleIntakeForm({ customers }: Props) {
           <input id="in-year" className="ops-input" type="number" value={year} onChange={(e) => setYear(e.target.value)} />
           <label className="ops-field-label" htmlFor="in-vin">VIN (optional)</label>
           <input id="in-vin" className="ops-input" value={vin} onChange={(e) => setVin(e.target.value)} />
+          <label className="ops-field-label" htmlFor="in-lot">Lot Number (optional — auction reference)</label>
+          <input id="in-lot" className="ops-input" value={lotNumber} onChange={(e) => setLotNumber(e.target.value)} />
           <label className="ops-field-label" htmlFor="in-colour">Colour</label>
           <input id="in-colour" className="ops-input" value={colour} onChange={(e) => setColour(e.target.value)} />
           <label className="ops-field-label" htmlFor="in-fuel">Fuel Type</label>

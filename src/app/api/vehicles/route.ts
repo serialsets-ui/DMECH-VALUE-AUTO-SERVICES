@@ -6,7 +6,7 @@ import type { StaffRole, AcquisitionChannel } from "@/types";
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
 const WRITABLE = [
-  "make", "model", "year", "vin", "colour", "fuel_type", "engine_cc", "battery_range_km",
+  "make", "model", "year", "vin", "lot_number", "colour", "fuel_type", "engine_cc", "battery_range_km",
   "source_region", "source_detail", "condition", "acquisition_channel",
   "purchase_price_usd_cents", "shipping_cost_usd_cents", "customs_duty_kobo", "cost_basis_kobo",
   "consignor_customer_id", "consignment_commission_pct", "trade_in_credit_kobo",

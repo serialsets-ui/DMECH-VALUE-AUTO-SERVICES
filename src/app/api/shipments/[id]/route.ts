@@ -3,7 +3,15 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
-const ALLOWED = ["progress_pct", "eta", "vessel_name", "tracking_url", "departed_at"] as const;
+const ALLOWED = [
+  "progress_pct",
+  "eta",
+  "vessel_name",
+  "tracking_url",
+  "departed_at",
+  "container_number",
+  "bill_of_lading",
+] as const;
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager"];
 

@@ -78,6 +78,18 @@ export default async function ShipmentDetailPage({
                 </a>
               </div>
             )}
+            {shipment.container_number && (
+              <div className="ops-info-row">
+                <span className="ops-info-label">Container Number</span>
+                <span className="ops-info-value">{shipment.container_number}</span>
+              </div>
+            )}
+            {shipment.bill_of_lading && (
+              <div className="ops-info-row">
+                <span className="ops-info-label">Bill of Lading</span>
+                <span className="ops-info-value">{shipment.bill_of_lading}</span>
+              </div>
+            )}
           </div>
 
           <div className="ops-panel">
@@ -107,6 +119,8 @@ export default async function ShipmentDetailPage({
             vesselName={shipment.vessel_name}
             trackingUrl={shipment.tracking_url}
             departedAt={shipment.departed_at}
+            containerNumber={shipment.container_number}
+            billOfLading={shipment.bill_of_lading}
           />
         )}
       </div>

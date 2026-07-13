@@ -6,6 +6,7 @@ import { formatNaira } from "@/lib/money";
 import {
   isCertified,
   displayStatus,
+  publicPhotos,
   type PublicVehicle,
   type PublicDisplayStatus,
 } from "@/lib/vehicle-display";
@@ -130,18 +131,19 @@ export function VehicleMarketplace({
             {filtered.map((v, i) => {
               const status = displayStatus(v);
               const certified = isCertified(v);
+              const heroPhoto = publicPhotos(v)[0]?.url;
               return (
                 <Reveal key={v.id} delayMs={Math.min(i * 40, 400)}>
                 <div className="v-card" onClick={() => setSelected(v)}>
                   <div
                     className="v-card-img"
                     style={
-                      v.photos[0]
-                        ? { backgroundImage: `url(${v.photos[0]})`, backgroundSize: "cover", backgroundPosition: "center" }
+                      heroPhoto
+                        ? { backgroundImage: `url(${heroPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }
                         : undefined
                     }
                   >
-                    {!v.photos[0] &&
+                    {!heroPhoto &&
                       (v.fuel_type === "electric" ? (
                         <Zap size={56} strokeWidth={1.25} />
                       ) : (

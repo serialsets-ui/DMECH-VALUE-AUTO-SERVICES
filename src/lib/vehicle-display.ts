@@ -1,4 +1,4 @@
-import type { Vehicle, WarrantyPolicy } from "@/types";
+import type { Vehicle, VehiclePhoto, WarrantyPolicy } from "@/types";
 
 // Client-safe vehicle helpers — pure functions and types only, no Supabase
 // import. Split out from lib/vehicles.ts because that file's
@@ -39,4 +39,12 @@ export function isCertified(vehicle: PublicVehicle): boolean {
 
 export function activeWarranty(vehicle: PublicVehicle): WarrantyPolicy | null {
   return vehicle.warranty_policies.find((w) => w.status === "active") ?? null;
+}
+
+// Damage photos and internal reference shots are staff-only — never show
+// them to a marketing-site visitor. Sorted by the staff-chosen display order.
+export function publicPhotos(vehicle: Vehicle): VehiclePhoto[] {
+  return vehicle.photos
+    .filter((p) => !p.is_internal)
+    .sort((a, b) => a.sort_order - b.sort_order);
 }

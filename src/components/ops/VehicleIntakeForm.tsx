@@ -5,18 +5,20 @@ import { useRouter } from "next/navigation";
 import { toKobo } from "@/lib/money";
 import { conditionLabel } from "@/lib/vehicle-display";
 import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
+import { VehiclePhotoManager } from "@/components/ops/VehiclePhotoManager";
 import type { AcquisitionChannel, FuelType, LifecycleStage, SourceRegion, VehicleCondition } from "@/types";
 
 interface Props {
   customers: { id: string; full_name: string }[];
 }
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2 | 3 | 4;
 
 const STEPS: { step: Step; label: string }[] = [
   { step: 1, label: "Identity" },
   { step: 2, label: "Acquisition" },
   { step: 3, label: "Review" },
+  { step: 4, label: "Photos" },
 ];
 
 // Import-channel vehicles start at 'sourced' (the first stage of their
@@ -63,6 +65,10 @@ export function VehicleIntakeForm({ customers }: Props) {
   const [consignorId, setConsignorId] = useState("");
   const [commissionPct, setCommissionPct] = useState("15");
   const [tradeInCreditNaira, setTradeInCreditNaira] = useState("");
+  // Defaults to true, matching the vehicles.is_published column default —
+  // staff can uncheck to stage a listing privately before it's ready.
+  const [published, setPublished] = useState(true);
+  const [createdVehicleId, setCreatedVehicleId] = useState<string | null>(null);
 
   function next() {
     setStep((s) => (s < 3 ? ((s + 1) as Step) : s));
@@ -71,7 +77,11 @@ export function VehicleIntakeForm({ customers }: Props) {
     setStep((s) => (s > 1 ? ((s - 1) as Step) : s));
   }
 
-  async function submit() {
+  // Creates the vehicle, then advances to the Photos step instead of
+  // navigating away immediately — photos can only be uploaded once a
+  // vehicle id exists (see api/vehicles/[id]/photos/route.ts), so this is
+  // the earliest point they can be attached.
+  async function createVehicle() {
     setStatus("saving");
     setError(null);
     try {
@@ -92,6 +102,7 @@ export function VehicleIntakeForm({ customers }: Props) {
           source_detail: sourceDetail || null,
           condition,
           acquisition_channel: channel,
+          is_published: published,
           purchase_price_usd_cents: channel === "import" && purchasePriceUsd ? Math.round(parseFloat(purchasePriceUsd) * 100) : null,
           shipping_cost_usd_cents: channel === "import" && shippingCostUsd ? Math.round(parseFloat(shippingCostUsd) * 100) : null,
           customs_duty_kobo: channel === "import" && customsDutyNaira ? toKobo(parseFloat(customsDutyNaira)) : null,
@@ -107,7 +118,9 @@ export function VehicleIntakeForm({ customers }: Props) {
         setStatus("error");
         return;
       }
-      router.push(`/ops/vehicles/${json.vehicle.id}`);
+      setCreatedVehicleId(json.vehicle.id);
+      setStatus("idle");
+      setStep(4);
     } catch {
       setError("Something went wrong.");
       setStatus("error");
@@ -273,16 +286,38 @@ export function VehicleIntakeForm({ customers }: Props) {
           <div>
             <div className="ops-panel-title">Review &amp; Submit</div>
             <p style={{ fontSize: 13, color: "var(--muted)", margin: "0 0 16px" }}>
-              Check the summary on the right, then create the vehicle. You can add photos,
-              condition report, and title verification once it exists.
+              Check the summary on the right, then create the vehicle. You&apos;ll add photos on
+              the next step; condition report and title verification come after that.
             </p>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18, fontSize: 13.5 }}>
+              <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
+              Published — visible on the marketing site once it reaches an available stage
+            </label>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <button className="ops-btn" style={{ background: "var(--card2)", color: "var(--text)" }} onClick={back}>← Back</button>
-              <button className="ops-btn" onClick={submit} disabled={status === "saving"}>
-                {status === "saving" ? "Creating..." : "Create Vehicle"}
+              <button className="ops-btn" onClick={createVehicle} disabled={status === "saving"}>
+                {status === "saving" ? "Creating..." : "Create Vehicle →"}
               </button>
             </div>
             {error && <div style={{ color: "var(--red)", fontSize: 12, marginTop: 8 }}>{error}</div>}
+          </div>
+        )}
+
+        {step === 4 && createdVehicleId && (
+          <div>
+            <div className="ops-panel-title">Add Photos</div>
+            <p style={{ fontSize: 13, color: "var(--muted)", margin: "0 0 16px" }}>
+              Vehicle created. Upload photos now, or skip and add them later from the vehicle
+              page — condition report, title verification, and certification also happen there.
+            </p>
+            <VehiclePhotoManager vehicleId={createdVehicleId} initialPhotos={[]} />
+            <button
+              className="ops-btn"
+              style={{ marginTop: 14 }}
+              onClick={() => router.push(`/ops/vehicles/${createdVehicleId}`)}
+            >
+              Finish → Go to Vehicle
+            </button>
           </div>
         )}
       </div>

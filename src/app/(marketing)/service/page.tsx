@@ -5,7 +5,7 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { SERVICE_PAGES, WHAT_TO_EXPECT } from "@/lib/service-pages";
 
 export const metadata: Metadata = {
-  title: "Book a Service — DMECH Value Auto Services",
+  title: "Vehicle Services — DMECH Value Auto Services",
   description: "Book workshop service for your vehicle — diagnostics, repairs, and maintenance.",
 };
 
@@ -15,37 +15,17 @@ export default function ServicePage() {
       <section className="section photo-banner pb-workshop center">
         <div className="section-inner">
           <div className="section-eyebrow">Workshop</div>
-          <div className="section-title">Book a Service</div>
+          <div className="section-title">Vehicle Services</div>
           <div className="section-subtitle" style={{ margin: "0 auto" }}>
-            Tell us what your vehicle needs — a DMECH workshop manager will confirm your booking
-            on WhatsApp within 30 minutes.
+            Diagnostics, repairs, and maintenance — see what we cover, then book in under a
+            minute.
           </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ background: "#fff" }}>
         <div className="section-inner">
-          <ServiceBookingForm />
-
-          <div className="section-eyebrow" style={{ textAlign: "center", marginTop: 56 }}>
-            What To Expect
-          </div>
-          <div className="section-title" style={{ textAlign: "center", fontSize: 26 }}>
-            After You Book
-          </div>
-          <div className="trust-grid contact-grid" style={{ marginTop: 24 }}>
-            {WHAT_TO_EXPECT.map((item, i) => (
-              <Reveal key={item.title} delayMs={i * 80}>
-                <div className="trust-card">
-                  <div className="trust-icon">{item.icon}</div>
-                  <div className="trust-title">{item.title}</div>
-                  <div className="trust-desc">{item.desc}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <div className="section-eyebrow" style={{ textAlign: "center", marginTop: 56 }}>
+          <div className="section-eyebrow" style={{ textAlign: "center" }}>
             Browse By Service
           </div>
           <div className="section-title" style={{ textAlign: "center", fontSize: 26 }}>
@@ -71,6 +51,40 @@ export default function ServicePage() {
                     {s.name}
                   </div>
                 </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="section-inner">
+          <div className="section-eyebrow" style={{ textAlign: "center" }}>
+            Book Your Service
+          </div>
+          <div className="section-title" style={{ textAlign: "center", fontSize: 26 }}>
+            Ready When You Are
+          </div>
+          <div className="section-subtitle" style={{ textAlign: "center", margin: "0 auto 8px" }}>
+            Tell us what your vehicle needs — a DMECH workshop manager will confirm your booking
+            on WhatsApp within 30 minutes.
+          </div>
+          <ServiceBookingForm />
+
+          <div className="section-eyebrow" style={{ textAlign: "center", marginTop: 56 }}>
+            What To Expect
+          </div>
+          <div className="section-title" style={{ textAlign: "center", fontSize: 26 }}>
+            After You Book
+          </div>
+          <div className="trust-grid contact-grid" style={{ marginTop: 24 }}>
+            {WHAT_TO_EXPECT.map((item, i) => (
+              <Reveal key={item.title} delayMs={i * 80}>
+                <div className="trust-card">
+                  <div className="trust-icon">{item.icon}</div>
+                  <div className="trust-title">{item.title}</div>
+                  <div className="trust-desc">{item.desc}</div>
+                </div>
               </Reveal>
             ))}
           </div>

@@ -130,6 +130,18 @@
 .photo-thumb-tag{width:100%;background:var(--card2);border:none;color:var(--text);font-size:11px;padding:4px 6px;font-family:inherit}
 .photo-thumb-internal{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);padding:4px 6px;background:var(--card2)}
 
+/* Vehicle Intake wizard (src/components/ops/VehicleIntakeForm.tsx) — form
+   on the left, a live-updating summary card on the right so the wide empty
+   space next to a narrow single-column form gets used for something real. */
+.ops-intake-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+.ops-intake-preview{position:sticky;top:20px}
+.ops-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:900px){
+  .ops-intake-layout{grid-template-columns:1fr}
+  .ops-intake-preview{position:static}
+  .ops-form-grid{grid-template-columns:1fr}
+}
+
 .ops-modal-overlay{position:fixed;inset:0;background:rgba(8,12,18,.72);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
 .ops-modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:92vw;max-height:90vh;overflow:auto}
 .crop-stage{position:relative;touch-action:none;user-select:none}

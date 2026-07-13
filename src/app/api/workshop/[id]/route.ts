@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
@@ -30,7 +30,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     updates.completed_at = new Date().toISOString();
   }
 
-  const supabase = await createClient();
+  // service-role: job_cards has no staff UPDATE RLS policy (only SELECT,
+  // plus a customer-scoped insert for the future portal flow).
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("job_cards")
     .update(updates)

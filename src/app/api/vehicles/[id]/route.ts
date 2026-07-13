@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
 // Mirrors oro-energy-management-hub's equipment PATCH route: role check,
 // then build `updates` only from this explicit allowlist of writable
 // columns — never spread the raw request body into the update.
+// certification_status is deliberately NOT here — it only changes via
+// POST /api/vehicles/[id]/certify, which also creates the matching
+// warranty_policies row in the same step (see VehicleEditForm's comment).
 const ALLOWED = [
   "lifecycle_stage",
   "sale_price_kobo",
   "condition",
   "colour",
-  "certification_status",
+  "video_url",
 ] as const;
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
@@ -36,7 +39,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (key in body) updates[key] = body[key];
   }
 
-  const supabase = await createClient();
+  // service-role: vehicles has no staff UPDATE RLS policy (only SELECT) —
+  // the RLS-respecting client would silently update 0 rows here.
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("vehicles")
     .update(updates)

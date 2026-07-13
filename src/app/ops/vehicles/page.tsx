@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { ClickableRow } from "@/components/ops/ClickableRow";
@@ -5,7 +6,9 @@ import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
 import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
-import type { Vehicle, AcquisitionChannel } from "@/types";
+import type { Vehicle, AcquisitionChannel, StaffRole } from "@/types";
+
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
 const CHANNEL_LABEL: Record<AcquisitionChannel, string> = {
   import: "Import",
@@ -29,7 +32,16 @@ export default async function OpsVehiclesPage() {
 
   return (
     <>
-      <TopBar title="Vehicles" />
+      <TopBar
+        title="Vehicles"
+        actions={
+          EDIT_ROLES.includes(staff.role as StaffRole) ? (
+            <Link href="/ops/vehicles/new" className="ops-btn" style={{ textDecoration: "none" }}>
+              + Add Vehicle
+            </Link>
+          ) : undefined
+        }
+      />
       <div className="ops-content">
         {vehicles.length === 0 ? (
           <div className="ops-panel" style={{ color: "var(--muted)", fontSize: 14 }}>

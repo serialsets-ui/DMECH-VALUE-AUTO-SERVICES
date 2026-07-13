@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { createServiceClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
-const ALLOWED = ["status", "deposit_paid"] as const;
+const ALLOWED = ["condition_report", "title_verification"] as const;
 
-const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant", "sales_manager"];
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const staff = await staffGuard();
@@ -13,7 +13,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
   if (!EDIT_ROLES.includes(staff.role as StaffRole)) {
-    return NextResponse.json({ error: "Not permitted to edit instalments." }, { status: 403 });
+    return NextResponse.json({ error: "Not permitted to edit inspection notes." }, { status: 403 });
   }
 
   const { id } = await params;
@@ -27,18 +27,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (key in body) updates[key] = body[key];
   }
 
-  // service-role: instalments has no staff UPDATE RLS policy (only SELECT).
-  const supabase = createServiceClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
-    .from("instalments")
+    .from("vehicles")
     .update(updates)
     .eq("id", id)
     .select()
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Could not update instalment." }, { status: 500 });
+    return NextResponse.json({ error: "Could not save inspection notes." }, { status: 500 });
   }
 
-  return NextResponse.json({ instalment: data });
+  return NextResponse.json({ vehicle: data });
 }

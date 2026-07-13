@@ -133,12 +133,20 @@ export function VehicleMarketplace({
               return (
                 <Reveal key={v.id} delayMs={Math.min(i * 40, 400)}>
                 <div className="v-card" onClick={() => setSelected(v)}>
-                  <div className="v-card-img">
-                    {v.fuel_type === "electric" ? (
-                      <Zap size={56} strokeWidth={1.25} />
-                    ) : (
-                      <Car size={56} strokeWidth={1.25} />
-                    )}
+                  <div
+                    className="v-card-img"
+                    style={
+                      v.photos[0]
+                        ? { backgroundImage: `url(${v.photos[0]})`, backgroundSize: "cover", backgroundPosition: "center" }
+                        : undefined
+                    }
+                  >
+                    {!v.photos[0] &&
+                      (v.fuel_type === "electric" ? (
+                        <Zap size={56} strokeWidth={1.25} />
+                      ) : (
+                        <Car size={56} strokeWidth={1.25} />
+                      ))}
                     <div className={`v-card-status ${STATUS_CLASS[status]}`}>{status}</div>
                     {certified && (
                       <div className="v-card-cert" style={{ display: "flex", alignItems: "center", gap: 4 }}>

@@ -1,6 +1,10 @@
 import { redirect, notFound } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { VehicleEditForm } from "@/components/ops/VehicleEditForm";
+import { VehiclePhotoManager } from "@/components/ops/VehiclePhotoManager";
+import { InspectionPanel } from "@/components/ops/InspectionPanel";
+import { RecordSaleForm } from "@/components/ops/RecordSaleForm";
+import { TradeInCreditForm } from "@/components/ops/TradeInCreditForm";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira, formatUsd, usdCentsToDollars } from "@/lib/money";
@@ -33,11 +37,40 @@ export default async function VehicleDetailPage({
 
   const stages = LIFECYCLE_STAGES_BY_CHANNEL[vehicle.acquisition_channel];
   const currentIndex = stages.indexOf(vehicle.lifecycle_stage);
+  const isSold = vehicle.lifecycle_stage === "sold" || vehicle.lifecycle_stage === "delivered";
+
+  let openInstalments: { id: string; total_price_kobo: number; customers: { full_name: string } | null }[] = [];
+  if (canEdit && vehicle.acquisition_channel === "trade_in" && !vehicle.trade_in_applied_to_instalment_id) {
+    const { data: instalments } = await supabase
+      .from("instalments")
+      .select("id, total_price_kobo, customers(full_name)")
+      .eq("status", "active");
+    // Supabase's generic (non-generated) types infer every embed as an
+    // array regardless of cardinality — this FK is many-to-one, so cast to
+    // the shape it actually returns at runtime.
+    openInstalments = (instalments ?? []) as unknown as typeof openInstalments;
+  }
 
   return (
     <>
       <TopBar title={`${vehicle.make} ${vehicle.model} ${vehicle.year}`} />
       <div className="ops-content">
+        {canEdit ? (
+          <VehiclePhotoManager vehicleId={vehicle.id} initialPhotos={vehicle.photos} />
+        ) : (
+          vehicle.photos.length > 0 && (
+            <div className="ops-panel">
+              <div className="ops-panel-title">Photos</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 10 }}>
+                {vehicle.photos.map((url) => (
+                  // eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL
+                  <img key={url} src={url} alt="Vehicle" style={{ width: "100%", height: 90, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)" }} />
+                ))}
+              </div>
+            </div>
+          )
+        )}
+
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <span className={`ops-badge ${stageBadgeClass(vehicle.lifecycle_stage)}`}>
             {stageLabel(vehicle.lifecycle_stage)}
@@ -142,19 +175,29 @@ export default async function VehicleDetailPage({
           </div>
         </div>
 
-        {vehicle.condition_report.length > 0 && (
-          <div className="ops-panel">
-            <div className="ops-panel-title">Condition Report</div>
-            {vehicle.condition_report.map((item) => (
-              <div className="ops-info-row" key={item.area}>
-                <span className="ops-info-label">{item.area}</span>
-                <span className="ops-info-value">
-                  {item.score}
-                  {item.notes ? ` — ${item.notes}` : ""}
-                </span>
-              </div>
-            ))}
-          </div>
+        {canEdit ? (
+          <InspectionPanel
+            vehicleId={vehicle.id}
+            conditionReport={vehicle.condition_report}
+            titleVerification={vehicle.title_verification}
+            certificationStatus={vehicle.certification_status}
+            salePriceKobo={vehicle.sale_price_kobo}
+          />
+        ) : (
+          vehicle.condition_report.length > 0 && (
+            <div className="ops-panel">
+              <div className="ops-panel-title">Condition Report</div>
+              {vehicle.condition_report.map((item) => (
+                <div className="ops-info-row" key={item.area}>
+                  <span className="ops-info-label">{item.area}</span>
+                  <span className="ops-info-value">
+                    {item.score}
+                    {item.notes ? ` — ${item.notes}` : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )
         )}
 
         {canEdit && (
@@ -165,7 +208,23 @@ export default async function VehicleDetailPage({
             salePriceKobo={vehicle.sale_price_kobo}
             condition={vehicle.condition}
             colour={vehicle.colour}
+            videoUrl={vehicle.video_url}
+          />
+        )}
+
+        {canEdit && !isSold && vehicle.sale_price_kobo && (
+          <RecordSaleForm
+            vehicleId={vehicle.id}
+            acquisitionChannel={vehicle.acquisition_channel}
             certificationStatus={vehicle.certification_status}
+          />
+        )}
+
+        {canEdit && vehicle.acquisition_channel === "trade_in" && !vehicle.trade_in_applied_to_instalment_id && (
+          <TradeInCreditForm
+            vehicleId={vehicle.id}
+            tradeInCreditKobo={vehicle.trade_in_credit_kobo}
+            instalments={openInstalments}
           />
         )}
       </div>

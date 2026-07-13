@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
@@ -27,7 +27,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (key in body) updates[key] = body[key];
   }
 
-  const supabase = await createClient();
+  // service-role: customs_entries has no staff UPDATE RLS policy (only SELECT).
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("customs_entries")
     .update(updates)

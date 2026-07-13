@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fromKobo, toKobo } from "@/lib/money";
 import { stageLabel } from "@/lib/ops/vehicle-stage";
-import type { LifecycleStage, VehicleCondition, CertificationStatus } from "@/types";
+import type { LifecycleStage, VehicleCondition } from "@/types";
 
 interface Props {
   vehicleId: string;
@@ -13,11 +13,17 @@ interface Props {
   salePriceKobo: number | null;
   condition: VehicleCondition | null;
   colour: string | null;
-  certificationStatus: CertificationStatus;
+  videoUrl: string | null;
 }
 
 type Status = "idle" | "saving" | "saved" | "error";
 
+// certification_status is deliberately not editable here — it only ever
+// changes through the InspectionPanel's "Certify & Issue Warranty" action,
+// which creates the matching warranty_policies row in the same step. A
+// plain dropdown here previously let staff mark a vehicle "Certified" with
+// no warranty behind it, which the marketing site's isCertified() check
+// would silently disagree with.
 export function VehicleEditForm({
   vehicleId,
   stages,
@@ -25,7 +31,7 @@ export function VehicleEditForm({
   salePriceKobo,
   condition,
   colour,
-  certificationStatus,
+  videoUrl,
 }: Props) {
   const router = useRouter();
   const [stage, setStage] = useState<LifecycleStage>(lifecycleStage);
@@ -34,7 +40,7 @@ export function VehicleEditForm({
   );
   const [cond, setCond] = useState<VehicleCondition | "">(condition ?? "");
   const [colourValue, setColourValue] = useState(colour ?? "");
-  const [certStatus, setCertStatus] = useState<CertificationStatus>(certificationStatus);
+  const [video, setVideo] = useState(videoUrl ?? "");
   const [status, setStatus] = useState<Status>("idle");
 
   async function save() {
@@ -48,7 +54,7 @@ export function VehicleEditForm({
           sale_price_kobo: priceNaira ? toKobo(parseFloat(priceNaira)) : null,
           condition: cond || null,
           colour: colourValue || null,
-          certification_status: certStatus,
+          video_url: video || null,
         }),
       });
       if (!res.ok) {
@@ -116,19 +122,16 @@ export function VehicleEditForm({
         onChange={(e) => setColourValue(e.target.value)}
       />
 
-      <label className="ops-field-label" htmlFor="veh-cert">
-        Certification Status
+      <label className="ops-field-label" htmlFor="veh-video">
+        Video URL (optional)
       </label>
-      <select
-        id="veh-cert"
+      <input
+        id="veh-video"
         className="ops-input"
-        value={certStatus}
-        onChange={(e) => setCertStatus(e.target.value as CertificationStatus)}
-      >
-        <option value="uncertified">Uncertified</option>
-        <option value="pending_inspection">Pending Inspection</option>
-        <option value="certified">Certified</option>
-      </select>
+        placeholder="https://youtube.com/..."
+        value={video}
+        onChange={(e) => setVideo(e.target.value)}
+      />
 
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button className="ops-btn" onClick={save} disabled={status === "saving"}>

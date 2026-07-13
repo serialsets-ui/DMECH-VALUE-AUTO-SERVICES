@@ -11,6 +11,8 @@ import {
   Ship,
   FileCheck,
   UserCog,
+  ShieldCheck,
+  PiggyBank,
   LogOut,
   type LucideIcon,
 } from "lucide-react";
@@ -55,6 +57,23 @@ const NAV: { section: string; items: NavItem[] }[] = [
     items: [
       { href: "/ops/shipments", label: "Shipments", icon: Ship, roles: ALL_ROLES },
       { href: "/ops/customs", label: "Customs", icon: FileCheck, roles: ALL_ROLES },
+    ],
+  },
+  {
+    section: "Certified Program",
+    items: [
+      {
+        href: "/ops/warranty-claims",
+        label: "Warranty Claims",
+        icon: ShieldCheck,
+        roles: ["super_admin", "managing_partner", "accountant"],
+      },
+      {
+        href: "/ops/reports/reserve-fund",
+        label: "Reserve Fund",
+        icon: PiggyBank,
+        roles: ["super_admin", "managing_partner", "accountant"],
+      },
     ],
   },
   {

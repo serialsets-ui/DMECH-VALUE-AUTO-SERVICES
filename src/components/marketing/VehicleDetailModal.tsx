@@ -32,6 +32,7 @@ interface Props {
 export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaultTenorMonths }: Props) {
   const [tab, setTab] = useState<Tab>("condition");
   const [plan, setPlan] = useState<"dmech_direct" | "partner_finance">("dmech_direct");
+  const [photoIndex, setPhotoIndex] = useState(0);
   const closeRef = useRef<HTMLButtonElement>(null);
   const titleId = "vehicle-modal-title";
 
@@ -76,6 +77,39 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
           ))}
         </div>
         <div className="modal-body">
+          {vehicle.photos.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL, not a local /public asset */}
+              <img
+                src={vehicle.photos[photoIndex]}
+                alt={`${vehicle.make} ${vehicle.model}`}
+                style={{ width: "100%", height: 220, objectFit: "cover", borderRadius: 10, display: "block" }}
+              />
+              {vehicle.photos.length > 1 && (
+                <div style={{ display: "flex", gap: 6, marginTop: 8, overflowX: "auto" }}>
+                  {vehicle.photos.map((url, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL
+                    <img
+                      key={url}
+                      src={url}
+                      alt=""
+                      onClick={() => setPhotoIndex(i)}
+                      style={{
+                        width: 56,
+                        height: 42,
+                        objectFit: "cover",
+                        borderRadius: 6,
+                        cursor: "pointer",
+                        flexShrink: 0,
+                        border: i === photoIndex ? "2px solid var(--blue)" : "2px solid transparent",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div style={{ marginBottom: 16 }}>
             <div id={titleId} style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 700 }}>
               {vehicle.make} {vehicle.model} {vehicle.year}

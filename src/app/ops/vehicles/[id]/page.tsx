@@ -8,7 +8,7 @@ import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
 import { LIFECYCLE_STAGES_BY_CHANNEL } from "@/types";
 import type { Vehicle, StaffRole } from "@/types";
 
-const EDIT_ROLES: StaffRole[] = ["managing_partner", "ops_manager", "sales_manager"];
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
 export default async function VehicleDetailPage({
   params,

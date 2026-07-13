@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Car, LogOut, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Car,
+  Package,
+  Wrench,
+  Wallet,
+  Ship,
+  FileCheck,
+  UserCog,
+  LogOut,
+  type LucideIcon,
+} from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
 import type { DmechUser, StaffRole } from "@/types";
@@ -10,6 +21,7 @@ import type { DmechUser, StaffRole } from "@/types";
 type NavItem = { href: string; label: string; icon: LucideIcon; roles: StaffRole[] };
 
 const ALL_ROLES: StaffRole[] = [
+  "super_admin",
   "managing_partner",
   "sales_manager",
   "ops_manager",
@@ -18,8 +30,6 @@ const ALL_ROLES: StaffRole[] = [
   "accountant",
 ];
 
-// Only Dashboard + Vehicles exist so far — add the rest (Instalments, Parts,
-// Workshop, Shipments, Customs) here as each module ships, one line each.
 const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "Overview",
@@ -27,11 +37,36 @@ const NAV: { section: string; items: NavItem[] }[] = [
   },
   {
     section: "Inventory",
-    items: [{ href: "/ops/vehicles", label: "Vehicles", icon: Car, roles: ALL_ROLES }],
+    items: [
+      { href: "/ops/vehicles", label: "Vehicles", icon: Car, roles: ALL_ROLES },
+      { href: "/ops/parts", label: "Parts", icon: Package, roles: ALL_ROLES },
+    ],
+  },
+  {
+    section: "Operations",
+    items: [{ href: "/ops/workshop", label: "Workshop", icon: Wrench, roles: ALL_ROLES }],
+  },
+  {
+    section: "Finance",
+    items: [{ href: "/ops/instalments", label: "Instalments", icon: Wallet, roles: ALL_ROLES }],
+  },
+  {
+    section: "Logistics",
+    items: [
+      { href: "/ops/shipments", label: "Shipments", icon: Ship, roles: ALL_ROLES },
+      { href: "/ops/customs", label: "Customs", icon: FileCheck, roles: ALL_ROLES },
+    ],
+  },
+  {
+    section: "Settings",
+    items: [
+      { href: "/ops/settings/staff", label: "Staff", icon: UserCog, roles: ["super_admin"] },
+    ],
   },
 ];
 
 const ROLE_LABEL: Record<StaffRole, string> = {
+  super_admin: "Super Admin",
   managing_partner: "Managing Partner",
   sales_manager: "Sales Manager",
   ops_manager: "Ops Manager",

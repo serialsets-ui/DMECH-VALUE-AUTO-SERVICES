@@ -4,6 +4,7 @@
 // by hand; there is no `supabase gen types` step in this project.
 
 export type StaffRole =
+  | "super_admin"
   | "managing_partner"
   | "sales_manager"
   | "ops_manager"

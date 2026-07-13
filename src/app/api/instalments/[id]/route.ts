@@ -3,18 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
-// Mirrors oro-energy-management-hub's equipment PATCH route: role check,
-// then build `updates` only from this explicit allowlist of writable
-// columns — never spread the raw request body into the update.
-const ALLOWED = [
-  "lifecycle_stage",
-  "sale_price_kobo",
-  "condition",
-  "colour",
-  "certification_status",
-] as const;
+const ALLOWED = ["status", "deposit_paid"] as const;
 
-const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant", "sales_manager"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const staff = await staffGuard();
@@ -22,7 +13,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
   if (!EDIT_ROLES.includes(staff.role as StaffRole)) {
-    return NextResponse.json({ error: "Not permitted to edit vehicles." }, { status: 403 });
+    return NextResponse.json({ error: "Not permitted to edit instalments." }, { status: 403 });
   }
 
   const { id } = await params;
@@ -38,15 +29,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("vehicles")
+    .from("instalments")
     .update(updates)
     .eq("id", id)
     .select()
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Could not update vehicle." }, { status: 500 });
+    return NextResponse.json({ error: "Could not update instalment." }, { status: 500 });
   }
 
-  return NextResponse.json({ vehicle: data });
+  return NextResponse.json({ instalment: data });
 }

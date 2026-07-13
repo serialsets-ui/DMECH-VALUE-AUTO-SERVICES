@@ -3,18 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
-// Mirrors oro-energy-management-hub's equipment PATCH route: role check,
-// then build `updates` only from this explicit allowlist of writable
-// columns — never spread the raw request body into the update.
-const ALLOWED = [
-  "lifecycle_stage",
-  "sale_price_kobo",
-  "condition",
-  "colour",
-  "certification_status",
-] as const;
+const ALLOWED = ["stage", "priority", "quote_kobo", "specialist_id"] as const;
 
-const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "workshop_lead"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const staff = await staffGuard();
@@ -22,7 +13,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
   if (!EDIT_ROLES.includes(staff.role as StaffRole)) {
-    return NextResponse.json({ error: "Not permitted to edit vehicles." }, { status: 403 });
+    return NextResponse.json({ error: "Not permitted to edit job cards." }, { status: 403 });
   }
 
   const { id } = await params;
@@ -35,18 +26,21 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   for (const key of ALLOWED) {
     if (key in body) updates[key] = body[key];
   }
+  if (updates.stage === "released") {
+    updates.completed_at = new Date().toISOString();
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("vehicles")
+    .from("job_cards")
     .update(updates)
     .eq("id", id)
     .select()
     .single();
 
   if (error) {
-    return NextResponse.json({ error: "Could not update vehicle." }, { status: 500 });
+    return NextResponse.json({ error: "Could not update job card." }, { status: 500 });
   }
 
-  return NextResponse.json({ vehicle: data });
+  return NextResponse.json({ jobCard: data });
 }

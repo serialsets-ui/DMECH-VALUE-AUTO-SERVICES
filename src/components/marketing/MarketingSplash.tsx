@@ -21,6 +21,11 @@ interface MarketingSplashProps {
 // animation-delays on stacked layers). Auto-dismisses after a brief pause;
 // unlike the ops splash this can't gate on a click — a public marketing
 // site loses visitors to every extra second before real content shows.
+//
+// Duration is deliberately long enough to see 2-3 photo transitions and
+// the progress bar fill — the original 2.2s (against a 12s crossfade
+// cycle) was too short to read as anything more than a flash before it
+// vanished.
 export function MarketingSplash({ onEnter }: MarketingSplashProps) {
   const [hiding, setHiding] = useState(false);
 
@@ -28,7 +33,7 @@ export function MarketingSplash({ onEnter }: MarketingSplashProps) {
     const dismiss = setTimeout(() => {
       setHiding(true);
       setTimeout(onEnter, 600);
-    }, 2200);
+    }, 3400);
     return () => clearTimeout(dismiss);
   }, [onEnter]);
 
@@ -43,6 +48,9 @@ export function MarketingSplash({ onEnter }: MarketingSplashProps) {
       <div className="msplash-content">
         <Logo variant="splash" />
         <div className="msplash-tagline">Import. Drive. Thrive.</div>
+        <div className="msplash-bar-wrap">
+          <div className="msplash-bar" />
+        </div>
       </div>
     </div>
   );

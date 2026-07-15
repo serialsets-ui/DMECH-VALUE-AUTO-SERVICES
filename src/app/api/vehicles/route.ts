@@ -5,9 +5,14 @@ import type { StaffRole, AcquisitionChannel } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
+// is_published deliberately NOT writable here — a brand-new vehicle has zero
+// photos, so it can never meet the publish bar (see photoRequirementStatus,
+// lib/vehicle-display.ts) at the moment of creation. It's forced false below
+// regardless of what the client sends; staff publish later from the edit
+// form once the photo set is complete.
 const WRITABLE = [
   "make", "model", "year", "vin", "lot_number", "colour", "fuel_type", "engine_cc", "battery_range_km",
-  "source_region", "source_detail", "condition", "acquisition_channel", "is_published",
+  "source_region", "source_detail", "condition", "acquisition_channel",
   "purchase_price_usd_cents", "shipping_cost_usd_cents", "customs_duty_kobo", "cost_basis_kobo",
   "consignor_customer_id", "consignment_commission_pct", "trade_in_credit_kobo",
 ] as const;
@@ -35,7 +40,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Make, model, year, source, condition, and channel are required." }, { status: 400 });
   }
 
-  const insertRow: Record<string, unknown> = { lifecycle_stage: initialStage(body.acquisition_channel) };
+  const insertRow: Record<string, unknown> = {
+    lifecycle_stage: initialStage(body.acquisition_channel),
+    is_published: false,
+  };
   for (const key of WRITABLE) {
     if (key in body) insertRow[key] = body[key];
   }

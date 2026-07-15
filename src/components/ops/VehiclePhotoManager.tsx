@@ -1,10 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { X, Upload, GripVertical } from "lucide-react";
+import { X, Upload, GripVertical, CheckCircle2, TriangleAlert } from "lucide-react";
 import { processImage, type CropRect } from "@/lib/image-pipeline";
 import { ImageCropModal } from "@/components/ops/ImageCropModal";
+import { photoRequirementStatus } from "@/lib/vehicle-display";
 import { PHOTO_TAGS, type VehiclePhoto } from "@/types";
+
+const TAG_LABEL = Object.fromEntries(PHOTO_TAGS.map((t) => [t.value, t.label]));
 
 type Status = "idle" | "processing" | "uploading" | "saving" | "error";
 
@@ -157,10 +160,48 @@ export function VehiclePhotoManager({
   }
 
   const busy = status === "processing" || status === "uploading";
+  const requirement = photoRequirementStatus(photos);
 
   return (
     <div className="ops-panel">
       <div className="ops-panel-title">Photos</div>
+
+      {/* Publish and Certify both require 10+ photos covering every tag in
+          REQUIRED_PHOTO_TAGS — this is the running scoreboard for that bar. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 8,
+          background: requirement.met ? "var(--green-d)" : "var(--card2)",
+          border: `1px solid ${requirement.met ? "var(--green)" : "var(--border)"}`,
+          borderRadius: 8,
+          padding: "10px 12px",
+          marginBottom: 14,
+          fontSize: 12.5,
+        }}
+      >
+        {requirement.met ? (
+          <CheckCircle2 size={16} strokeWidth={2} style={{ color: "var(--green)", flexShrink: 0, marginTop: 1 }} />
+        ) : (
+          <TriangleAlert size={16} strokeWidth={2} style={{ color: "var(--amber)", flexShrink: 0, marginTop: 1 }} />
+        )}
+        <div>
+          {requirement.met ? (
+            <span style={{ color: "var(--green)", fontWeight: 600 }}>
+              Photo requirement met — {requirement.count} photos, all required angles covered.
+            </span>
+          ) : (
+            <span style={{ color: "var(--text)" }}>
+              <strong>{photos.length}/10 photos.</strong> Needed to Publish or Certify:
+              {requirement.photosNeeded > 0 && ` ${requirement.photosNeeded} more photo${requirement.photosNeeded === 1 ? "" : "s"}.`}
+              {requirement.missingTags.length > 0 && (
+                <> Missing tags: {requirement.missingTags.map((t) => TAG_LABEL[t]).join(", ")}.</>
+              )}
+            </span>
+          )}
+        </div>
+      </div>
 
       {photos.length > 0 && (
         <div

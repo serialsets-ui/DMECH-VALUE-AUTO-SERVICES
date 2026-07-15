@@ -192,6 +192,7 @@ export default async function VehicleDetailPage({
             titleVerification={vehicle.title_verification}
             certificationStatus={vehicle.certification_status}
             salePriceKobo={vehicle.sale_price_kobo}
+            photos={vehicle.photos}
           />
         ) : (
           vehicle.condition_report.length > 0 && (
@@ -224,6 +225,7 @@ export default async function VehicleDetailPage({
             lotNumber={vehicle.lot_number}
             seoTitle={vehicle.seo_title}
             seoDescription={vehicle.seo_description}
+            photos={vehicle.photos}
           />
         )}
 

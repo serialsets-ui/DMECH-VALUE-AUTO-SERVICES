@@ -65,9 +65,6 @@ export function VehicleIntakeForm({ customers }: Props) {
   const [consignorId, setConsignorId] = useState("");
   const [commissionPct, setCommissionPct] = useState("15");
   const [tradeInCreditNaira, setTradeInCreditNaira] = useState("");
-  // Defaults to true, matching the vehicles.is_published column default —
-  // staff can uncheck to stage a listing privately before it's ready.
-  const [published, setPublished] = useState(true);
   const [createdVehicleId, setCreatedVehicleId] = useState<string | null>(null);
 
   function next() {
@@ -102,7 +99,6 @@ export function VehicleIntakeForm({ customers }: Props) {
           source_detail: sourceDetail || null,
           condition,
           acquisition_channel: channel,
-          is_published: published,
           purchase_price_usd_cents: channel === "import" && purchasePriceUsd ? Math.round(parseFloat(purchasePriceUsd) * 100) : null,
           shipping_cost_usd_cents: channel === "import" && shippingCostUsd ? Math.round(parseFloat(shippingCostUsd) * 100) : null,
           customs_duty_kobo: channel === "import" && customsDutyNaira ? toKobo(parseFloat(customsDutyNaira)) : null,
@@ -289,10 +285,11 @@ export function VehicleIntakeForm({ customers }: Props) {
               Check the summary on the right, then create the vehicle. You&apos;ll add photos on
               the next step; condition report and title verification come after that.
             </p>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18, fontSize: 13.5 }}>
-              <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
-              Published — visible on the marketing site once it reaches an available stage
-            </label>
+            <p style={{ fontSize: 12, color: "var(--amber)", margin: "0 0 18px" }}>
+              It&apos;s created unpublished — a vehicle needs 10 photos covering every required
+              angle before it can go live on the marketing site or be certified. You can publish
+              it from the vehicle page once that&apos;s done.
+            </p>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <button className="ops-btn" style={{ background: "var(--card2)", color: "var(--text)" }} onClick={back}>← Back</button>
               <button className="ops-btn" onClick={createVehicle} disabled={status === "saving"}>

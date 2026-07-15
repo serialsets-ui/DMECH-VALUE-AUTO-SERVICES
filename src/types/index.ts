@@ -190,6 +190,25 @@ export interface VehiclePhoto {
   sort_order: number;
 }
 
+// A vehicle can't be Published or Certified until its photo set is complete
+// — at least this many photos, covering every tag below. Chosen to be
+// exactly the 10-photo minimum: covering all of these tags on distinct
+// photos satisfies the count on its own. "hero"/"boot"/"chassis"/"steering"/
+// "damage" stay optional extras, not required.
+export const MIN_PUBLISH_PHOTOS = 10;
+export const REQUIRED_PHOTO_TAGS: PhotoTag[] = [
+  "front",
+  "rear",
+  "left_side",
+  "right_side",
+  "engine_bay",
+  "dashboard",
+  "interior_front",
+  "seats",
+  "wheels",
+  "vin_plate",
+];
+
 export interface Vehicle {
   id: string;
   make: string;

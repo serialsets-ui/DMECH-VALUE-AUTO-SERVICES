@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
-import type { StaffRole } from "@/types";
+import { photoRequirementStatus } from "@/lib/vehicle-display";
+import type { StaffRole, VehiclePhoto } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
@@ -33,11 +34,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const { data: vehicle } = await supabase
     .from("vehicles")
-    .select("sale_price_kobo")
+    .select("sale_price_kobo, photos")
     .eq("id", id)
     .maybeSingle();
   if (!vehicle) {
     return NextResponse.json({ error: "Vehicle not found." }, { status: 404 });
+  }
+
+  // A certified/warrantied vehicle is a trust claim — it can't go out with
+  // an incomplete photo set. See MIN_PUBLISH_PHOTOS/REQUIRED_PHOTO_TAGS.
+  const requirement = photoRequirementStatus((vehicle.photos as VehiclePhoto[] | undefined) ?? []);
+  if (!requirement.met) {
+    return NextResponse.json(
+      {
+        error: `Can't certify yet — needs ${requirement.photosNeeded} more photo${requirement.photosNeeded === 1 ? "" : "s"}${requirement.missingTags.length ? `, missing: ${requirement.missingTags.join(", ")}` : ""}.`,
+      },
+      { status: 400 },
+    );
   }
 
   const { data: configRow } = await supabase

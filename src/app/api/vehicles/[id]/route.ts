@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
-import type { StaffRole } from "@/types";
+import { photoRequirementStatus } from "@/lib/vehicle-display";
+import type { StaffRole, VehiclePhoto } from "@/types";
 
 // Mirrors oro-energy-management-hub's equipment PATCH route: role check,
 // then build `updates` only from this explicit allowlist of writable
@@ -46,6 +47,22 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   // service-role: vehicles has no staff UPDATE RLS policy (only SELECT) —
   // the RLS-respecting client would silently update 0 rows here.
   const supabase = createServiceClient();
+
+  // Can't flip a listing live without a complete, trustworthy photo set —
+  // see MIN_PUBLISH_PHOTOS/REQUIRED_PHOTO_TAGS (src/types/index.ts).
+  if (updates.is_published === true) {
+    const { data: current } = await supabase.from("vehicles").select("photos").eq("id", id).maybeSingle();
+    const requirement = photoRequirementStatus((current?.photos as VehiclePhoto[] | undefined) ?? []);
+    if (!requirement.met) {
+      return NextResponse.json(
+        {
+          error: `Can't publish yet — needs ${requirement.photosNeeded} more photo${requirement.photosNeeded === 1 ? "" : "s"}${requirement.missingTags.length ? `, missing: ${requirement.missingTags.join(", ")}` : ""}.`,
+        },
+        { status: 400 },
+      );
+    }
+  }
+
   const { data, error } = await supabase
     .from("vehicles")
     .update(updates)

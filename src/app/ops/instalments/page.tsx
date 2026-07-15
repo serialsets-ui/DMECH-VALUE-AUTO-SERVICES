@@ -62,7 +62,7 @@ export default async function OpsInstalmentsPage() {
                     <td>
                       {i.vehicles ? `${i.vehicles.make} ${i.vehicles.model} ${i.vehicles.year}` : "—"}
                     </td>
-                    <td>{i.plan_type === "dmech_direct" ? "DMECH Direct" : "Partner Finance"}</td>
+                    <td>{i.plan_type === "dmech_direct" ? "DMECH Direct" : "Partner Finance (Autochek)"}</td>
                     <td>{formatNaira(i.total_price_kobo)}</td>
                     <td>
                       <span className={`ops-badge ${STATUS_CLASS[i.status]}`}>{i.status}</span>

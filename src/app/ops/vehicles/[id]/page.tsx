@@ -52,6 +52,16 @@ export default async function VehicleDetailPage({
     openInstalments = (instalments ?? []) as unknown as typeof openInstalments;
   }
 
+  let saleCustomers: { id: string; full_name: string }[] = [];
+  if (canEdit && !isSold && vehicle.sale_price_kobo) {
+    const { data: customerRows } = await supabase
+      .from("customers")
+      .select("id, full_name")
+      .is("deleted_at", null)
+      .order("full_name");
+    saleCustomers = customerRows ?? [];
+  }
+
   return (
     <>
       <TopBar title={`${vehicle.make} ${vehicle.model} ${vehicle.year}`} />
@@ -234,6 +244,7 @@ export default async function VehicleDetailPage({
             vehicleId={vehicle.id}
             acquisitionChannel={vehicle.acquisition_channel}
             certificationStatus={vehicle.certification_status}
+            customers={saleCustomers}
           />
         )}
 

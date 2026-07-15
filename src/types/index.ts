@@ -458,3 +458,44 @@ export interface PlatformConfigRow<T = unknown> {
   updated_by: string | null;
   updated_at: string;
 }
+
+// Stored as the platform_config row with key='business_profile'. Starts
+// empty ({}) — every field renders blank on an invoice until a real value
+// is entered via Settings > Business, never fabricated.
+export interface BusinessProfile {
+  legal_name?: string;
+  tin?: string;
+  rc_number?: string;
+  vat_number?: string;
+  address?: string;
+  bank_name?: string;
+  bank_account_number?: string;
+  bank_account_name?: string;
+}
+
+export type InvoiceDocType = "invoice" | "receipt";
+
+export interface InvoiceLineItem {
+  description: string;
+  quantity: number;
+  unit_price_kobo: number;
+  amount_kobo: number;
+}
+
+export interface Invoice {
+  id: string;
+  doc_type: InvoiceDocType;
+  invoice_number: string;
+  vehicle_id: string | null;
+  customer_id: string | null;
+  issue_date: string;
+  line_items: InvoiceLineItem[];
+  subtotal_kobo: number;
+  vat_rate: number;
+  vat_exempt: boolean;
+  vat_amount_kobo: number;
+  total_kobo: number;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}

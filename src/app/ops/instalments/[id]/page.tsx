@@ -69,7 +69,7 @@ export default async function InstalmentDetailPage({
             <div className="ops-info-row">
               <span className="ops-info-label">Plan Type</span>
               <span className="ops-info-value">
-                {instalment.plan_type === "dmech_direct" ? "DMECH Direct" : "Partner Finance"}
+                {instalment.plan_type === "dmech_direct" ? "DMECH Direct" : "Partner Finance (Autochek)"}
               </span>
             </div>
             <div className="ops-info-row">

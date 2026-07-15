@@ -13,6 +13,8 @@ import {
   UserCog,
   ShieldCheck,
   PiggyBank,
+  Receipt,
+  Building2,
   LogOut,
   type LucideIcon,
 } from "lucide-react";
@@ -50,7 +52,10 @@ const NAV: { section: string; items: NavItem[] }[] = [
   },
   {
     section: "Finance",
-    items: [{ href: "/ops/instalments", label: "Instalments", icon: Wallet, roles: ALL_ROLES }],
+    items: [
+      { href: "/ops/instalments", label: "Instalments", icon: Wallet, roles: ALL_ROLES },
+      { href: "/ops/invoices", label: "Invoices", icon: Receipt, roles: ALL_ROLES },
+    ],
   },
   {
     section: "Logistics",
@@ -80,6 +85,12 @@ const NAV: { section: string; items: NavItem[] }[] = [
     section: "Settings",
     items: [
       { href: "/ops/settings/staff", label: "Staff", icon: UserCog, roles: ["super_admin"] },
+      {
+        href: "/ops/settings/business",
+        label: "Business",
+        icon: Building2,
+        roles: ["super_admin", "managing_partner"],
+      },
     ],
   },
 ];

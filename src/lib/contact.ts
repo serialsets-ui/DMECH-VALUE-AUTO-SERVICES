@@ -16,6 +16,11 @@ export const CONTACT = {
 
 export const ADDRESS_FULL = "Sangotedo, Ajah Axis, Lagos, Nigeria";
 
+// DMECH is a registered dealer/financing partner with Autochek Africa —
+// Partner Finance is fulfilled through them. Link is the one confirmed by
+// DMECH; swap for a dealer-specific referral URL if/when one exists.
+export const AUTOCHEK_URL = "https://autochek.africa/welcome";
+
 export function whatsappHref(message: string): string {
   return `https://wa.me/${CONTACT.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }

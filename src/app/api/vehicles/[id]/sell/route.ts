@@ -15,6 +15,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const { id } = await params;
+  const body = await request.json().catch(() => null);
+  const customerId = typeof body?.customer_id === "string" ? body.customer_id : "";
+  if (!customerId) {
+    return NextResponse.json({ error: "Select the buyer before recording the sale." }, { status: 400 });
+  }
+
   const supabase = createServiceClient();
 
   const { data: vehicle } = await supabase.from("vehicles").select("*").eq("id", id).maybeSingle();
@@ -25,7 +31,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Set a sale price before recording the sale." }, { status: 400 });
   }
 
-  const updates: Record<string, unknown> = { lifecycle_stage: "sold" };
+  const updates: Record<string, unknown> = { lifecycle_stage: "sold", buyer_id: customerId };
 
   if (vehicle.acquisition_channel === "consignment" && vehicle.consignment_commission_pct != null) {
     updates.consignment_payout_kobo = Math.round(
@@ -37,6 +43,33 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (updateError) {
     return NextResponse.json({ error: "Could not record the sale." }, { status: 500 });
   }
+
+  // Sale invoice — VAT-exempt by default (see migration 007's comment): the
+  // invoice shows exactly sale_price_kobo, the price already agreed
+  // throughout the rest of the app, rather than silently adding a charge on
+  // top until staff confirm the correct VAT treatment with their accountant.
+  const description = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.vin ? ` (VIN: ${vehicle.vin})` : ""}`;
+  const { data: invoice } = await supabase
+    .from("invoices")
+    .insert({
+      doc_type: "invoice",
+      vehicle_id: id,
+      customer_id: customerId,
+      line_items: [
+        {
+          description,
+          quantity: 1,
+          unit_price_kobo: vehicle.sale_price_kobo,
+          amount_kobo: vehicle.sale_price_kobo,
+        },
+      ],
+      subtotal_kobo: vehicle.sale_price_kobo,
+      vat_exempt: true,
+      vat_amount_kobo: 0,
+      total_kobo: vehicle.sale_price_kobo,
+    })
+    .select("id")
+    .single();
 
   if (vehicle.certification_status === "certified") {
     const { data: policy } = await supabase
@@ -56,5 +89,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   }
 
-  return NextResponse.json({ ok: true, consignmentPayoutKobo: updates.consignment_payout_kobo ?? null });
+  return NextResponse.json({
+    ok: true,
+    consignmentPayoutKobo: updates.consignment_payout_kobo ?? null,
+    invoiceId: invoice?.id ?? null,
+  });
 }

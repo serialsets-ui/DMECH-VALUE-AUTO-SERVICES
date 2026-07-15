@@ -29,7 +29,7 @@ const FAQS = [
   },
   {
     q: "What documents do I need for an instalment plan?",
-    a: "For DMECH Direct Finance: a valid government ID, your BVN, and a guarantor. For Partner Finance: additionally an employment letter or proof of income and a 6-month bank statement. We'll guide you through exactly what's needed for your chosen plan.",
+    a: "For DMECH Direct Finance: a valid government ID, your BVN, and a guarantor. For Partner Finance (fulfilled through Autochek, our registered financing partner): additionally an employment letter or proof of income and a 6-month bank statement. We'll guide you through exactly what's needed for your chosen plan.",
   },
   {
     q: "Can I really start paying before the car arrives?",

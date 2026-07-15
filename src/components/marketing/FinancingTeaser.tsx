@@ -25,10 +25,10 @@ export function FinancingTeaser() {
           <Reveal delayMs={100}>
             <div className="inst-card partner">
               <div className="inst-badge">Extended Plan</div>
-              <h3>Partner Finance</h3>
+              <h3>Partner Finance — Autochek</h3>
               <div className="inst-desc">
-                20–30% deposit, 6–24 months, competitive market rates through our lending
-                partners.
+                20–30% deposit, 6–24 months, competitive rates through Autochek — DMECH is a
+                registered dealer partner.
               </div>
             </div>
           </Reveal>

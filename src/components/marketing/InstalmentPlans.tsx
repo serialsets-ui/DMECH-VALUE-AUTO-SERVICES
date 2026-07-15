@@ -1,3 +1,5 @@
+import { AUTOCHEK_URL } from "@/lib/contact";
+
 export function InstalmentPlans() {
   return (
     <section className="section" id="instalment">
@@ -39,10 +41,10 @@ export function InstalmentPlans() {
           </div>
           <div className="inst-card partner">
             <div className="inst-badge">Extended Plan</div>
-            <h3>Partner Finance</h3>
+            <h3>Partner Finance — Autochek</h3>
             <div className="inst-desc">
-              Longer term, lower deposit. Financed through our lending partners. More time to
-              pay, competitive rates.
+              Longer term, lower deposit. DMECH is a registered Autochek dealer partner — Autochek
+              handles the financing directly. More time to pay, competitive rates.
             </div>
             <div className="inst-detail">
               <span className="inst-detail-label">Deposit</span>
@@ -66,6 +68,15 @@ export function InstalmentPlans() {
                 Employment letter, bank statement, BVN, Guarantor
               </span>
             </div>
+            <a
+              href={AUTOCHEK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="teaser-link"
+              style={{ display: "inline-block", marginTop: 14, fontSize: 14 }}
+            >
+              Apply via Autochek →
+            </a>
           </div>
         </div>
 

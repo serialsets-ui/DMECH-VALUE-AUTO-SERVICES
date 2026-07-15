@@ -11,7 +11,7 @@ import {
   conditionLabel,
   type PublicVehicle,
 } from "@/lib/vehicle-display";
-import { whatsappHref } from "@/lib/contact";
+import { whatsappHref, AUTOCHEK_URL } from "@/lib/contact";
 
 type Tab = "condition" | "specs" | "history" | "financing" | "certification";
 
@@ -282,7 +282,7 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
                   className={plan === "partner_finance" ? "active" : ""}
                   onClick={() => setPlan("partner_finance")}
                 >
-                  Partner Finance
+                  Partner Finance (Autochek)
                 </button>
               </div>
               {price ? (
@@ -303,10 +303,20 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
                     <span className="spec-label">Monthly</span>
                     <span className="spec-value">{formatNaira(monthly)}/mo</span>
                   </div>
-                  <p style={{ fontSize: 12, color: "var(--subtle)", marginTop: 12 }}>
-                    Payments can start while a shipped vehicle is still on the water — by
-                    arrival, you&apos;re already ahead.
-                  </p>
+                  {plan === "partner_finance" ? (
+                    <p style={{ fontSize: 12, color: "var(--subtle)", marginTop: 12 }}>
+                      DMECH is a registered Autochek dealer partner — Autochek handles this
+                      financing directly.{" "}
+                      <a href={AUTOCHEK_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)" }}>
+                        Apply via Autochek →
+                      </a>
+                    </p>
+                  ) : (
+                    <p style={{ fontSize: 12, color: "var(--subtle)", marginTop: 12 }}>
+                      Payments can start while a shipped vehicle is still on the water — by
+                      arrival, you&apos;re already ahead.
+                    </p>
+                  )}
                 </>
               ) : (
                 <p style={{ color: "var(--muted)", fontSize: 14 }}>

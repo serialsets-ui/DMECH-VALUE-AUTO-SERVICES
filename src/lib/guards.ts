@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { DmechUser, StaffRole } from "@/types";
+import type { Customer, DmechUser, StaffRole } from "@/types";
 
 /**
  * Resolve the current session to a `users` row and confirm it's staff (any
@@ -32,4 +32,34 @@ export async function roleGuard(allowed: StaffRole[]): Promise<DmechUser | null>
   const profile = await staffGuard();
   if (!profile || !allowed.includes(profile.role as StaffRole)) return null;
   return profile;
+}
+
+/**
+ * Resolve the current session to a `customers` row via users.auth_user_id ->
+ * users.id -> customers.user_id — the same join dmech_customer_id() does in
+ * SQL (002_functions.sql), just run client-side here since Server
+ * Components/route handlers need the full row, not just the id.
+ */
+export async function customerGuard(): Promise<Customer | null> {
+  const supabase = await createClient();
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+  if (!authUser) return null;
+
+  const { data: userRow } = await supabase
+    .from("users")
+    .select("id")
+    .eq("auth_user_id", authUser.id)
+    .maybeSingle();
+  if (!userRow) return null;
+
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("user_id", userRow.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  return customer as Customer | null;
 }

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Car,
+  Users,
   Package,
   Wrench,
   Wallet,
@@ -39,6 +40,10 @@ const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "Overview",
     items: [{ href: "/ops/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ALL_ROLES }],
+  },
+  {
+    section: "Customers",
+    items: [{ href: "/ops/customers", label: "Customers", icon: Users, roles: ALL_ROLES }],
   },
   {
     section: "Inventory",

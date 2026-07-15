@@ -45,7 +45,39 @@ export type CustomerType =
   | "parts_retail"
   | "parts_wholesale";
 
+export const CUSTOMER_TYPE_LABELS: Record<CustomerType, string> = {
+  instalment_buyer: "Instalment Buyer",
+  cash_buyer: "Cash Buyer",
+  workshop_walkin: "Workshop Walk-In",
+  corporate: "Corporate",
+  parts_retail: "Parts — Retail",
+  parts_wholesale: "Parts — Wholesale",
+};
+
+// Types that involve DMECH extending credit — the ones a requested
+// credit_limit_kobo (and therefore an approval tier) actually applies to.
+export const FINANCING_CUSTOMER_TYPES: CustomerType[] = ["instalment_buyer", "corporate"];
+
 export type ApprovalStatus = "pending" | "stage2_docs" | "approved" | "declined";
+
+export interface CustomerDocument {
+  type: string;
+  url: string;
+  uploaded_at: string;
+  verified: boolean;
+}
+
+export interface Guarantor {
+  name: string;
+  phone: string;
+  relationship: string;
+}
+
+export interface CompanyDetails {
+  company_name: string;
+  rc_number: string;
+  contact_person: string;
+}
 
 export interface Customer {
   id: string;
@@ -58,14 +90,14 @@ export interface Customer {
   bvn: string | null;
   employer: string | null;
   monthly_income_kobo: number | null;
-  guarantor: Record<string, unknown> | null;
-  company_details: Record<string, unknown> | null;
+  guarantor: Guarantor | null;
+  company_details: CompanyDetails | null;
   approval_status: ApprovalStatus;
   approval_tier: 1 | 2 | 3 | 4 | null;
   approved_by: string[];
   credit_limit_kobo: number | null;
   ltv_tier: "new" | "medium" | "high" | "vip";
-  documents: Array<{ type: string; url: string; uploaded_at: string; verified: boolean }>;
+  documents: CustomerDocument[];
   created_at: string;
   updated_at: string;
   deleted_at: string | null;

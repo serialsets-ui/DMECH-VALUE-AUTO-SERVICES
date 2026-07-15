@@ -29,6 +29,7 @@ export function Footer() {
           <Link href="/about#testimonials">Reviews</Link>
           <Link href="/faq">FAQ</Link>
           <Link href="/contact">Contact Us</Link>
+          <Link href="/verify">Customer Portal</Link>
         </div>
         <div className="footer-col">
           <h4>Get In Touch</h4>

@@ -1,10 +1,13 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { ClickableRow } from "@/components/ops/ClickableRow";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
-import type { Instalment, InstalmentStatus } from "@/types";
+import type { Instalment, InstalmentStatus, StaffRole } from "@/types";
+
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant", "sales_manager"];
 
 interface InstalmentRow extends Instalment {
   customers: { full_name: string; phone: string } | null;
@@ -36,7 +39,16 @@ export default async function OpsInstalmentsPage() {
 
   return (
     <>
-      <TopBar title="Instalments" />
+      <TopBar
+        title="Instalments"
+        actions={
+          EDIT_ROLES.includes(staff.role as StaffRole) ? (
+            <Link href="/ops/instalments/new" className="ops-btn" style={{ textDecoration: "none" }}>
+              + New Instalment
+            </Link>
+          ) : undefined
+        }
+      />
       <div className="ops-content">
         {instalments.length === 0 ? (
           <div className="ops-panel" style={{ color: "var(--muted)", fontSize: 14 }}>

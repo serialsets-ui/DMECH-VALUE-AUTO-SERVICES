@@ -353,6 +353,7 @@ export interface Payment {
   instalment_id: string;
   customer_id: string;
   amount_kobo: number;
+  amount_paid_kobo: number | null;
   payment_number: number | null;
   due_date: string;
   paid_date: string | null;
@@ -488,6 +489,8 @@ export interface Invoice {
   invoice_number: string;
   vehicle_id: string | null;
   customer_id: string | null;
+  instalment_id: string | null;
+  payment_id: string | null;
   issue_date: string;
   line_items: InvoiceLineItem[];
   subtotal_kobo: number;

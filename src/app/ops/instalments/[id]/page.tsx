@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { InstalmentEditForm } from "@/components/ops/InstalmentEditForm";
+import { PaymentSchedule } from "@/components/ops/PaymentSchedule";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
@@ -12,13 +13,6 @@ interface InstalmentWithJoins extends Instalment {
   customers: { full_name: string; phone: string } | null;
   vehicles: { make: string; model: string; year: number } | null;
 }
-
-const PAYMENT_STATUS_CLASS: Record<string, string> = {
-  paid: "ops-badge-green",
-  pending: "ops-badge-blue",
-  overdue: "ops-badge-amber",
-  partial: "ops-badge-muted",
-};
 
 export default async function InstalmentDetailPage({
   params,
@@ -101,23 +95,7 @@ export default async function InstalmentDetailPage({
 
           <div className="ops-panel">
             <div className="ops-panel-title">Payment Schedule</div>
-            {payments.length === 0 ? (
-              <div style={{ color: "var(--muted)", fontSize: 13 }}>No payments recorded yet.</div>
-            ) : (
-              payments.map((p) => (
-                <div className="ops-info-row" key={p.id}>
-                  <span className="ops-info-label">
-                    #{p.payment_number ?? "—"} · Due {new Date(p.due_date).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}
-                  </span>
-                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span className="ops-info-value">{formatNaira(p.amount_kobo)}</span>
-                    <span className={`ops-badge ${PAYMENT_STATUS_CLASS[p.status] ?? "ops-badge-muted"}`}>
-                      {p.status}
-                    </span>
-                  </span>
-                </div>
-              ))
-            )}
+            <PaymentSchedule payments={payments} canEdit={canEdit} />
           </div>
         </div>
 

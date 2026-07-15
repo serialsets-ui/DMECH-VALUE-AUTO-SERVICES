@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   PiggyBank,
   Receipt,
+  CircleDollarSign,
   Building2,
   LogOut,
   type LucideIcon,
@@ -54,6 +55,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     section: "Finance",
     items: [
       { href: "/ops/instalments", label: "Instalments", icon: Wallet, roles: ALL_ROLES },
+      { href: "/ops/payments", label: "Payments", icon: CircleDollarSign, roles: ALL_ROLES },
       { href: "/ops/invoices", label: "Invoices", icon: Receipt, roles: ALL_ROLES },
     ],
   },

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { formatNaira } from "@/lib/money";
 import {
   isCertified,
@@ -11,7 +10,7 @@ import {
   type PublicVehicle,
   type PublicDisplayStatus,
 } from "@/lib/vehicle-display";
-import { Zap, CheckCircle2, Car, type LucideIcon } from "lucide-react";
+import { Zap, CheckCircle2, Car, X, type LucideIcon } from "lucide-react";
 import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
 import { Reveal } from "@/components/marketing/Reveal";
 import { USE_CATEGORY_LABELS, type VehicleUseCategory } from "@/types";
@@ -27,11 +26,14 @@ type Filter =
   | "certified"
   | VehicleUseCategory;
 
-const USE_CATEGORY_FILTERS = Object.entries(USE_CATEGORY_LABELS) as [VehicleUseCategory, string][];
-
 // Filter state is keyed on the plain lowercase `key` (also used for the
-// ?filter= deep link, e.g. from the Home page's EV teaser or the Shop by Use
+// ?filter= deep link, e.g. from the Home page's EV teaser or the Shop By Use
 // section) — the icon and label are display-only, kept separate from the key.
+// Use-case categories (Corporate/Family/...) are deliberately NOT rendered as
+// buttons here — they already have a dedicated, better-designed entry point
+// (the Shop By Use cards on Home). A category arriving via ?filter= still
+// works; it's surfaced as a single "Showing: X" indicator below instead of
+// five more permanent pills competing with these for space.
 const FILTERS: { key: Filter; label: string; icon?: LucideIcon }[] = [
   { key: "all", label: "All" },
   { key: "available", label: "Available" },
@@ -41,8 +43,11 @@ const FILTERS: { key: Filter; label: string; icon?: LucideIcon }[] = [
   { key: "nigerian-used", label: "Nigerian Used" },
   { key: "ev", label: "EVs", icon: Zap },
   { key: "certified", label: "Certified Nigerian-Used", icon: CheckCircle2 },
-  ...USE_CATEGORY_FILTERS.map(([key, label]) => ({ key, label })),
 ];
+
+// Superset used only for validating a ?filter= deep link — includes the use
+// categories even though they don't get their own button (see above).
+const ALL_FILTER_KEYS = new Set<Filter>([...FILTERS.map((f) => f.key), ...(Object.keys(USE_CATEGORY_LABELS) as VehicleUseCategory[])]);
 
 const STATUS_CLASS: Record<PublicDisplayStatus, string> = {
   Available: "status-available",
@@ -64,11 +69,12 @@ export function VehicleMarketplace({
   defaultTenorMonths,
   initialFilterKey,
 }: Props) {
-  const isValidFilter = (k: string): k is Filter => FILTERS.some((f) => f.key === k);
+  const isValidFilter = (k: string): k is Filter => ALL_FILTER_KEYS.has(k as Filter);
   const [filter, setFilter] = useState<Filter>(
     (initialFilterKey && isValidFilter(initialFilterKey) && initialFilterKey) || "all",
   );
   const [selected, setSelected] = useState<PublicVehicle | null>(null);
+  const activeUseCategory = filter in USE_CATEGORY_LABELS ? (filter as VehicleUseCategory) : null;
 
   const filtered = vehicles.filter((v) => {
     if (filter === "all") return true;
@@ -91,31 +97,29 @@ export function VehicleMarketplace({
           and inspection guarantee.
         </div>
 
-        <Link
-          href="/vehicles/certified"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            background: "var(--green-d)",
-            border: "1px solid #BBF7D0",
-            borderRadius: 12,
-            padding: "14px 18px",
-            marginBottom: 24,
-            textDecoration: "none",
-          }}
-        >
-          <span style={{ display: "flex", color: "var(--green)" }}>
-            <CheckCircle2 size={20} strokeWidth={1.75} />
-          </span>
-          <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>
-            <strong style={{ color: "var(--green)" }}>DMECH Certified Nigerian-Used</strong> —
-            vehicles already in Nigeria, inspected, title-checked, and sold with a real warranty.
-          </span>
-          <span className="teaser-link" style={{ fontSize: 13, flexShrink: 0 }}>
-            Learn More →
-          </span>
-        </Link>
+        {activeUseCategory && (
+          <button
+            type="button"
+            onClick={() => setFilter("all")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "var(--blue)",
+              color: "#fff",
+              border: "none",
+              borderRadius: 20,
+              padding: "8px 14px",
+              marginBottom: 14,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Showing: {USE_CATEGORY_LABELS[activeUseCategory]} vehicles
+            <X size={14} strokeWidth={2.5} />
+          </button>
+        )}
 
         <div className="vehicle-filters">
           {FILTERS.map((f) => (

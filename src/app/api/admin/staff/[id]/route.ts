@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { roleGuard } from "@/lib/guards";
+import { logAudit } from "@/lib/audit";
 import type { StaffRole } from "@/types";
 
 const ALLOWED = ["role", "is_active"] as const;
@@ -36,6 +37,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   const supabase = createServiceClient();
+  const { data: before } = await supabase.from("users").select("role, is_active").eq("id", id).maybeSingle();
+
   const { data, error } = await supabase
     .from("users")
     .update(updates)
@@ -46,6 +49,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (error) {
     return NextResponse.json({ error: "Could not update staff record." }, { status: 500 });
   }
+
+  await logAudit({ userId: staff.id, action: "update", tableName: "users", recordId: id, oldValue: before, newValue: updates });
 
   return NextResponse.json({ staff: data });
 }

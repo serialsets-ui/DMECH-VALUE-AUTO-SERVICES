@@ -8,6 +8,7 @@ import {
   Users,
   Package,
   Wrench,
+  HardHat,
   Wallet,
   Ship,
   FileCheck,
@@ -17,6 +18,9 @@ import {
   Receipt,
   CircleDollarSign,
   Building2,
+  Settings,
+  History,
+  BarChart3,
   LogOut,
   type LucideIcon,
 } from "lucide-react";
@@ -54,7 +58,10 @@ const NAV: { section: string; items: NavItem[] }[] = [
   },
   {
     section: "Operations",
-    items: [{ href: "/ops/workshop", label: "Workshop", icon: Wrench, roles: ALL_ROLES }],
+    items: [
+      { href: "/ops/workshop", label: "Workshop", icon: Wrench, roles: ALL_ROLES },
+      { href: "/ops/specialists", label: "Specialists", icon: HardHat, roles: ALL_ROLES },
+    ],
   },
   {
     section: "Finance",
@@ -89,6 +96,17 @@ const NAV: { section: string; items: NavItem[] }[] = [
     ],
   },
   {
+    section: "Reports",
+    items: [
+      {
+        href: "/ops/reports",
+        label: "Business Reports",
+        icon: BarChart3,
+        roles: ["super_admin", "managing_partner", "accountant"],
+      },
+    ],
+  },
+  {
     section: "Settings",
     items: [
       { href: "/ops/settings/staff", label: "Staff", icon: UserCog, roles: ["super_admin"] },
@@ -96,6 +114,18 @@ const NAV: { section: string; items: NavItem[] }[] = [
         href: "/ops/settings/business",
         label: "Business",
         icon: Building2,
+        roles: ["super_admin", "managing_partner"],
+      },
+      {
+        href: "/ops/settings/platform",
+        label: "Platform",
+        icon: Settings,
+        roles: ["super_admin", "managing_partner"],
+      },
+      {
+        href: "/ops/settings/audit-log",
+        label: "Audit Log",
+        icon: History,
         roles: ["super_admin", "managing_partner"],
       },
     ],

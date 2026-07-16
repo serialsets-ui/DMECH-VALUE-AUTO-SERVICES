@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import { approvalsRequired } from "@/lib/approval";
+import { logAudit } from "@/lib/audit";
+import { queueNotification } from "@/lib/notifications";
 import type { StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "sales_manager", "accountant"];
@@ -34,6 +36,21 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (action === "decline") {
     const { data, error } = await service.from("customers").update({ approval_status: "declined" }).eq("id", id).select().single();
     if (error) return NextResponse.json({ error: "Could not decline this customer." }, { status: 500 });
+    await logAudit({
+      userId: staff.id,
+      action: "decline",
+      tableName: "customers",
+      recordId: id,
+      oldValue: { approval_status: customer.approval_status },
+      newValue: { approval_status: "declined" },
+    });
+    await queueNotification({
+      recipientId: customer.user_id,
+      recipientPhone: customer.phone,
+      channel: "email",
+      template: "customer_approval_decision",
+      payload: { status: "declined", customerName: customer.full_name },
+    });
     return NextResponse.json({ customer: data });
   }
 
@@ -55,6 +72,25 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   if (error) {
     return NextResponse.json({ error: "Could not record your approval." }, { status: 500 });
+  }
+
+  await logAudit({
+    userId: staff.id,
+    action: "approve",
+    tableName: "customers",
+    recordId: id,
+    oldValue: { approval_status: customer.approval_status, approved_by: approvedBy },
+    newValue: { approval_status: nextStatus, approved_by: nextApprovedBy },
+  });
+
+  if (nextStatus === "approved") {
+    await queueNotification({
+      recipientId: customer.user_id,
+      recipientPhone: customer.phone,
+      channel: "email",
+      template: "customer_approval_decision",
+      payload: { status: "approved", customerName: customer.full_name },
+    });
   }
 
   return NextResponse.json({ customer: data, approvalsRequired: required });

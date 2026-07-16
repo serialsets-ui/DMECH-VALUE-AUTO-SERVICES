@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { roleGuard } from "@/lib/guards";
+import { logAudit } from "@/lib/audit";
 import type { BusinessProfile } from "@/types";
 
 const ALLOWED: (keyof BusinessProfile)[] = [
@@ -42,6 +43,8 @@ export async function PATCH(request: Request) {
   if (error) {
     return NextResponse.json({ error: "Could not save business settings." }, { status: 500 });
   }
+
+  await logAudit({ userId: staff.id, action: "update", tableName: "platform_config", recordId: "business_profile", newValue: profile as Record<string, unknown> });
 
   return NextResponse.json({ profile });
 }

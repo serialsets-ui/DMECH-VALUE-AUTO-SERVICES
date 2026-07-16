@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
+import { queueNotification } from "@/lib/notifications";
 import type { StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
@@ -88,6 +89,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       });
     }
   }
+
+  const { data: buyer } = await supabase.from("customers").select("user_id, phone").eq("id", customerId).maybeSingle();
+  await queueNotification({
+    recipientId: buyer?.user_id ?? null,
+    recipientPhone: buyer?.phone ?? null,
+    channel: "email",
+    template: "sale_confirmed",
+    payload: { vehicleDescription: description, invoiceId: invoice?.id ?? null },
+  });
 
   return NextResponse.json({
     ok: true,

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
+import { queueNotification } from "@/lib/notifications";
+import { formatNaira } from "@/lib/money";
 import type { PaymentMethod, StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant", "sales_manager"];
@@ -84,6 +86,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .single();
     receiptId = receipt?.id ?? null;
   }
+
+  const { data: customer } = await supabase.from("customers").select("user_id, phone").eq("id", payment.customer_id).maybeSingle();
+  await queueNotification({
+    recipientId: customer?.user_id ?? null,
+    recipientPhone: customer?.phone ?? null,
+    channel: "sms",
+    template: "payment_received",
+    payload: { amount: formatNaira(amountPaidKobo), paymentNumber: payment.payment_number, status },
+  });
 
   return NextResponse.json({ payment: updated, receiptId });
 }

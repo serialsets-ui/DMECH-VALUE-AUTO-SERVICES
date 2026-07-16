@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import { photoRequirementStatus } from "@/lib/vehicle-display";
+import { logAudit } from "@/lib/audit";
 import type { StaffRole, VehiclePhoto } from "@/types";
 
 // Mirrors oro-energy-management-hub's equipment PATCH route: role check,
@@ -72,6 +73,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   if (error) {
     return NextResponse.json({ error: "Could not update vehicle." }, { status: 500 });
+  }
+
+  // Only is_published is audited here — a public-visibility toggle is a
+  // meaningfully trust-sensitive change; the other allowlisted fields
+  // (price, colour, etc.) aren't logged yet, a known gap in coverage.
+  if ("is_published" in updates) {
+    await logAudit({
+      userId: staff.id,
+      action: "update",
+      tableName: "vehicles",
+      recordId: id,
+      newValue: { is_published: updates.is_published },
+    });
   }
 
   return NextResponse.json({ vehicle: data });

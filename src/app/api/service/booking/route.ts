@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { queueNotification } from "@/lib/notifications";
 
 // Workshop Service Booking (spec 4.5) — the mockup never implemented this at
 // all. Lands in `leads` (source: 'workshop_booking'), same as the calculator
@@ -45,6 +46,13 @@ export async function POST(request: Request) {
   if (error) {
     return NextResponse.json({ error: "Could not save your booking." }, { status: 500 });
   }
+
+  await queueNotification({
+    recipientPhone: phone,
+    channel: "sms",
+    template: "booking_received",
+    payload: { name, preferredDate: body?.preferredDate ?? null },
+  });
 
   return NextResponse.json({ ok: true });
 }

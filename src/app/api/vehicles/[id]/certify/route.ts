@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import { photoRequirementStatus } from "@/lib/vehicle-display";
+import { logAudit } from "@/lib/audit";
 import type { StaffRole, VehiclePhoto } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
@@ -100,6 +101,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       { status: 500 },
     );
   }
+
+  await logAudit({
+    userId: staff.id,
+    action: "certify",
+    tableName: "vehicles",
+    recordId: id,
+    newValue: { certification_status: "certified", warranty_policy_id: policy.id },
+  });
 
   return NextResponse.json({ warrantyPolicy: policy });
 }

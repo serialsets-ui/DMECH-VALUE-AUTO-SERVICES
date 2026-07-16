@@ -24,6 +24,7 @@ export interface DmechUser {
   is_active: boolean;
   avatar_url: string | null;
   metadata: Record<string, unknown>;
+  must_change_password: boolean;
   created_at: string;
   updated_at: string;
 }

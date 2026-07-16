@@ -69,6 +69,7 @@ export async function POST(request: Request) {
       full_name: fullName,
       role,
       is_active: true,
+      must_change_password: true,
     })
     .select()
     .single();

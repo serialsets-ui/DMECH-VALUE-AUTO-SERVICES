@@ -11,6 +11,7 @@ import { staffGuard } from "@/lib/guards";
 export default async function OpsLayout({ children }: { children: React.ReactNode }) {
   const staff = await staffGuard();
   if (!staff) redirect("/login");
+  if (staff.must_change_password) redirect("/change-password");
 
   return (
     <div data-theme="dark">

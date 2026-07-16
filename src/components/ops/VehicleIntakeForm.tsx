@@ -6,7 +6,10 @@ import { toKobo } from "@/lib/money";
 import { conditionLabel } from "@/lib/vehicle-display";
 import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
 import { VehiclePhotoManager } from "@/components/ops/VehiclePhotoManager";
-import type { AcquisitionChannel, FuelType, LifecycleStage, SourceRegion, VehicleCondition } from "@/types";
+import { USE_CATEGORY_LABELS } from "@/types";
+import type { AcquisitionChannel, FuelType, LifecycleStage, SourceRegion, VehicleCondition, VehicleUseCategory } from "@/types";
+
+const USE_CATEGORY_OPTIONS = Object.entries(USE_CATEGORY_LABELS) as [VehicleUseCategory, string][];
 
 interface Props {
   customers: { id: string; full_name: string }[];
@@ -55,6 +58,11 @@ export function VehicleIntakeForm({ customers }: Props) {
   const [sourceRegion, setSourceRegion] = useState<SourceRegion>("usa");
   const [sourceDetail, setSourceDetail] = useState("");
   const [condition, setCondition] = useState<VehicleCondition>("used");
+  const [useCategories, setUseCategories] = useState<VehicleUseCategory[]>([]);
+
+  function toggleUseCategory(cat: VehicleUseCategory) {
+    setUseCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
+  }
 
   // Step 2 — acquisition
   const [channel, setChannel] = useState<AcquisitionChannel>("import");
@@ -98,6 +106,7 @@ export function VehicleIntakeForm({ customers }: Props) {
           source_region: sourceRegion,
           source_detail: sourceDetail || null,
           condition,
+          use_categories: useCategories,
           acquisition_channel: channel,
           purchase_price_usd_cents: channel === "import" && purchasePriceUsd ? Math.round(parseFloat(purchasePriceUsd) * 100) : null,
           shipping_cost_usd_cents: channel === "import" && shippingCostUsd ? Math.round(parseFloat(shippingCostUsd) * 100) : null,
@@ -210,6 +219,16 @@ export function VehicleIntakeForm({ customers }: Props) {
               <option value="used">{sourceRegion === "nigeria" ? "Used (Nigerian Used)" : "Used (Tokunbo)"}</option>
               <option value="new">Brand New</option>
             </select>
+
+            <label className="ops-field-label">Use Categories (optional — select all that apply)</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 16px", marginBottom: 16 }}>
+              {USE_CATEGORY_OPTIONS.map(([value, label]) => (
+                <label key={value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5 }}>
+                  <input type="checkbox" checked={useCategories.includes(value)} onChange={() => toggleUseCategory(value)} />
+                  {label}
+                </label>
+              ))}
+            </div>
 
             <button className="ops-btn" onClick={next} disabled={!make || !model || !year}>
               Next: Acquisition
@@ -357,6 +376,12 @@ export function VehicleIntakeForm({ customers }: Props) {
             {conditionLabel({ condition, source_region: sourceRegion })}
           </span>
         </div>
+        {useCategories.length > 0 && (
+          <div className="ops-info-row">
+            <span className="ops-info-label">Use Categories</span>
+            <span className="ops-info-value">{useCategories.map((c) => USE_CATEGORY_LABELS[c]).join(", ")}</span>
+          </div>
+        )}
         <div className="ops-info-row">
           <span className="ops-info-label">Channel</span>
           <span className="ops-info-value" style={{ textTransform: "capitalize" }}>{channel.replace("_", " ")}</span>

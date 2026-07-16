@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/marketing/Hero";
+import { UseCategoryTeaser } from "@/components/marketing/UseCategoryTeaser";
 import { VehicleTeaser } from "@/components/marketing/VehicleTeaser";
 import { CertifiedTeaser } from "@/components/marketing/CertifiedTeaser";
 import { TrustTeaser } from "@/components/marketing/TrustTeaser";
@@ -26,6 +27,7 @@ export default async function MarketingHome() {
   return (
     <main className="page-fade">
       <Hero ngnRate={ngnRate} marketPriceBenchmarks={marketPriceBenchmarks} />
+      <UseCategoryTeaser />
       <VehicleTeaser vehicles={vehicles} />
       <CertifiedTeaser vehicles={vehicles} />
       <TrustTeaser />

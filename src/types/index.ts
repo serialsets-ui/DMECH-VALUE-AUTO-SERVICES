@@ -179,6 +179,27 @@ export type FuelType = "petrol" | "diesel" | "hybrid" | "electric";
 export type SourceRegion = "usa" | "europe" | "china" | "nigeria";
 export type VehicleCondition = "used" | "new";
 
+// Buyer-persona tags — orthogonal to acquisition_channel/source_region (how
+// DMECH got the vehicle) and condition/fuel_type (what it is). A vehicle can
+// carry more than one (a pickup is both Construction and Logistics).
+export type VehicleUseCategory = "corporate" | "family" | "construction" | "catering" | "logistics";
+
+export const USE_CATEGORY_LABELS: Record<VehicleUseCategory, string> = {
+  corporate: "Corporate",
+  family: "Family",
+  construction: "Construction",
+  catering: "Catering",
+  logistics: "Logistics",
+};
+
+export const USE_CATEGORY_DESCRIPTIONS: Record<VehicleUseCategory, string> = {
+  corporate: "Executive sedans & fleet vehicles for your business",
+  family: "Spacious, safe SUVs and vans for the family",
+  construction: "Rugged pickups & trucks built for the job site",
+  catering: "Reliable vans for food & hospitality business",
+  logistics: "Haulage-ready vehicles for moving goods",
+};
+
 export type PhotoTag =
   | "hero"
   | "front"
@@ -254,6 +275,7 @@ export interface Vehicle {
   source_region: SourceRegion | null;
   source_detail: string | null;
   condition: VehicleCondition | null;
+  use_categories: VehicleUseCategory[];
   purchase_price_usd_cents: number | null;
   shipping_cost_usd_cents: number | null;
   customs_duty_kobo: number | null;

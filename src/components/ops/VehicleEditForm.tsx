@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { fromKobo, toKobo } from "@/lib/money";
 import { stageLabel } from "@/lib/ops/vehicle-stage";
 import { photoRequirementStatus } from "@/lib/vehicle-display";
-import type { LifecycleStage, VehicleCondition, SourceRegion, VehiclePhoto } from "@/types";
+import { USE_CATEGORY_LABELS } from "@/types";
+import type { LifecycleStage, VehicleCondition, SourceRegion, VehiclePhoto, VehicleUseCategory } from "@/types";
+
+const USE_CATEGORY_OPTIONS = Object.entries(USE_CATEGORY_LABELS) as [VehicleUseCategory, string][];
 
 interface Props {
   vehicleId: string;
@@ -21,6 +24,7 @@ interface Props {
   seoTitle: string | null;
   seoDescription: string | null;
   photos: VehiclePhoto[];
+  useCategories: VehicleUseCategory[];
 }
 
 type Status = "idle" | "saving" | "saved" | "error";
@@ -45,6 +49,7 @@ export function VehicleEditForm({
   seoTitle,
   seoDescription,
   photos,
+  useCategories: initialUseCategories,
 }: Props) {
   const router = useRouter();
   const [stage, setStage] = useState<LifecycleStage>(lifecycleStage);
@@ -58,7 +63,12 @@ export function VehicleEditForm({
   const [lotNumberValue, setLotNumberValue] = useState(lotNumber ?? "");
   const [seoTitleValue, setSeoTitleValue] = useState(seoTitle ?? "");
   const [seoDescriptionValue, setSeoDescriptionValue] = useState(seoDescription ?? "");
+  const [useCategories, setUseCategories] = useState<VehicleUseCategory[]>(initialUseCategories);
   const [status, setStatus] = useState<Status>("idle");
+
+  function toggleUseCategory(cat: VehicleUseCategory) {
+    setUseCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
+  }
   const requirement = photoRequirementStatus(photos);
   const canPublish = published || requirement.met;
 
@@ -75,6 +85,7 @@ export function VehicleEditForm({
           colour: colourValue || null,
           video_url: video || null,
           is_published: published,
+          use_categories: useCategories,
           lot_number: lotNumberValue || null,
           seo_title: seoTitleValue || null,
           seo_description: seoDescriptionValue || null,
@@ -147,6 +158,16 @@ export function VehicleEditForm({
         value={colourValue}
         onChange={(e) => setColourValue(e.target.value)}
       />
+
+      <label className="ops-field-label">Use Categories (select all that apply)</label>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 16px", marginBottom: 16 }}>
+        {USE_CATEGORY_OPTIONS.map(([value, label]) => (
+          <label key={value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5 }}>
+            <input type="checkbox" checked={useCategories.includes(value)} onChange={() => toggleUseCategory(value)} />
+            {label}
+          </label>
+        ))}
+      </div>
 
       <label className="ops-field-label" htmlFor="veh-video">
         Video URL (optional)

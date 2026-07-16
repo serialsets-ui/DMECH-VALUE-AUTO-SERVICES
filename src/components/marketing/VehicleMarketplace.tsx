@@ -14,6 +14,7 @@ import {
 import { Zap, CheckCircle2, Car, type LucideIcon } from "lucide-react";
 import { VehicleDetailModal } from "@/components/marketing/VehicleDetailModal";
 import { Reveal } from "@/components/marketing/Reveal";
+import { USE_CATEGORY_LABELS, type VehicleUseCategory } from "@/types";
 
 type Filter =
   | "all"
@@ -23,11 +24,14 @@ type Filter =
   | "foreign-used"
   | "nigerian-used"
   | "ev"
-  | "certified";
+  | "certified"
+  | VehicleUseCategory;
+
+const USE_CATEGORY_FILTERS = Object.entries(USE_CATEGORY_LABELS) as [VehicleUseCategory, string][];
 
 // Filter state is keyed on the plain lowercase `key` (also used for the
-// ?filter= deep link, e.g. from the Home page's EV teaser) — the icon and
-// label are display-only, kept separate from the key itself.
+// ?filter= deep link, e.g. from the Home page's EV teaser or the Shop by Use
+// section) — the icon and label are display-only, kept separate from the key.
 const FILTERS: { key: Filter; label: string; icon?: LucideIcon }[] = [
   { key: "all", label: "All" },
   { key: "available", label: "Available" },
@@ -37,6 +41,7 @@ const FILTERS: { key: Filter; label: string; icon?: LucideIcon }[] = [
   { key: "nigerian-used", label: "Nigerian Used" },
   { key: "ev", label: "EVs", icon: Zap },
   { key: "certified", label: "Certified Nigerian-Used", icon: CheckCircle2 },
+  ...USE_CATEGORY_FILTERS.map(([key, label]) => ({ key, label })),
 ];
 
 const STATUS_CLASS: Record<PublicDisplayStatus, string> = {
@@ -71,6 +76,7 @@ export function VehicleMarketplace({
     if (filter === "certified") return isCertified(v);
     if (filter === "foreign-used") return conditionCategory(v) === "foreign_used";
     if (filter === "nigerian-used") return conditionCategory(v) === "nigerian_used";
+    if (filter in USE_CATEGORY_LABELS) return v.use_categories.includes(filter as VehicleUseCategory);
     const statusKey = displayStatus(v).toLowerCase().replace(" ", "-");
     return statusKey === filter;
   });

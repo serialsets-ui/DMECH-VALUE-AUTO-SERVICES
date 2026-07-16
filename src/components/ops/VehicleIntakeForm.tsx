@@ -223,7 +223,7 @@ export function VehicleIntakeForm({ customers }: Props) {
             <label className="ops-field-label">Use Categories (optional — select all that apply)</label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 16px", marginBottom: 16 }}>
               {USE_CATEGORY_OPTIONS.map(([value, label]) => (
-                <label key={value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5 }}>
+                <label key={value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, color: "var(--text)" }}>
                   <input type="checkbox" checked={useCategories.includes(value)} onChange={() => toggleUseCategory(value)} />
                   {label}
                 </label>

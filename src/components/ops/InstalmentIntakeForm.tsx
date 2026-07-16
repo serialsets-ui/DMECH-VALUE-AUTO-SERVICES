@@ -130,7 +130,7 @@ export function InstalmentIntakeForm({ customers, vehicles, defaultDepositPct, d
         </>
       )}
 
-      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, fontSize: 13.5 }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, fontSize: 13.5, color: "var(--text)" }}>
         <input type="checkbox" checked={depositPaid} onChange={(e) => setDepositPaid(e.target.checked)} />
         Deposit already collected
       </label>

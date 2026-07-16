@@ -162,7 +162,7 @@ export function VehicleEditForm({
       <label className="ops-field-label">Use Categories (select all that apply)</label>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 16px", marginBottom: 16 }}>
         {USE_CATEGORY_OPTIONS.map(([value, label]) => (
-          <label key={value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5 }}>
+          <label key={value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, color: "var(--text)" }}>
             <input type="checkbox" checked={useCategories.includes(value)} onChange={() => toggleUseCategory(value)} />
             {label}
           </label>
@@ -190,7 +190,7 @@ export function VehicleEditForm({
         onChange={(e) => setLotNumberValue(e.target.value)}
       />
 
-      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: !canPublish ? 4 : 14, fontSize: 13.5 }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: !canPublish ? 4 : 14, fontSize: 13.5, color: "var(--text)" }}>
         <input
           type="checkbox"
           checked={published}

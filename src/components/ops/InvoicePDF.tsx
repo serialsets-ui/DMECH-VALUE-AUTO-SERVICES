@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
-import { formatNaira } from "@/lib/money";
+import { fromKobo } from "@/lib/money";
 import type { BusinessProfile, Invoice } from "@/types";
 
 // Adapted from JUSTRA's InvoicePDF.tsx (a sibling project with a proven,
@@ -10,6 +10,17 @@ import type { BusinessProfile, Invoice } from "@/types";
 // e-invoicing (MBS) mandate isn't enforced until July 2027, so there is
 // nothing to submit to yet — this generates a correctly-formatted document,
 // not a fiscalized one.
+
+// NOT lib/money.ts's formatNaira() — @react-pdf/renderer's built-in
+// Helvetica font has no glyph for ₦, so it silently renders as a broken
+// character in the PDF (confirmed by actually rendering one; nothing about
+// this shows up from lint or a type check). JUSTRA hit the identical
+// problem and settled on the same fix: spell out "NGN" instead of the
+// symbol, PDF output only — every other formatNaira() call site in this
+// app (web pages) keeps the real ₦ symbol, which renders fine in a browser.
+function fmt(kobo: number): string {
+  return `NGN ${Math.round(fromKobo(kobo)).toLocaleString("en-NG")}`;
+}
 
 const s = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: "#111111", padding: 40, backgroundColor: "#ffffff" },
@@ -110,8 +121,8 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
           <View key={i} style={s.tableRow}>
             <Text style={s.colDesc}>{item.description}</Text>
             <Text style={s.colQty}>{item.quantity}</Text>
-            <Text style={s.colPrice}>{formatNaira(item.unit_price_kobo)}</Text>
-            <Text style={s.colAmount}>{formatNaira(item.amount_kobo)}</Text>
+            <Text style={s.colPrice}>{fmt(item.unit_price_kobo)}</Text>
+            <Text style={s.colAmount}>{fmt(item.amount_kobo)}</Text>
           </View>
         ))}
 
@@ -119,17 +130,17 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
           <View style={s.totalsBox}>
             <View style={s.totalsRow}>
               <Text style={s.totalsLabel}>Subtotal</Text>
-              <Text style={s.totalsValue}>{formatNaira(invoice.subtotal_kobo)}</Text>
+              <Text style={s.totalsValue}>{fmt(invoice.subtotal_kobo)}</Text>
             </View>
             <View style={s.totalsRow}>
               <Text style={s.totalsLabel}>
                 VAT ({invoice.vat_rate}%){invoice.vat_exempt ? " — Exempt" : ""}
               </Text>
-              <Text style={s.totalsValue}>{invoice.vat_exempt ? "₦0" : `+ ${formatNaira(invoice.vat_amount_kobo)}`}</Text>
+              <Text style={s.totalsValue}>{invoice.vat_exempt ? "NGN 0" : `+ ${fmt(invoice.vat_amount_kobo)}`}</Text>
             </View>
             <View style={s.netRow}>
               <Text style={s.netLabel}>Total</Text>
-              <Text style={s.netValue}>{formatNaira(invoice.total_kobo)}</Text>
+              <Text style={s.netValue}>{fmt(invoice.total_kobo)}</Text>
             </View>
           </View>
         </View>

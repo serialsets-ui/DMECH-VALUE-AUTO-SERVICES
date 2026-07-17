@@ -22,9 +22,13 @@ export default async function OpsCustomersPage() {
   if (!staff) redirect("/login");
 
   const supabase = await createClient();
+  // dealer_partner rows live in this same table but get their own section
+  // (Ops > Dealer Partners) — they're suppliers, not buyers, so excluded
+  // here to keep "Customers" meaning what staff expect it to mean.
   const { data } = await supabase
     .from("customers")
     .select("*")
+    .neq("type", "dealer_partner")
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 

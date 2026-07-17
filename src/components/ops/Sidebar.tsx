@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Car,
+  Handshake,
   Users,
   Package,
   Wrench,
@@ -54,6 +55,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     items: [
       { href: "/ops/vehicles", label: "Vehicles", icon: Car, roles: ALL_ROLES },
       { href: "/ops/parts", label: "Parts", icon: Package, roles: ALL_ROLES },
+      { href: "/ops/dealer-partners", label: "Dealer Partners", icon: Handshake, roles: ALL_ROLES },
     ],
   },
   {

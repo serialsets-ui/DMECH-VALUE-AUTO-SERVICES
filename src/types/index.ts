@@ -44,7 +44,8 @@ export type CustomerType =
   | "workshop_walkin"
   | "corporate"
   | "parts_retail"
-  | "parts_wholesale";
+  | "parts_wholesale"
+  | "dealer_partner";
 
 export const CUSTOMER_TYPE_LABELS: Record<CustomerType, string> = {
   instalment_buyer: "Instalment Buyer",
@@ -53,7 +54,21 @@ export const CUSTOMER_TYPE_LABELS: Record<CustomerType, string> = {
   corporate: "Corporate",
   parts_retail: "Parts — Retail",
   parts_wholesale: "Parts — Wholesale",
+  dealer_partner: "Dealer Partner",
 };
+
+// dealer_partner is deliberately excluded from self-service/general staff
+// registration (RegistrationForm.tsx, CustomerIntakeForm.tsx) — it's a
+// business relationship DMECH initiates, not something a site visitor or
+// walk-in registers as. Managed only via Ops > Dealer Partners.
+export const REGISTRABLE_CUSTOMER_TYPES: CustomerType[] = [
+  "instalment_buyer",
+  "cash_buyer",
+  "workshop_walkin",
+  "corporate",
+  "parts_retail",
+  "parts_wholesale",
+];
 
 // Types that involve DMECH extending credit — the ones a requested
 // credit_limit_kobo (and therefore an approval tier) actually applies to.

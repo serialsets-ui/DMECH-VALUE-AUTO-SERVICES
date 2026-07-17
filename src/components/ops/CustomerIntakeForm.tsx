@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DocumentUploadManager } from "@/components/ops/DocumentUploadManager";
-import { CUSTOMER_TYPE_LABELS, FINANCING_CUSTOMER_TYPES } from "@/types";
+import { CUSTOMER_TYPE_LABELS, FINANCING_CUSTOMER_TYPES, REGISTRABLE_CUSTOMER_TYPES } from "@/types";
 import type { CustomerType } from "@/types";
 
 type Step = 1 | 2 | 3 | 4;
 
-const TYPE_OPTIONS = Object.entries(CUSTOMER_TYPE_LABELS) as [CustomerType, string][];
+// dealer_partner isn't offered here — Dealer Partners get their own
+// dedicated flow (Ops > Dealer Partners), not this general customer intake.
+const TYPE_OPTIONS = REGISTRABLE_CUSTOMER_TYPES.map((value) => [value, CUSTOMER_TYPE_LABELS[value]] as [CustomerType, string]);
 
 // Staff-assisted version of RegistrationForm.tsx (portal self-service) —
 // same shape, same fields, submits to /api/admin/customers instead (no

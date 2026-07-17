@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import type { StaffRole } from "@/types";
 
@@ -27,7 +27,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (key in body) updates[key] = body[key];
   }
 
-  const supabase = await createClient();
+  // service-role: vehicles has no staff UPDATE RLS policy (only SELECT) —
+  // the RLS-respecting client silently updates 0 rows here, and .single()
+  // then throws on the empty result (see the main vehicles PATCH route's
+  // identical comment).
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("vehicles")
     .update(updates)

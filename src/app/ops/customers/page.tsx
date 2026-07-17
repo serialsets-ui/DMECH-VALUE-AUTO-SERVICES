@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { ClickableRow } from "@/components/ops/ClickableRow";
@@ -5,7 +6,7 @@ import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
 import { CUSTOMER_TYPE_LABELS } from "@/types";
-import type { ApprovalStatus, Customer } from "@/types";
+import type { ApprovalStatus, Customer, StaffRole } from "@/types";
 
 const STATUS_CLASS: Record<ApprovalStatus, string> = {
   pending: "ops-badge-amber",
@@ -13,6 +14,8 @@ const STATUS_CLASS: Record<ApprovalStatus, string> = {
   approved: "ops-badge-green",
   declined: "ops-badge-muted",
 };
+
+const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "sales_manager", "sales_rep", "accountant"];
 
 export default async function OpsCustomersPage() {
   const staff = await staffGuard();
@@ -29,7 +32,16 @@ export default async function OpsCustomersPage() {
 
   return (
     <>
-      <TopBar title="Customers" />
+      <TopBar
+        title="Customers"
+        actions={
+          EDIT_ROLES.includes(staff.role as StaffRole) ? (
+            <Link href="/ops/customers/new" className="ops-btn" style={{ textDecoration: "none" }}>
+              + Add Customer
+            </Link>
+          ) : undefined
+        }
+      />
       <div className="ops-content">
         {customers.length === 0 ? (
           <div className="ops-panel" style={{ color: "var(--muted)", fontSize: 14 }}>

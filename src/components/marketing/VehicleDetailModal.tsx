@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { X, CheckCircle2, TriangleAlert, MessageCircle } from "lucide-react";
 import { formatNaira } from "@/lib/money";
@@ -312,10 +313,19 @@ export function VehicleDetailModal({ vehicle, onClose, defaultDepositPct, defaul
                       </a>
                     </p>
                   ) : (
-                    <p style={{ fontSize: 12, color: "var(--subtle)", marginTop: 12 }}>
-                      Payments can start while a shipped vehicle is still on the water — by
-                      arrival, you&apos;re already ahead.
-                    </p>
+                    <>
+                      <p style={{ fontSize: 12, color: "var(--subtle)", marginTop: 12 }}>
+                        Payments can start while a shipped vehicle is still on the water — by
+                        arrival, you&apos;re already ahead.
+                      </p>
+                      <Link
+                        href="/register"
+                        className="v-card-btn btn-primary"
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: 12, textDecoration: "none" }}
+                      >
+                        Apply for Financing →
+                      </Link>
+                    </>
                   )}
                 </>
               ) : (

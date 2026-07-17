@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { InstalmentPlans } from "@/components/marketing/InstalmentPlans";
 import { Reveal } from "@/components/marketing/Reveal";
 
@@ -19,6 +20,9 @@ export default function FinancingPage() {
             DMECH Direct Finance and Partner Finance both let your instalments begin the moment
             your vehicle is purchased — not after it clears customs.
           </div>
+          <Link href="/register" className="nav-cta" style={{ display: "inline-flex", marginTop: 20, textDecoration: "none" }}>
+            Apply for Financing →
+          </Link>
         </div>
       </section>
       <Reveal>

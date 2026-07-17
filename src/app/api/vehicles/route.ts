@@ -5,11 +5,10 @@ import type { StaffRole, AcquisitionChannel } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
-// is_published deliberately NOT writable here — a brand-new vehicle has zero
-// photos, so it can never meet the publish bar (see photoRequirementStatus,
-// lib/vehicle-display.ts) at the moment of creation. It's forced false below
+// is_published deliberately NOT writable here — a brand-new vehicle hasn't
+// had its price, photos, or details reviewed yet. It's forced false below
 // regardless of what the client sends; staff publish later from the edit
-// form once the photo set is complete.
+// form once the listing is actually ready.
 const WRITABLE = [
   "make", "model", "year", "vin", "lot_number", "colour", "fuel_type", "engine_cc", "battery_range_km",
   "source_region", "source_detail", "condition", "use_categories", "acquisition_channel",

@@ -1,5 +1,4 @@
-import { MIN_PUBLISH_PHOTOS, REQUIRED_PHOTO_TAGS } from "@/types";
-import type { PhotoTag, Vehicle, VehiclePhoto, WarrantyPolicy } from "@/types";
+import type { Vehicle, VehiclePhoto, WarrantyPolicy } from "@/types";
 
 // Client-safe vehicle helpers — pure functions and types only, no Supabase
 // import. Split out from lib/vehicles.ts because that file's
@@ -50,27 +49,6 @@ export function publicPhotos(vehicle: Vehicle): VehiclePhoto[] {
     .sort((a, b) => a.sort_order - b.sort_order);
 }
 
-export interface PhotoRequirementStatus {
-  met: boolean;
-  count: number;
-  photosNeeded: number;
-  missingTags: PhotoTag[];
-}
-
-// Gates Publish and Certify — see MIN_PUBLISH_PHOTOS/REQUIRED_PHOTO_TAGS
-// (src/types/index.ts) for why these specific tags. Counts every photo
-// (internal-only ones included) since the requirement is about having
-// actually documented the vehicle, not about what's public.
-export function photoRequirementStatus(photos: VehiclePhoto[]): PhotoRequirementStatus {
-  const tags = new Set(photos.map((p) => p.tag).filter((t): t is PhotoTag => t !== null));
-  const missingTags = REQUIRED_PHOTO_TAGS.filter((t) => !tags.has(t));
-  return {
-    met: photos.length >= MIN_PUBLISH_PHOTOS && missingTags.length === 0,
-    count: photos.length,
-    photosNeeded: Math.max(0, MIN_PUBLISH_PHOTOS - photos.length),
-    missingTags,
-  };
-}
 
 export type ConditionCategory = "brand_new" | "foreign_used" | "nigerian_used";
 

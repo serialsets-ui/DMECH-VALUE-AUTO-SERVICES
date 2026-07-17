@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toKobo } from "@/lib/money";
-import { photoRequirementStatus } from "@/lib/vehicle-display";
-import type { CertificationStatus, TitleVerificationCheck, VehiclePhoto } from "@/types";
+import type { CertificationStatus, TitleVerificationCheck } from "@/types";
 
 interface ConditionItem {
   area: string;
@@ -19,7 +18,6 @@ interface Props {
   titleVerification: TitleVerificationCheck[];
   certificationStatus: CertificationStatus;
   salePriceKobo: number | null;
-  photos: VehiclePhoto[];
 }
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -30,10 +28,8 @@ export function InspectionPanel({
   titleVerification,
   certificationStatus,
   salePriceKobo,
-  photos,
 }: Props) {
   const router = useRouter();
-  const requirement = photoRequirementStatus(photos);
   const [conditions, setConditions] = useState<ConditionItem[]>(conditionReport);
   const [checks, setChecks] = useState<TitleVerificationCheck[]>(titleVerification);
   const [inspectionStatus, setInspectionStatus] = useState<SaveStatus>("idle");
@@ -171,12 +167,6 @@ export function InspectionPanel({
           <div style={{ fontSize: 13, color: "var(--green)" }}>This vehicle is already certified.</div>
         ) : (
           <>
-            {!requirement.met && (
-              <div style={{ fontSize: 12, color: "var(--amber)", marginBottom: 10 }}>
-                Needs {requirement.photosNeeded > 0 ? `${requirement.photosNeeded} more photo${requirement.photosNeeded === 1 ? "" : "s"}` : "a few more angles"}
-                {requirement.missingTags.length > 0 ? ` (missing: ${requirement.missingTags.join(", ")})` : ""} before this vehicle can be certified — see the Photos panel above.
-              </div>
-            )}
             {!salePriceKobo && (
               <div style={{ fontSize: 12, color: "var(--amber)", marginBottom: 10 }}>
                 No sale price set yet — the reserve contribution will be recorded as ₦0 until one is.
@@ -201,7 +191,7 @@ export function InspectionPanel({
             <input id="cert-price" className="ops-input" type="number" value={warrantyPriceNaira} onChange={(e) => setWarrantyPriceNaira(e.target.value)} />
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button className="ops-btn" onClick={certify} disabled={certifyStatus === "saving" || !requirement.met}>
+              <button className="ops-btn" onClick={certify} disabled={certifyStatus === "saving"}>
                 {certifyStatus === "saving" ? "Certifying..." : "Certify & Issue Warranty"}
               </button>
               {certifyError && <span style={{ color: "var(--red)", fontSize: 12 }}>{certifyError}</span>}

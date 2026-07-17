@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fromKobo, toKobo } from "@/lib/money";
 import { stageLabel } from "@/lib/ops/vehicle-stage";
-import { photoRequirementStatus } from "@/lib/vehicle-display";
 import { USE_CATEGORY_LABELS } from "@/types";
-import type { LifecycleStage, VehicleCondition, SourceRegion, VehiclePhoto, VehicleUseCategory } from "@/types";
+import type { LifecycleStage, VehicleCondition, SourceRegion, VehicleUseCategory } from "@/types";
 
 const USE_CATEGORY_OPTIONS = Object.entries(USE_CATEGORY_LABELS) as [VehicleUseCategory, string][];
 
@@ -23,7 +22,6 @@ interface Props {
   lotNumber: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
-  photos: VehiclePhoto[];
   useCategories: VehicleUseCategory[];
 }
 
@@ -48,7 +46,6 @@ export function VehicleEditForm({
   lotNumber,
   seoTitle,
   seoDescription,
-  photos,
   useCategories: initialUseCategories,
 }: Props) {
   const router = useRouter();
@@ -69,9 +66,6 @@ export function VehicleEditForm({
   function toggleUseCategory(cat: VehicleUseCategory) {
     setUseCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
   }
-  const requirement = photoRequirementStatus(photos);
-  const canPublish = published || requirement.met;
-
   async function save() {
     setStatus("saving");
     try {
@@ -190,21 +184,14 @@ export function VehicleEditForm({
         onChange={(e) => setLotNumberValue(e.target.value)}
       />
 
-      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: !canPublish ? 4 : 14, fontSize: 13.5, color: "var(--text)" }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, fontSize: 13.5, color: "var(--text)" }}>
         <input
           type="checkbox"
           checked={published}
-          disabled={!canPublish}
           onChange={(e) => setPublished(e.target.checked)}
         />
         Published — visible on the marketing site
       </label>
-      {!canPublish && (
-        <div style={{ fontSize: 12, color: "var(--amber)", marginBottom: 14 }}>
-          Needs {requirement.photosNeeded > 0 ? `${requirement.photosNeeded} more photo${requirement.photosNeeded === 1 ? "" : "s"}` : "a few more angles"}
-          {requirement.missingTags.length > 0 ? ` (missing: ${requirement.missingTags.join(", ")})` : ""} before this can be published — see the Photos panel above.
-        </div>
-      )}
 
       <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14, marginBottom: 4 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: "var(--subtle)", letterSpacing: ".5px", textTransform: "uppercase", marginBottom: 10 }}>

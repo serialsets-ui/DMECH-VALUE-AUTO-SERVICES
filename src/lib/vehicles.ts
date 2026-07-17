@@ -15,7 +15,6 @@ export {
   publicPhotos,
   conditionCategory,
   conditionLabel,
-  photoRequirementStatus,
 } from "@/lib/vehicle-display";
 
 // Mirrors the "public read pipeline vehicles" RLS policy — shown all the

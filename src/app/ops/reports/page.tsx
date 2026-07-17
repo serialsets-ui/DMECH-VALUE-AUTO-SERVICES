@@ -14,7 +14,11 @@ export default async function ReportsPage() {
 
   const supabase = await createClient();
   const [soldVehiclesRes, allVehiclesRes, paymentsRes, customersRes] = await Promise.all([
-    supabase.from("vehicles").select("sale_price_kobo").in("lifecycle_stage", ["sold", "delivered"]).is("deleted_at", null),
+    supabase
+      .from("vehicles")
+      .select("sale_price_kobo, consignment_payout_kobo, consignment_payout_paid_at")
+      .in("lifecycle_stage", ["sold", "delivered"])
+      .is("deleted_at", null),
     supabase.from("vehicles").select("lifecycle_stage").is("deleted_at", null),
     supabase.from("payments").select("amount_kobo, amount_paid_kobo, status"),
     supabase.from("customers").select("approval_status").is("deleted_at", null),
@@ -22,6 +26,13 @@ export default async function ReportsPage() {
 
   const soldVehicles = soldVehiclesRes.data ?? [];
   const totalRevenueKobo = soldVehicles.reduce((sum, v) => sum + (v.sale_price_kobo ?? 0), 0);
+  // Consignment payouts were never DMECH's money -- net revenue backs them out
+  // regardless of whether they've actually been paid to the consignor yet.
+  const totalPayoutsKobo = soldVehicles.reduce((sum, v) => sum + (v.consignment_payout_kobo ?? 0), 0);
+  const outstandingPayoutsKobo = soldVehicles
+    .filter((v) => v.consignment_payout_kobo != null && !v.consignment_payout_paid_at)
+    .reduce((sum, v) => sum + (v.consignment_payout_kobo ?? 0), 0);
+  const netRevenueKobo = totalRevenueKobo - totalPayoutsKobo;
 
   const stageCounts = new Map<LifecycleStage, number>();
   for (const v of allVehiclesRes.data ?? []) {
@@ -51,7 +62,15 @@ export default async function ReportsPage() {
           </div>
           <div className="ops-stat-card">
             <div className="ops-stat-value">{formatNaira(totalRevenueKobo)}</div>
-            <div className="ops-stat-label">Total Revenue</div>
+            <div className="ops-stat-label">Gross Revenue</div>
+          </div>
+          <div className="ops-stat-card">
+            <div className="ops-stat-value">{formatNaira(netRevenueKobo)}</div>
+            <div className="ops-stat-label">Net Revenue (after payouts)</div>
+          </div>
+          <div className="ops-stat-card">
+            <div className="ops-stat-value">{formatNaira(outstandingPayoutsKobo)}</div>
+            <div className="ops-stat-label">Outstanding Consignment Payables</div>
           </div>
         </div>
 

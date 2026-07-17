@@ -5,7 +5,10 @@ import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
 import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
-import type { Customer, Vehicle } from "@/types";
+import { ConsignmentPayoutAction } from "@/components/ops/ConsignmentPayoutAction";
+import type { Customer, StaffRole, Vehicle } from "@/types";
+
+const PAYOUT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant"];
 
 export default async function DealerPartnerDetailPage({
   params,
@@ -64,7 +67,7 @@ export default async function DealerPartnerDetailPage({
               </div>
             ) : (
               vehicles.map((v) => (
-                <div className="ops-info-row" key={v.id}>
+                <div className="ops-info-row" key={v.id} style={{ flexWrap: "wrap", gap: 8 }}>
                   <Link href={`/ops/vehicles/${v.id}`} style={{ color: "var(--blue)" }}>
                     {v.year} {v.make} {v.model}
                   </Link>
@@ -72,6 +75,18 @@ export default async function DealerPartnerDetailPage({
                     {v.sale_price_kobo && <span className="ops-info-value">{formatNaira(v.sale_price_kobo)}</span>}
                     <span className={`ops-badge ${stageBadgeClass(v.lifecycle_stage)}`}>{stageLabel(v.lifecycle_stage)}</span>
                   </span>
+                  {v.consignment_payout_kobo != null && (
+                    <span style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "flex-end", fontSize: 13 }}>
+                      <span style={{ color: "var(--muted)" }}>Payout: {formatNaira(v.consignment_payout_kobo)}</span>
+                      {PAYOUT_ROLES.includes(staff.role as StaffRole) ? (
+                        <ConsignmentPayoutAction vehicleId={v.id} paidAt={v.consignment_payout_paid_at} />
+                      ) : (
+                        <span className={`ops-badge ${v.consignment_payout_paid_at ? "ops-badge-green" : "ops-badge-amber"}`}>
+                          {v.consignment_payout_paid_at ? "Paid" : "Unpaid"}
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </div>
               ))
             )}

@@ -315,6 +315,7 @@ export interface Vehicle {
   consignor_customer_id: string | null;
   consignment_commission_pct: number | null;
   consignment_payout_kobo: number | null;
+  consignment_payout_paid_at: string | null;
   trade_in_credit_kobo: number | null;
   trade_in_applied_to_instalment_id: string | null;
   title_verification: TitleVerificationCheck[];

@@ -22,6 +22,7 @@ import {
   Settings,
   History,
   BarChart3,
+  HandCoins,
   LogOut,
   type LucideIcon,
 } from "lucide-react";
@@ -104,6 +105,12 @@ const NAV: { section: string; items: NavItem[] }[] = [
         href: "/ops/reports",
         label: "Business Reports",
         icon: BarChart3,
+        roles: ["super_admin", "managing_partner", "accountant"],
+      },
+      {
+        href: "/ops/reports/consignment-payables",
+        label: "Consignment Payables",
+        icon: HandCoins,
         roles: ["super_admin", "managing_partner", "accountant"],
       },
     ],

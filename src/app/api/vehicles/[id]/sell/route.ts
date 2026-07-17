@@ -50,6 +50,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   // throughout the rest of the app, rather than silently adding a charge on
   // top until staff confirm the correct VAT treatment with their accountant.
   const description = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.vin ? ` (VIN: ${vehicle.vin})` : ""}`;
+  const { data: buyer } = await supabase.from("customers").select("user_id, phone, tin").eq("id", customerId).maybeSingle();
   const { data: invoice } = await supabase
     .from("invoices")
     .insert({
@@ -62,12 +63,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           quantity: 1,
           unit_price_kobo: vehicle.sale_price_kobo,
           amount_kobo: vehicle.sale_price_kobo,
+          // 8703 — Harmonized System code for motor cars/passenger vehicles.
+          hsn_code: "8703",
         },
       ],
       subtotal_kobo: vehicle.sale_price_kobo,
       vat_exempt: true,
       vat_amount_kobo: 0,
       total_kobo: vehicle.sale_price_kobo,
+      customer_tin: buyer?.tin ?? null,
+      invoice_type_code: buyer?.tin ? "B2B" : "B2C",
+      payment_means_code: "ZZZ",
     })
     .select("id")
     .single();
@@ -90,7 +96,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   }
 
-  const { data: buyer } = await supabase.from("customers").select("user_id, phone").eq("id", customerId).maybeSingle();
   await queueNotification({
     recipientId: buyer?.user_id ?? null,
     recipientPhone: buyer?.phone ?? null,

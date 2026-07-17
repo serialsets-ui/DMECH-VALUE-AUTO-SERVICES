@@ -9,6 +9,7 @@ interface LineItemDraft {
   description: string;
   quantity: string;
   unitPriceNaira: string;
+  hsnCode: string;
 }
 
 interface VehicleOption {
@@ -19,19 +20,26 @@ interface VehicleOption {
   sale_price_kobo: number | null;
 }
 
+interface CustomerOption {
+  id: string;
+  full_name: string;
+  tin: string | null;
+}
+
 interface Props {
-  customers: { id: string; full_name: string }[];
+  customers: CustomerOption[];
   vehicles: VehicleOption[];
 }
 
 function emptyItem(): LineItemDraft {
-  return { description: "", quantity: "1", unitPriceNaira: "" };
+  return { description: "", quantity: "1", unitPriceNaira: "", hsnCode: "" };
 }
 
 export function InvoiceCreateForm({ customers, vehicles }: Props) {
   const router = useRouter();
   const [docType, setDocType] = useState<InvoiceDocType>("invoice");
   const [customerId, setCustomerId] = useState("");
+  const [customerTin, setCustomerTin] = useState("");
   const [vehicleId, setVehicleId] = useState("");
   const [vatExempt, setVatExempt] = useState(true);
   const [notes, setNotes] = useState("");
@@ -49,6 +57,14 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
     setItems((prev) => prev.filter((_, idx) => idx !== i));
   }
 
+  // Switching customer refreshes the TIN field from whatever's already on
+  // file for them -- staff can still type/correct it, which (if new)
+  // persists back to the customer record on submit.
+  function selectCustomer(id: string) {
+    setCustomerId(id);
+    setCustomerTin(customers.find((c) => c.id === id)?.tin ?? "");
+  }
+
   // The first line item is reserved for whichever vehicle is selected here
   // (or freeform text if none is) -- any items after it are extras the
   // staff member adds by hand (documentation fee, accessories, etc).
@@ -59,7 +75,8 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
     if (!vehicle) return;
     const description = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
     const priceNaira = vehicle.sale_price_kobo ? String(vehicle.sale_price_kobo / 100) : "";
-    setItems((prev) => [{ description, quantity: "1", unitPriceNaira: priceNaira }, ...prev.slice(1)]);
+    // 8703 — Harmonized System code for motor cars/passenger vehicles.
+    setItems((prev) => [{ description, quantity: "1", unitPriceNaira: priceNaira, hsnCode: "8703" }, ...prev.slice(1)]);
   }
 
   const subtotalKobo = useMemo(
@@ -85,6 +102,7 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
         body: JSON.stringify({
           doc_type: docType,
           customer_id: customerId,
+          customer_tin: customerTin || null,
           vehicle_id: vehicleId || null,
           vat_exempt: vatExempt,
           notes: notes || null,
@@ -94,6 +112,7 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
               description: item.description.trim(),
               quantity: Number(item.quantity) || 0,
               unit_price_kobo: toKobo(Number(item.unitPriceNaira) || 0),
+              hsn_code: item.hsnCode.trim() || null,
             })),
         }),
       });
@@ -127,7 +146,7 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
         </div>
         <div>
           <label className="ops-field-label" htmlFor="inv-customer">Customer</label>
-          <select id="inv-customer" className="ops-input" value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+          <select id="inv-customer" className="ops-input" value={customerId} onChange={(e) => selectCustomer(e.target.value)}>
             <option value="">Select customer</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>{c.full_name}</option>
@@ -135,6 +154,15 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
           </select>
         </div>
       </div>
+
+      <label className="ops-field-label" htmlFor="inv-tin">Customer TIN (optional — makes this a B2B invoice)</label>
+      <input
+        id="inv-tin"
+        className="ops-input"
+        placeholder="e.g. 12345678-0001"
+        value={customerTin}
+        onChange={(e) => setCustomerTin(e.target.value)}
+      />
 
       <label className="ops-field-label" htmlFor="inv-vehicle">Vehicle (optional — for a car sale)</label>
       <select id="inv-vehicle" className="ops-input" value={vehicleId} onChange={(e) => applyVehicle(e.target.value)}>
@@ -153,13 +181,20 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
         Line Items
       </div>
       {items.map((item, i) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 80px 140px 140px auto", gap: 8, marginBottom: 8, alignItems: "center" }}>
+        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 90px 70px 120px 120px auto", gap: 8, marginBottom: 8, alignItems: "center" }}>
           <input
             className="ops-input"
             style={{ marginBottom: 0 }}
             placeholder="Description"
             value={item.description}
             onChange={(e) => updateItem(i, "description", e.target.value)}
+          />
+          <input
+            className="ops-input"
+            style={{ marginBottom: 0 }}
+            placeholder="HSN code"
+            value={item.hsnCode}
+            onChange={(e) => updateItem(i, "hsnCode", e.target.value)}
           />
           <input
             className="ops-input"
@@ -185,6 +220,10 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
           <button type="button" className="ops-logout-btn" onClick={() => removeItem(i)} disabled={items.length === 1}>✕</button>
         </div>
       ))}
+      <p style={{ fontSize: 11, color: "var(--muted)", marginTop: -4, marginBottom: 16 }}>
+        HSN code is optional — common ones: 8703 (motor vehicles), 8708 (vehicle parts). Leave
+        blank for workshop labor or anything without a goods classification.
+      </p>
       <button type="button" className="ops-btn" style={{ background: "var(--card2)", color: "var(--text)", marginBottom: 20 }} onClick={addItem}>
         + Add Line Item
       </button>

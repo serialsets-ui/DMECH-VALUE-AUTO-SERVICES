@@ -48,6 +48,7 @@ const s = StyleSheet.create({
   tableHeaderText: { fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff" },
   tableRow: { flexDirection: "row", paddingVertical: 7, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: "#f0f0f0" },
   colDesc: { flex: 4 },
+  colHsn: { flex: 1, textAlign: "right", color: "#999999" },
   colQty: { flex: 1, textAlign: "right" },
   colPrice: { flex: 2, textAlign: "right" },
   colAmount: { flex: 2, textAlign: "right" },
@@ -102,6 +103,7 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
           <View style={s.billCol}>
             <Text style={s.sectionLabel}>Bill To</Text>
             <Text style={s.clientName}>{customerName ?? "—"}</Text>
+            {invoice.customer_tin && <Text style={s.clientMeta}>TIN: {invoice.customer_tin}</Text>}
           </View>
           <View style={s.billCol}>
             <Text style={s.sectionLabel}>Payment Details</Text>
@@ -113,6 +115,7 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
 
         <View style={s.tableHeader}>
           <Text style={[s.tableHeaderText, s.colDesc]}>Description</Text>
+          <Text style={[s.tableHeaderText, s.colHsn]}>HSN</Text>
           <Text style={[s.tableHeaderText, s.colQty]}>Qty</Text>
           <Text style={[s.tableHeaderText, s.colPrice]}>Unit Price</Text>
           <Text style={[s.tableHeaderText, s.colAmount]}>Amount</Text>
@@ -120,6 +123,7 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
         {invoice.line_items.map((item, i) => (
           <View key={i} style={s.tableRow}>
             <Text style={s.colDesc}>{item.description}</Text>
+            <Text style={s.colHsn}>{item.hsn_code || "—"}</Text>
             <Text style={s.colQty}>{item.quantity}</Text>
             <Text style={s.colPrice}>{fmt(item.unit_price_kobo)}</Text>
             <Text style={s.colAmount}>{fmt(item.amount_kobo)}</Text>
@@ -154,8 +158,21 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
 
         {!isReceipt && (
           <View style={s.mbsNote}>
-            <Text style={s.mbsNoteTitle}>NRS e-Invoice (MBS) — Active July 2027</Text>
-            <Text style={s.mbsNoteBody}>IRN: —   CSID: —   QR: —   Auto-generated once NRS MBS enforcement begins.</Text>
+            {invoice.fetch_transmission_status === "Sent" && invoice.fetch_irn ? (
+              <>
+                <Text style={s.mbsNoteTitle}>NRS e-Invoice (MBS) — Transmitted</Text>
+                <Text style={s.mbsNoteBody}>
+                  IRN: {invoice.fetch_irn}   Type: {invoice.invoice_type_code ?? "—"}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={s.mbsNoteTitle}>NRS e-Invoice (MBS) — Active July 2027</Text>
+                <Text style={s.mbsNoteBody}>
+                  IRN: —   CSID: —   QR: —   Auto-generated once NRS MBS transmission is enabled.
+                </Text>
+              </>
+            )}
           </View>
         )}
 

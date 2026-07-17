@@ -24,7 +24,7 @@ export default async function NewInvoicePage() {
   const [customersRes, vehiclesRes] = await Promise.all([
     supabase
       .from("customers")
-      .select("id, full_name")
+      .select("id, full_name, tin")
       .is("deleted_at", null)
       .neq("type", "dealer_partner")
       .order("full_name"),

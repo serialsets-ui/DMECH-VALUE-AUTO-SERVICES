@@ -42,10 +42,11 @@ export async function POST(request: Request) {
       const description = typeof i.description === "string" ? i.description.trim() : "";
       const quantity = Number(i.quantity);
       const unitPriceKobo = Number(i.unit_price_kobo);
+      const hsnCode = typeof i.hsn_code === "string" && i.hsn_code.trim() ? i.hsn_code.trim() : null;
       if (!description || !Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(unitPriceKobo) || unitPriceKobo < 0) {
         return null;
       }
-      return { description, quantity, unit_price_kobo: unitPriceKobo, amount_kobo: Math.round(quantity * unitPriceKobo) };
+      return { description, quantity, unit_price_kobo: unitPriceKobo, amount_kobo: Math.round(quantity * unitPriceKobo), hsn_code: hsnCode };
     })
     .filter((item: InvoiceLineItem | null): item is InvoiceLineItem => item !== null);
 
@@ -61,6 +62,19 @@ export async function POST(request: Request) {
   const totalKobo = subtotalKobo + vatAmountKobo;
 
   const service = createServiceClient();
+
+  // Customer TIN is captured here (not a separate customer-edit screen) --
+  // whoever is raising the invoice is the one who'd have it. Persist it
+  // back to the customer record for reuse, but snapshot it onto the
+  // invoice itself so a later change to the customer's TIN doesn't alter
+  // an already-issued invoice.
+  const submittedTin = typeof body?.customer_tin === "string" && body.customer_tin.trim() ? body.customer_tin.trim() : null;
+  const { data: customer } = await service.from("customers").select("tin").eq("id", customerId).maybeSingle();
+  const customerTin = submittedTin ?? customer?.tin ?? null;
+  if (submittedTin && !customer?.tin) {
+    await service.from("customers").update({ tin: submittedTin }).eq("id", customerId);
+  }
+
   const { data: invoice, error } = await service
     .from("invoices")
     .insert({
@@ -75,6 +89,9 @@ export async function POST(request: Request) {
       total_kobo: totalKobo,
       notes,
       created_by: staff.id,
+      customer_tin: customerTin,
+      invoice_type_code: customerTin ? "B2B" : "B2C",
+      payment_means_code: "ZZZ",
     })
     .select("id, invoice_number")
     .single();

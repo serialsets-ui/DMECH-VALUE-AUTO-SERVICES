@@ -108,6 +108,7 @@ export interface Customer {
   monthly_income_kobo: number | null;
   guarantor: Guarantor | null;
   company_details: CompanyDetails | null;
+  tin: string | null;
   approval_status: ApprovalStatus;
   approval_tier: 1 | 2 | 3 | 4 | null;
   approved_by: string[];
@@ -554,7 +555,21 @@ export interface InvoiceLineItem {
   quantity: number;
   unit_price_kobo: number;
   amount_kobo: number;
+  // Harmonized System code for the goods/service line -- e.g. "8703" for a
+  // motor vehicle, "8708" for vehicle parts. Optional freeform: workshop
+  // labor and misc lines don't have a real goods HS code.
+  hsn_code?: string | null;
 }
+
+// 'B2B' when the customer has a TIN on file, 'B2C' otherwise -- computed
+// automatically at invoice creation, never a user-facing choice.
+export type InvoiceTypeCode = "B2B" | "B2C";
+
+// UN/EDIFACT transmission status of an Access Point Provider submission
+// (e.g. MAXFRONT's FETCH, same as JUSTRA) -- 'NotSent' until DMECH has a
+// real AP relationship wired up; the transmission client itself isn't
+// built yet, only these tracking columns are.
+export type FetchTransmissionStatus = "NotSent" | "Pending" | "Sent" | "Failed" | "Cancelled";
 
 export interface Invoice {
   id: string;
@@ -574,4 +589,13 @@ export interface Invoice {
   notes: string | null;
   created_by: string | null;
   created_at: string;
+  // Snapshotted at creation, not live-looked-up -- an issued invoice
+  // shouldn't silently change if the customer's TIN is edited later.
+  customer_tin: string | null;
+  invoice_type_code: InvoiceTypeCode | null;
+  payment_means_code: string | null;
+  fetch_invoice_id: string | null;
+  fetch_irn: string | null;
+  fetch_transmission_status: FetchTransmissionStatus;
+  fetch_transmitted_at: string | null;
 }

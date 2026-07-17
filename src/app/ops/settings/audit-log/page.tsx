@@ -33,8 +33,8 @@ export default async function AuditLogPage() {
       <div className="ops-content">
         <p style={{ fontSize: 12, color: "var(--muted)", marginBottom: 14 }}>
           Not every mutation in the app writes here yet — currently covers customer approvals,
-          staff role/access changes, business/platform settings edits, vehicle certification, and
-          vehicle publish toggles. Most recent 200 entries.
+          staff role/access changes, business/platform settings edits, vehicle creation,
+          certification, and publish toggles. Most recent 200 entries.
         </p>
         {entries.length === 0 ? (
           <div className="ops-panel" style={{ color: "var(--muted)", fontSize: 14 }}>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
+import { logAudit } from "@/lib/audit";
 import type { StaffRole, AcquisitionChannel } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
@@ -53,6 +54,14 @@ export async function POST(request: Request) {
   if (error) {
     return NextResponse.json({ error: "Could not create the vehicle." }, { status: 500 });
   }
+
+  await logAudit({
+    userId: staff.id,
+    action: "create",
+    tableName: "vehicles",
+    recordId: data.id,
+    newValue: { make: data.make, model: data.model, year: data.year, acquisition_channel: data.acquisition_channel },
+  });
 
   return NextResponse.json({ vehicle: data });
 }

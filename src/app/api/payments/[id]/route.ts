@@ -58,9 +58,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   let receiptId: string | null = existingReceipt?.id ?? null;
   if (!existingReceipt) {
+    // vehicles!vehicle_id — instalments has two FK paths to vehicles (this
+    // one, plus vehicles.trade_in_applied_to_instalment_id pointing back),
+    // so an unqualified embed returns PostgREST 300 Multiple Choices.
+    // Confirmed live against the schema — the original unqualified version
+    // of this query really does fail this way, not just in theory.
     const { data: instalment } = await supabase
       .from("instalments")
-      .select("vehicle_id, vehicles(make,model,year)")
+      .select("vehicle_id, vehicles!vehicle_id(make,model,year)")
       .eq("id", payment.instalment_id)
       .maybeSingle();
     const vehicleInfo = instalment?.vehicles as unknown as { make: string; model: string; year: number } | null;

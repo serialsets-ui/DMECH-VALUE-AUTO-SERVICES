@@ -30,9 +30,15 @@ export default async function OpsPaymentsPage() {
   if (!staff) redirect("/login");
 
   const supabase = await createClient();
+  // vehicles!vehicle_id — instalments has two FK paths to vehicles (this
+  // one, plus vehicles.trade_in_applied_to_instalment_id pointing back), so
+  // an unqualified embed returns PostgREST 300 Multiple Choices. Confirmed
+  // live: the unqualified version of this query genuinely failed this way —
+  // silently too, since a discarded `data: null` on error just rendered
+  // this whole list as empty rather than erroring visibly.
   const { data } = await supabase
     .from("payments")
-    .select("id, instalment_id, payment_number, amount_kobo, due_date, status, payment_method, customers(full_name), instalments(vehicles(make,model,year))")
+    .select("id, instalment_id, payment_number, amount_kobo, due_date, status, payment_method, customers(full_name), instalments(vehicles!vehicle_id(make,model,year))")
     .order("due_date", { ascending: true });
 
   // Supabase's generic types infer every embed as an array regardless of

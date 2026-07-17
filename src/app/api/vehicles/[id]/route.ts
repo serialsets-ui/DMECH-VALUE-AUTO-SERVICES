@@ -25,6 +25,10 @@ const ALLOWED = [
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
+// Freeform text fields prone to stray leading/trailing whitespace from
+// manual entry -- trimmed at the boundary so it can never reach the DB.
+const TRIM_FIELDS = ["colour", "lot_number"] as const;
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const staff = await staffGuard();
   if (!staff) {
@@ -43,6 +47,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const updates: Record<string, unknown> = {};
   for (const key of ALLOWED) {
     if (key in body) updates[key] = body[key];
+  }
+  for (const key of TRIM_FIELDS) {
+    if (typeof updates[key] === "string") updates[key] = (updates[key] as string).trim();
   }
 
   // service-role: vehicles has no staff UPDATE RLS policy (only SELECT) —

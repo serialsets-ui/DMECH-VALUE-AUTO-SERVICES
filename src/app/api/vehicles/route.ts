@@ -17,6 +17,11 @@ const WRITABLE = [
   "consignor_customer_id", "consignment_commission_pct", "trade_in_credit_kobo",
 ] as const;
 
+// Freeform text fields prone to stray leading/trailing whitespace from
+// manual entry -- trimmed at the boundary so it can never reach the DB,
+// rather than relying on every future intake form to get this right.
+const TRIM_FIELDS = ["make", "model", "vin", "lot_number", "colour", "source_detail"] as const;
+
 // Import-channel vehicles start their lifecycle at 'sourced' (the first
 // stage in LIFECYCLE_STAGES_BY_CHANNEL.import); every other channel starts
 // at 'intake', since those two early stages exist specifically for
@@ -46,6 +51,9 @@ export async function POST(request: Request) {
   };
   for (const key of WRITABLE) {
     if (key in body) insertRow[key] = body[key];
+  }
+  for (const key of TRIM_FIELDS) {
+    if (typeof insertRow[key] === "string") insertRow[key] = (insertRow[key] as string).trim();
   }
 
   const supabase = createServiceClient();

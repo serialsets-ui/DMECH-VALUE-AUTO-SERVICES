@@ -17,6 +17,9 @@ export function BusinessProfileForm({ profile }: { profile: BusinessProfile }) {
   const [rcNumber, setRcNumber] = useState(profile.rc_number ?? "");
   const [vatNumber, setVatNumber] = useState(profile.vat_number ?? "");
   const [address, setAddress] = useState(profile.address ?? "");
+  const [phone, setPhone] = useState(profile.phone ?? "");
+  const [email, setEmail] = useState(profile.email ?? "");
+  const [website, setWebsite] = useState(profile.website ?? "");
   const [bankName, setBankName] = useState(profile.bank_name ?? "");
   const [bankAccountNumber, setBankAccountNumber] = useState(profile.bank_account_number ?? "");
   const [bankAccountName, setBankAccountName] = useState(profile.bank_account_name ?? "");
@@ -34,6 +37,9 @@ export function BusinessProfileForm({ profile }: { profile: BusinessProfile }) {
           rc_number: rcNumber || undefined,
           vat_number: vatNumber || undefined,
           address: address || undefined,
+          phone: phone || undefined,
+          email: email || undefined,
+          website: website || undefined,
           bank_name: bankName || undefined,
           bank_account_number: bankAccountNumber || undefined,
           bank_account_name: bankAccountName || undefined,
@@ -73,6 +79,15 @@ export function BusinessProfileForm({ profile }: { profile: BusinessProfile }) {
 
       <label className="ops-field-label" htmlFor="biz-address">Registered Address</label>
       <textarea id="biz-address" className="ops-input" rows={2} value={address} onChange={(e) => setAddress(e.target.value)} />
+
+      <label className="ops-field-label" htmlFor="biz-phone">Phone (optional)</label>
+      <input id="biz-phone" className="ops-input" value={phone} onChange={(e) => setPhone(e.target.value)} />
+
+      <label className="ops-field-label" htmlFor="biz-email">Email (optional)</label>
+      <input id="biz-email" type="email" className="ops-input" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+      <label className="ops-field-label" htmlFor="biz-website">Website (optional)</label>
+      <input id="biz-website" className="ops-input" placeholder="dmechservices.ng" value={website} onChange={(e) => setWebsite(e.target.value)} />
 
       <label className="ops-field-label" htmlFor="biz-bank-name">Bank Name</label>
       <input id="biz-bank-name" className="ops-input" value={bankName} onChange={(e) => setBankName(e.target.value)} />

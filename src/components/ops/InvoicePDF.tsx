@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
 import { fromKobo } from "@/lib/money";
 import type { BusinessProfile, Invoice } from "@/types";
 
@@ -22,6 +22,14 @@ function fmt(kobo: number): string {
   return `NGN ${Math.round(fromKobo(kobo)).toLocaleString("en-NG")}`;
 }
 
+// Every OTHER piece of text on this document is computed (amounts via
+// fmt() above), but description/notes are freeform staff-typed text --
+// nothing stops someone typing a literal ₦ into a description or note,
+// which hits the exact same broken-glyph problem fmt() exists to avoid.
+function safe(text: string): string {
+  return text.replace(/₦/g, "NGN ");
+}
+
 const s = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: "#111111", padding: 40, backgroundColor: "#ffffff" },
   header: {
@@ -32,7 +40,8 @@ const s = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "#0B2038",
   },
-  headerLeft: { flex: 1 },
+  headerLeft: { flex: 1, flexDirection: "row" },
+  logo: { width: 42, height: 42, marginRight: 10, objectFit: "contain" },
   headerRight: { textAlign: "right" },
   bizName: { fontSize: 15, fontFamily: "Helvetica-Bold", color: "#0B2038", marginBottom: 3 },
   bizMeta: { fontSize: 9, color: "#666666", marginTop: 2 },
@@ -68,13 +77,21 @@ const s = StyleSheet.create({
   footer: { position: "absolute", bottom: 24, left: 40, right: 40, textAlign: "center", fontSize: 8, color: "#bbbbbb", borderTopWidth: 1, borderTopColor: "#e8e8e0", paddingTop: 7 },
 });
 
+interface InvoiceCustomer {
+  full_name: string;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+}
+
 interface Props {
   invoice: Invoice;
   business: BusinessProfile;
-  customerName: string | null;
+  customer: InvoiceCustomer | null;
+  logoDataUri: string | null;
 }
 
-export function InvoicePDF({ invoice, business, customerName }: Props) {
+export function InvoicePDF({ invoice, business, customer, logoDataUri }: Props) {
   const isReceipt = invoice.doc_type === "receipt";
 
   return (
@@ -82,15 +99,25 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View style={s.headerLeft}>
-            <Text style={s.bizName}>{business.legal_name || "DMECH Value Auto Services"}</Text>
-            {business.tin && <Text style={s.bizMeta}>TIN: {business.tin}</Text>}
-            {business.rc_number && <Text style={s.bizMeta}>RC: {business.rc_number}</Text>}
-            {business.address && <Text style={s.bizMeta}>{business.address}</Text>}
-            {business.bank_name && (
-              <Text style={s.bizMeta}>
-                {business.bank_name} · {business.bank_account_number} · {business.bank_account_name}
-              </Text>
-            )}
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer's Image is a PDF drawing primitive, not a DOM <img>; it has no alt prop. */}
+            {logoDataUri && <Image src={logoDataUri} style={s.logo} />}
+            <View>
+              <Text style={s.bizName}>{business.legal_name || "DMECH Value Auto Services"}</Text>
+              {business.tin && <Text style={s.bizMeta}>TIN: {business.tin}</Text>}
+              {business.rc_number && <Text style={s.bizMeta}>RC: {business.rc_number}</Text>}
+              {business.address && <Text style={s.bizMeta}>{business.address}</Text>}
+              {(business.phone || business.email) && (
+                <Text style={s.bizMeta}>
+                  {[business.phone, business.email].filter(Boolean).join(" · ")}
+                </Text>
+              )}
+              {business.website && <Text style={s.bizMeta}>{business.website}</Text>}
+              {business.bank_name && (
+                <Text style={s.bizMeta}>
+                  {business.bank_name} · {business.bank_account_number} · {business.bank_account_name}
+                </Text>
+              )}
+            </View>
           </View>
           <View style={s.headerRight}>
             <Text style={s.docType}>{isReceipt ? "RECEIPT" : "INVOICE"}</Text>
@@ -102,8 +129,11 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
         <View style={s.billRow}>
           <View style={s.billCol}>
             <Text style={s.sectionLabel}>Bill To</Text>
-            <Text style={s.clientName}>{customerName ?? "—"}</Text>
+            <Text style={s.clientName}>{customer?.full_name ?? "—"}</Text>
             {invoice.customer_tin && <Text style={s.clientMeta}>TIN: {invoice.customer_tin}</Text>}
+            {customer?.phone && <Text style={s.clientMeta}>{customer.phone}</Text>}
+            {customer?.email && <Text style={s.clientMeta}>{customer.email}</Text>}
+            {customer?.address && <Text style={s.clientMeta}>{customer.address}</Text>}
           </View>
           <View style={s.billCol}>
             <Text style={s.sectionLabel}>Payment Details</Text>
@@ -122,7 +152,7 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
         </View>
         {invoice.line_items.map((item, i) => (
           <View key={i} style={s.tableRow}>
-            <Text style={s.colDesc}>{item.description}</Text>
+            <Text style={s.colDesc}>{safe(item.description)}</Text>
             <Text style={s.colHsn}>{item.hsn_code || "—"}</Text>
             <Text style={s.colQty}>{item.quantity}</Text>
             <Text style={s.colPrice}>{fmt(item.unit_price_kobo)}</Text>
@@ -152,7 +182,7 @@ export function InvoicePDF({ invoice, business, customerName }: Props) {
         {invoice.notes && (
           <View style={s.notes}>
             <Text style={s.notesLabel}>Notes</Text>
-            <Text>{invoice.notes}</Text>
+            <Text>{safe(invoice.notes)}</Text>
           </View>
         )}
 

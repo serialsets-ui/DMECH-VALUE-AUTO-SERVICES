@@ -524,6 +524,9 @@ export interface BusinessProfile {
   rc_number?: string;
   vat_number?: string;
   address?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
   bank_name?: string;
   bank_account_number?: string;
   bank_account_name?: string;

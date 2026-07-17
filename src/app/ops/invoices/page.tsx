@@ -1,8 +1,20 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import type { StaffRole } from "@/types";
+
+const EDIT_ROLES: StaffRole[] = [
+  "super_admin",
+  "managing_partner",
+  "sales_manager",
+  "sales_rep",
+  "ops_manager",
+  "workshop_lead",
+  "accountant",
+];
 
 interface InvoiceRow {
   id: string;
@@ -30,11 +42,21 @@ export default async function OpsInvoicesPage() {
 
   return (
     <>
-      <TopBar title="Invoices" />
+      <TopBar
+        title="Invoices"
+        actions={
+          EDIT_ROLES.includes(staff.role as StaffRole) ? (
+            <Link href="/ops/invoices/new" className="ops-btn" style={{ textDecoration: "none" }}>
+              + New Invoice
+            </Link>
+          ) : undefined
+        }
+      />
       <div className="ops-content">
         {invoices.length === 0 ? (
           <div className="ops-panel" style={{ color: "var(--muted)", fontSize: 14 }}>
-            No invoices yet — one is generated automatically each time a vehicle sale is recorded.
+            No invoices yet — one is generated automatically for every vehicle sale and payment
+            received, or create one directly above for a car sale, workshop job, or parts order.
           </div>
         ) : (
           <div className="ops-table-wrap">

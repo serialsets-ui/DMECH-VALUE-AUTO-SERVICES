@@ -563,6 +563,10 @@ export interface Invoice {
   customer_id: string | null;
   instalment_id: string | null;
   payment_id: string | null;
+  // Self-FK: set on a receipt to point back at the manually-created invoice
+  // it settles (the "Mark Paid" flow) -- null for every other receipt,
+  // which link via payment_id/instalment_id instead.
+  related_invoice_id: string | null;
   issue_date: string;
   line_items: InvoiceLineItem[];
   subtotal_kobo: number;

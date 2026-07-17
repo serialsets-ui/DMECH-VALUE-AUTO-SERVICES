@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
   const supabase = createServiceClient();
 
-  const { data: vehicle } = await supabase.from("vehicles").select("sale_price_kobo").eq("id", vehicleId).maybeSingle();
+  const { data: vehicle } = await supabase.from("vehicles").select("make, model, year, vin, sale_price_kobo").eq("id", vehicleId).maybeSingle();
   if (!vehicle?.sale_price_kobo) {
     return NextResponse.json({ error: "This vehicle has no sale price set yet." }, { status: 400 });
   }
@@ -95,5 +95,33 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ instalment });
+  // Deposit receipt -- distinguished from a regular instalment-payment
+  // receipt by having instalment_id set but payment_id null (there's no
+  // `payments` row for a deposit, it's collected at intake, not scheduled).
+  let depositReceiptId: string | null = null;
+  if (depositPaid && depositAmountKobo > 0) {
+    const description = `Deposit — ${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.vin ? ` (VIN: ${vehicle.vin})` : ""}`;
+    const { data: customer } = await supabase.from("customers").select("tin").eq("id", customerId).maybeSingle();
+    const { data: receipt } = await supabase
+      .from("invoices")
+      .insert({
+        doc_type: "receipt",
+        vehicle_id: vehicleId,
+        customer_id: customerId,
+        instalment_id: instalment.id,
+        line_items: [{ description, quantity: 1, unit_price_kobo: depositAmountKobo, amount_kobo: depositAmountKobo }],
+        subtotal_kobo: depositAmountKobo,
+        vat_exempt: true,
+        vat_amount_kobo: 0,
+        total_kobo: depositAmountKobo,
+        customer_tin: customer?.tin ?? null,
+        invoice_type_code: customer?.tin ? "B2B" : "B2C",
+        payment_means_code: "ZZZ",
+      })
+      .select("id")
+      .single();
+    depositReceiptId = receipt?.id ?? null;
+  }
+
+  return NextResponse.json({ instalment, depositReceiptId });
 }

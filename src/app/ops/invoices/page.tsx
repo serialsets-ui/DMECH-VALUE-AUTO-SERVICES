@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
+import { MarkInvoicePaidAction } from "@/components/ops/MarkInvoicePaidAction";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
@@ -22,6 +23,7 @@ interface InvoiceRow {
   invoice_number: string;
   issue_date: string;
   total_kobo: number;
+  related_invoice_id: string | null;
   vehicles: { make: string; model: string; year: number } | null;
   customers: { full_name: string } | null;
 }
@@ -33,12 +35,18 @@ export default async function OpsInvoicesPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("invoices")
-    .select("id, doc_type, invoice_number, issue_date, total_kobo, vehicles(make,model,year), customers(full_name)")
+    .select("id, doc_type, invoice_number, issue_date, total_kobo, related_invoice_id, vehicles(make,model,year), customers(full_name)")
     .order("created_at", { ascending: false });
 
   // Supabase's generic types infer every embed as an array regardless of
   // cardinality — both FKs here are many-to-one, so cast to the real shape.
   const invoices = (data ?? []) as unknown as InvoiceRow[];
+  const canManage = EDIT_ROLES.includes(staff.role as StaffRole);
+  // Which invoice ids already have a receipt generated against them, so the
+  // "Mark Paid" action only shows for ones that don't yet.
+  const receiptIdByInvoiceId = new Map(
+    invoices.filter((inv) => inv.related_invoice_id).map((inv) => [inv.related_invoice_id as string, inv.id]),
+  );
 
   return (
     <>
@@ -69,25 +77,42 @@ export default async function OpsInvoicesPage() {
                   <th>Customer</th>
                   <th>Amount</th>
                   <th>Date</th>
+                  <th>Status</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {invoices.map((inv) => (
-                  <tr key={inv.id}>
-                    <td>{inv.invoice_number}</td>
-                    <td style={{ textTransform: "capitalize" }}>{inv.doc_type}</td>
-                    <td>{inv.vehicles ? `${inv.vehicles.year} ${inv.vehicles.make} ${inv.vehicles.model}` : "—"}</td>
-                    <td>{inv.customers?.full_name ?? "—"}</td>
-                    <td>{formatNaira(inv.total_kobo)}</td>
-                    <td>{new Date(inv.issue_date).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}</td>
-                    <td>
-                      <a href={`/api/invoices/${inv.id}/pdf`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)" }}>
-                        View PDF →
-                      </a>
-                    </td>
-                  </tr>
-                ))}
+                {invoices.map((inv) => {
+                  const receiptId = receiptIdByInvoiceId.get(inv.id) ?? null;
+                  return (
+                    <tr key={inv.id}>
+                      <td>{inv.invoice_number}</td>
+                      <td style={{ textTransform: "capitalize" }}>{inv.doc_type}</td>
+                      <td>{inv.vehicles ? `${inv.vehicles.year} ${inv.vehicles.make} ${inv.vehicles.model}` : "—"}</td>
+                      <td>{inv.customers?.full_name ?? "—"}</td>
+                      <td>{formatNaira(inv.total_kobo)}</td>
+                      <td>{new Date(inv.issue_date).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}</td>
+                      <td>
+                        {inv.doc_type === "receipt" ? (
+                          <span className="ops-badge ops-badge-green">Paid</span>
+                        ) : receiptId ? (
+                          <a href={`/api/invoices/${receiptId}/pdf`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)" }}>
+                            <span className="ops-badge ops-badge-green">Paid</span>
+                          </a>
+                        ) : canManage ? (
+                          <MarkInvoicePaidAction invoiceId={inv.id} />
+                        ) : (
+                          <span className="ops-badge ops-badge-amber">Unpaid</span>
+                        )}
+                      </td>
+                      <td>
+                        <a href={`/api/invoices/${inv.id}/pdf`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)" }}>
+                          View PDF →
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

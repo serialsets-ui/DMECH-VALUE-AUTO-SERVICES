@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { InstalmentEditForm } from "@/components/ops/InstalmentEditForm";
@@ -24,7 +25,7 @@ export default async function InstalmentDetailPage({
 
   const { id } = await params;
   const supabase = await createClient();
-  const [instalmentRes, paymentsRes] = await Promise.all([
+  const [instalmentRes, paymentsRes, depositReceiptRes] = await Promise.all([
     supabase
       .from("instalments")
       // vehicles!vehicle_id — see the list page's comment on the same join.
@@ -32,11 +33,15 @@ export default async function InstalmentDetailPage({
       .eq("id", id)
       .maybeSingle(),
     supabase.from("payments").select("*").eq("instalment_id", id).order("payment_number"),
+    // payment_id null distinguishes the deposit receipt from a regular
+    // instalment-payment receipt, which always has payment_id set.
+    supabase.from("invoices").select("id").eq("instalment_id", id).is("payment_id", null).eq("doc_type", "receipt").maybeSingle(),
   ]);
 
   if (!instalmentRes.data) notFound();
   const instalment = instalmentRes.data as InstalmentWithJoins;
   const payments = (paymentsRes.data as Payment[] | null) ?? [];
+  const depositReceiptId = depositReceiptRes.data?.id ?? null;
   const canEdit = EDIT_ROLES.includes(staff.role as StaffRole);
 
   return (
@@ -72,9 +77,14 @@ export default async function InstalmentDetailPage({
             </div>
             <div className="ops-info-row">
               <span className="ops-info-label">Deposit</span>
-              <span className="ops-info-value">
+              <span className="ops-info-value" style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 {instalment.deposit_pct ? `${instalment.deposit_pct}%` : "—"}
                 {instalment.deposit_amount_kobo ? ` (${formatNaira(instalment.deposit_amount_kobo)})` : ""}
+                {depositReceiptId && (
+                  <Link href={`/api/invoices/${depositReceiptId}/pdf`} target="_blank" style={{ color: "var(--blue)", fontSize: 12 }}>
+                    Receipt →
+                  </Link>
+                )}
               </span>
             </div>
             <div className="ops-info-row">

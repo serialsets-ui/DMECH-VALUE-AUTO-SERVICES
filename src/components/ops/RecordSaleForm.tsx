@@ -14,9 +14,11 @@ interface Props {
 export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationStatus, customers }: Props) {
   const router = useRouter();
   const [customerId, setCustomerId] = useState("");
+  const [paidInFull, setPaidInFull] = useState(false);
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
 
   async function recordSale() {
     setStatus("saving");
@@ -25,7 +27,7 @@ export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationSta
       const res = await fetch(`/api/vehicles/${vehicleId}/sell`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: customerId }),
+        body: JSON.stringify({ customer_id: customerId, paid_in_full: paidInFull }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -34,6 +36,7 @@ export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationSta
         return;
       }
       if (json.invoiceId) setInvoiceUrl(`/api/invoices/${json.invoiceId}/pdf`);
+      if (json.receiptId) setReceiptUrl(`/api/invoices/${json.receiptId}/pdf`);
       router.refresh();
     } catch {
       setError("Something went wrong.");
@@ -58,17 +61,29 @@ export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationSta
         ))}
       </select>
 
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, fontSize: 13.5, color: "var(--text)" }}>
+        <input type="checkbox" checked={paidInFull} onChange={(e) => setPaidInFull(e.target.checked)} />
+        Customer paid in full at this time — also generate a receipt
+      </label>
+
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button className="ops-btn" onClick={recordSale} disabled={status === "saving" || !customerId}>
           {status === "saving" ? "Recording..." : "Mark as Sold"}
         </button>
         {error && <span style={{ color: "var(--red)", fontSize: 12 }}>{error}</span>}
       </div>
-      {invoiceUrl && (
-        <div style={{ marginTop: 12 }}>
-          <a className="ops-btn" style={{ display: "inline-block", textDecoration: "none" }} href={invoiceUrl} target="_blank" rel="noopener noreferrer">
-            Download Sale Invoice (PDF)
-          </a>
+      {(invoiceUrl || receiptUrl) && (
+        <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
+          {invoiceUrl && (
+            <a className="ops-btn" style={{ display: "inline-block", textDecoration: "none" }} href={invoiceUrl} target="_blank" rel="noopener noreferrer">
+              Download Sale Invoice (PDF)
+            </a>
+          )}
+          {receiptUrl && (
+            <a className="ops-btn" style={{ display: "inline-block", textDecoration: "none", background: "var(--green-d)", color: "var(--green)" }} href={receiptUrl} target="_blank" rel="noopener noreferrer">
+              Download Receipt (PDF)
+            </a>
+          )}
         </div>
       )}
     </div>

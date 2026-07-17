@@ -98,7 +98,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     recipientPhone: customer?.phone ?? null,
     channel: "sms",
     template: "payment_received",
-    payload: { amount: formatNaira(amountPaidKobo), paymentNumber: payment.payment_number, status },
+    payload: { amount: formatNaira(amountPaidKobo), paymentNumber: payment.payment_number, status, receiptId },
   });
 
   return NextResponse.json({ payment: updated, receiptId });

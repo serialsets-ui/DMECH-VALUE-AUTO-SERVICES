@@ -18,6 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const { id } = await params;
   const body = await request.json().catch(() => null);
   const customerId = typeof body?.customer_id === "string" ? body.customer_id : "";
+  const paidInFull = body?.paid_in_full === true;
   if (!customerId) {
     return NextResponse.json({ error: "Select the buyer before recording the sale." }, { status: 400 });
   }
@@ -78,6 +79,41 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     .select("id")
     .single();
 
+  // Paid-in-full at the point of sale (a cash buyer, not instalment
+  // financing) gets its own receipt alongside the invoice -- the invoice
+  // documents what was billed, the receipt confirms it was actually paid.
+  // related_invoice_id links it back so the invoice list can show "Paid".
+  let receiptId: string | null = null;
+  if (paidInFull && invoice?.id) {
+    const { data: receipt } = await supabase
+      .from("invoices")
+      .insert({
+        doc_type: "receipt",
+        vehicle_id: id,
+        customer_id: customerId,
+        related_invoice_id: invoice.id,
+        line_items: [
+          {
+            description,
+            quantity: 1,
+            unit_price_kobo: vehicle.sale_price_kobo,
+            amount_kobo: vehicle.sale_price_kobo,
+            hsn_code: "8703",
+          },
+        ],
+        subtotal_kobo: vehicle.sale_price_kobo,
+        vat_exempt: true,
+        vat_amount_kobo: 0,
+        total_kobo: vehicle.sale_price_kobo,
+        customer_tin: buyer?.tin ?? null,
+        invoice_type_code: buyer?.tin ? "B2B" : "B2C",
+        payment_means_code: "ZZZ",
+      })
+      .select("id")
+      .single();
+    receiptId = receipt?.id ?? null;
+  }
+
   if (vehicle.certification_status === "certified") {
     const { data: policy } = await supabase
       .from("warranty_policies")
@@ -101,12 +137,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     recipientPhone: buyer?.phone ?? null,
     channel: "email",
     template: "sale_confirmed",
-    payload: { vehicleDescription: description, invoiceId: invoice?.id ?? null },
+    payload: { vehicleDescription: description, invoiceId: invoice?.id ?? null, receiptId },
   });
 
   return NextResponse.json({
     ok: true,
     consignmentPayoutKobo: updates.consignment_payout_kobo ?? null,
     invoiceId: invoice?.id ?? null,
+    receiptId,
   });
 }

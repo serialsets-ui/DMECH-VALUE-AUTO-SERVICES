@@ -40,10 +40,11 @@ const s = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "#0B2038",
   },
-  headerLeft: { flex: 1, flexDirection: "row" },
-  logo: { width: 42, height: 42, marginRight: 10, objectFit: "contain" },
+  headerLeft: { flex: 1 },
+  // 718x190 source — fixed height keeps the wordmark crisp instead of
+  // relying on objectFit to shrink-and-center it inside a square box.
+  logo: { width: 170, height: 45, marginBottom: 8 },
   headerRight: { textAlign: "right" },
-  bizName: { fontSize: 15, fontFamily: "Helvetica-Bold", color: "#0B2038", marginBottom: 3 },
   bizMeta: { fontSize: 9, color: "#666666", marginTop: 2 },
   docType: { fontSize: 20, fontFamily: "Helvetica-Bold", color: "#1899E7" },
   docNumber: { fontSize: 12, fontFamily: "Helvetica-Bold", color: "#0B2038", marginTop: 3 },
@@ -101,23 +102,20 @@ export function InvoicePDF({ invoice, business, customer, logoDataUri }: Props) 
           <View style={s.headerLeft}>
             {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer's Image is a PDF drawing primitive, not a DOM <img>; it has no alt prop. */}
             {logoDataUri && <Image src={logoDataUri} style={s.logo} />}
-            <View>
-              <Text style={s.bizName}>{business.legal_name || "DMECH Value Auto Services"}</Text>
-              {business.tin && <Text style={s.bizMeta}>TIN: {business.tin}</Text>}
-              {business.rc_number && <Text style={s.bizMeta}>RC: {business.rc_number}</Text>}
-              {business.address && <Text style={s.bizMeta}>{business.address}</Text>}
-              {(business.phone || business.email) && (
-                <Text style={s.bizMeta}>
-                  {[business.phone, business.email].filter(Boolean).join(" · ")}
-                </Text>
-              )}
-              {business.website && <Text style={s.bizMeta}>{business.website}</Text>}
-              {business.bank_name && (
-                <Text style={s.bizMeta}>
-                  {business.bank_name} · {business.bank_account_number} · {business.bank_account_name}
-                </Text>
-              )}
-            </View>
+            {business.tin && <Text style={s.bizMeta}>TIN: {business.tin}</Text>}
+            {business.rc_number && <Text style={s.bizMeta}>RC: {business.rc_number}</Text>}
+            {business.address && <Text style={s.bizMeta}>{business.address}</Text>}
+            {(business.phone || business.email) && (
+              <Text style={s.bizMeta}>
+                {[business.phone, business.email].filter(Boolean).join(" · ")}
+              </Text>
+            )}
+            {business.website && <Text style={s.bizMeta}>{business.website}</Text>}
+            {business.bank_name && (
+              <Text style={s.bizMeta}>
+                {business.bank_name} · {business.bank_account_number} · {business.bank_account_name}
+              </Text>
+            )}
           </View>
           <View style={s.headerRight}>
             <Text style={s.docType}>{isReceipt ? "RECEIPT" : "INVOICE"}</Text>

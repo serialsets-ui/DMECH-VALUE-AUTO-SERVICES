@@ -58,6 +58,7 @@ export default async function VehicleDetailPage({
       .from("customers")
       .select("id, full_name")
       .is("deleted_at", null)
+      .neq("type", "dealer_partner")
       .order("full_name");
     saleCustomers = customerRows ?? [];
   }

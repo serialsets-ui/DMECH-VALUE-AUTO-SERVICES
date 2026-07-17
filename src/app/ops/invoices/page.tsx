@@ -35,6 +35,7 @@ interface InvoiceRow {
   payment_method: PaymentMethod | null;
   paid_date: string | null;
   voided_at: string | null;
+  fetch_transmission_status: string;
   vehicles: { make: string; model: string; year: number } | null;
   customers: { full_name: string } | null;
 }
@@ -47,7 +48,7 @@ export default async function OpsInvoicesPage() {
   const { data } = await supabase
     .from("invoices")
     .select(
-      "id, doc_type, invoice_number, issue_date, total_kobo, related_invoice_id, payment_method, paid_date, voided_at, vehicles(make,model,year), customers(full_name)",
+      "id, doc_type, invoice_number, issue_date, total_kobo, related_invoice_id, payment_method, paid_date, voided_at, fetch_transmission_status, vehicles(make,model,year), customers(full_name)",
     )
     .order("created_at", { ascending: false });
 
@@ -100,7 +101,9 @@ export default async function OpsInvoicesPage() {
               <tbody>
                 {invoices.map((inv) => {
                   const receipt = receiptByInvoiceId.get(inv.id) ?? null;
-                  const isEditable = inv.doc_type === "invoice" && !inv.voided_at && !receipt;
+                  // Editable up until NRS transmission, not just until
+                  // payment -- see api/invoices/[id]/route.ts's comment.
+                  const isEditable = inv.doc_type === "invoice" && !inv.voided_at && inv.fetch_transmission_status !== "Sent";
                   return (
                     <tr key={inv.id} style={inv.voided_at ? { opacity: 0.55 } : undefined}>
                       <td>{inv.invoice_number}</td>

@@ -24,9 +24,8 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
   const { id } = await params;
   const supabase = await createClient();
 
-  const [invoiceRes, receiptRes, customersRes, vehiclesRes] = await Promise.all([
+  const [invoiceRes, customersRes, vehiclesRes] = await Promise.all([
     supabase.from("invoices").select("*").eq("id", id).maybeSingle(),
-    supabase.from("invoices").select("id").eq("related_invoice_id", id).maybeSingle(),
     supabase
       .from("customers")
       .select("id, full_name, tin")
@@ -44,9 +43,9 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
   if (!invoiceRes.data) notFound();
   const invoice = invoiceRes.data as Invoice;
 
-  // Only an unpaid, unvoided invoice is editable -- see api/invoices/[id]/route.ts's
-  // comment for why (a receipt already copied this row's totals at Mark Paid time).
-  if (invoice.doc_type !== "invoice" || invoice.voided_at || receiptRes.data) {
+  // Editable up until NRS transmission, not just until payment -- see
+  // api/invoices/[id]/route.ts's comment for why.
+  if (invoice.doc_type !== "invoice" || invoice.voided_at || invoice.fetch_transmission_status === "Sent") {
     redirect("/ops/invoices");
   }
 

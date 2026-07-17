@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AcquisitionChannel, CertificationStatus } from "@/types";
+import type { AcquisitionChannel, CertificationStatus, PaymentMethod } from "@/types";
 
 interface Props {
   vehicleId: string;
@@ -15,6 +15,7 @@ export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationSta
   const router = useRouter();
   const [customerId, setCustomerId] = useState("");
   const [paidInFull, setPaidInFull] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
@@ -27,7 +28,11 @@ export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationSta
       const res = await fetch(`/api/vehicles/${vehicleId}/sell`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: customerId, paid_in_full: paidInFull }),
+        body: JSON.stringify({
+          customer_id: customerId,
+          paid_in_full: paidInFull,
+          payment_method: paidInFull ? paymentMethod : null,
+        }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -61,10 +66,26 @@ export function RecordSaleForm({ vehicleId, acquisitionChannel, certificationSta
         ))}
       </select>
 
-      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, fontSize: 13.5, color: "var(--text)" }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: paidInFull ? 8 : 16, fontSize: 13.5, color: "var(--text)" }}>
         <input type="checkbox" checked={paidInFull} onChange={(e) => setPaidInFull(e.target.checked)} />
         Customer paid in full at this time — also generate a receipt
       </label>
+      {paidInFull && (
+        <>
+          <label className="ops-field-label" htmlFor="sale-payment-method">Payment Method</label>
+          <select
+            id="sale-payment-method"
+            className="ops-input"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+          >
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="paystack">Paystack</option>
+            <option value="pos">POS</option>
+            <option value="cash">Cash</option>
+          </select>
+        </>
+      )}
 
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button className="ops-btn" onClick={recordSale} disabled={status === "saving" || !customerId}>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
-import type { InstalmentPlanType, StaffRole } from "@/types";
+import type { InstalmentPlanType, PaymentMethod, StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant", "sales_manager"];
 
@@ -26,6 +26,9 @@ export async function POST(request: Request) {
   const tenorMonths = Math.round(Number(body?.tenor_months));
   const adminFeePct = body?.admin_fee_pct != null ? Number(body.admin_fee_pct) : null;
   const depositPaid = Boolean(body?.deposit_paid);
+  const depositPaymentMethod: PaymentMethod | null = ["bank_transfer", "paystack", "pos", "cash"].includes(body?.deposit_payment_method)
+    ? body.deposit_payment_method
+    : null;
 
   if (!vehicleId || !customerId || !depositPct || !tenorMonths || tenorMonths < 1) {
     return NextResponse.json(
@@ -117,6 +120,8 @@ export async function POST(request: Request) {
         customer_tin: customer?.tin ?? null,
         invoice_type_code: customer?.tin ? "B2B" : "B2C",
         payment_means_code: "ZZZ",
+        payment_method: depositPaymentMethod,
+        paid_date: new Date().toISOString().slice(0, 10),
       })
       .select("id")
       .single();

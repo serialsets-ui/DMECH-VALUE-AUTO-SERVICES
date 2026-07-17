@@ -24,7 +24,8 @@ export function PaymentSchedule({ payments, canEdit }: { payments: Payment[]; ca
 
   function openRow(p: Payment) {
     setOpenId(p.id);
-    setAmount(String(Math.round(fromKobo(p.amount_kobo))));
+    const remainingKobo = p.amount_kobo - (p.amount_paid_kobo ?? 0);
+    setAmount(String(Math.round(fromKobo(Math.max(remainingKobo, 0)))));
     setMethod("bank_transfer");
     setPaidDate(new Date().toISOString().slice(0, 10));
     setStatus("idle");
@@ -39,7 +40,7 @@ export function PaymentSchedule({ payments, canEdit }: { payments: Payment[]; ca
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount_paid_kobo: toKobo(parseFloat(amount)),
+          amount_received_kobo: toKobo(parseFloat(amount)),
           payment_method: method,
           paid_date: paidDate,
         }),
@@ -72,6 +73,7 @@ export function PaymentSchedule({ payments, canEdit }: { payments: Payment[]; ca
           <div className="ops-info-row" style={{ border: "none" }}>
             <span className="ops-info-label">
               #{p.payment_number ?? "—"} · Due {new Date(p.due_date).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}
+              {p.status === "partial" && p.amount_paid_kobo ? ` · ${formatNaira(p.amount_paid_kobo)} received so far` : ""}
             </span>
             <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span className="ops-info-value">{formatNaira(p.amount_kobo)}</span>
@@ -93,7 +95,7 @@ export function PaymentSchedule({ payments, canEdit }: { payments: Payment[]; ca
             <div style={{ padding: "0 0 14px" }}>
               <div className="ops-form-grid">
                 <div>
-                  <label className="ops-field-label" htmlFor={`pay-amt-${p.id}`}>Amount Received (₦)</label>
+                  <label className="ops-field-label" htmlFor={`pay-amt-${p.id}`}>Amount Received Now (₦)</label>
                   <input
                     id={`pay-amt-${p.id}`}
                     className="ops-input"

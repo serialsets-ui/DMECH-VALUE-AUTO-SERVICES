@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import { logAudit } from "@/lib/audit";
-import type { StaffRole } from "@/types";
+import type { PaymentMethod, StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = [
   "super_admin",
@@ -19,7 +19,7 @@ const EDIT_ROLES: StaffRole[] = [
 // payment" split used at Record Sale and Instalment Intake, just for the
 // one creation path that has no vehicle-sale/payment-schedule row to hang
 // this off of.
-export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const staff = await staffGuard();
   if (!staff) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
@@ -27,6 +27,12 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   if (!EDIT_ROLES.includes(staff.role as StaffRole)) {
     return NextResponse.json({ error: "Not permitted to mark invoices paid." }, { status: 403 });
   }
+
+  const body = await request.json().catch(() => null);
+  const paymentMethod: PaymentMethod | null = ["bank_transfer", "paystack", "pos", "cash"].includes(body?.payment_method)
+    ? body.payment_method
+    : null;
+  const paidDate = typeof body?.paid_date === "string" && body.paid_date ? body.paid_date : new Date().toISOString().slice(0, 10);
 
   const { id } = await params;
   const service = createServiceClient();
@@ -64,6 +70,8 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       customer_tin: invoice.customer_tin,
       invoice_type_code: invoice.invoice_type_code,
       payment_means_code: invoice.payment_means_code,
+      payment_method: paymentMethod,
+      paid_date: paidDate,
     })
     .select("id")
     .single();

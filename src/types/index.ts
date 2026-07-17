@@ -567,6 +567,11 @@ export interface Invoice {
   // it settles (the "Mark Paid" flow) -- null for every other receipt,
   // which link via payment_id/instalment_id instead.
   related_invoice_id: string | null;
+  // How/when this specific receipt's money was actually received --
+  // denormalized here (not just derived from `payments`) since deposits,
+  // cash sales, and manually-marked-paid invoices have no payments row.
+  payment_method: PaymentMethod | null;
+  paid_date: string | null;
   issue_date: string;
   line_items: InvoiceLineItem[];
   subtotal_kobo: number;

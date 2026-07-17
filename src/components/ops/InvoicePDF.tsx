@@ -1,6 +1,13 @@
 import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
 import { fromKobo } from "@/lib/money";
-import type { BusinessProfile, Invoice } from "@/types";
+import type { BusinessProfile, Invoice, PaymentMethod } from "@/types";
+
+const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  bank_transfer: "Bank Transfer",
+  paystack: "Paystack",
+  pos: "POS",
+  cash: "Cash",
+};
 
 // Adapted from JUSTRA's InvoicePDF.tsx (a sibling project with a proven,
 // real-world invoice/receipt PDF renderer) — dropped WHT (withholding tax
@@ -134,10 +141,19 @@ export function InvoicePDF({ invoice, business, customer, logoDataUri }: Props) 
             {customer?.address && <Text style={s.clientMeta}>{customer.address}</Text>}
           </View>
           <View style={s.billCol}>
-            <Text style={s.sectionLabel}>Payment Details</Text>
-            {business.bank_name && <Text style={s.clientName}>{business.bank_name}</Text>}
-            {business.bank_account_number && <Text style={s.clientMeta}>Acc: {business.bank_account_number}</Text>}
-            {business.bank_account_name && <Text style={s.clientMeta}>{business.bank_account_name}</Text>}
+            <Text style={s.sectionLabel}>{isReceipt ? "Payment Received" : "Payment Details"}</Text>
+            {isReceipt ? (
+              <>
+                <Text style={s.clientName}>{invoice.payment_method ? PAYMENT_METHOD_LABEL[invoice.payment_method] : "—"}</Text>
+                {invoice.paid_date && <Text style={s.clientMeta}>Paid: {invoice.paid_date}</Text>}
+              </>
+            ) : (
+              <>
+                {business.bank_name && <Text style={s.clientName}>{business.bank_name}</Text>}
+                {business.bank_account_number && <Text style={s.clientMeta}>Acc: {business.bank_account_number}</Text>}
+                {business.bank_account_name && <Text style={s.clientMeta}>{business.bank_account_name}</Text>}
+              </>
+            )}
           </View>
         </View>
 

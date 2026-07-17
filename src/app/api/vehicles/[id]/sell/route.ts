@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { staffGuard } from "@/lib/guards";
 import { queueNotification } from "@/lib/notifications";
-import type { StaffRole } from "@/types";
+import type { PaymentMethod, StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "sales_manager"];
 
@@ -19,6 +19,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const body = await request.json().catch(() => null);
   const customerId = typeof body?.customer_id === "string" ? body.customer_id : "";
   const paidInFull = body?.paid_in_full === true;
+  const paymentMethod: PaymentMethod | null = ["bank_transfer", "paystack", "pos", "cash"].includes(body?.payment_method)
+    ? body.payment_method
+    : null;
   if (!customerId) {
     return NextResponse.json({ error: "Select the buyer before recording the sale." }, { status: 400 });
   }
@@ -108,6 +111,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         customer_tin: buyer?.tin ?? null,
         invoice_type_code: buyer?.tin ? "B2B" : "B2C",
         payment_means_code: "ZZZ",
+        payment_method: paymentMethod,
+        paid_date: new Date().toISOString().slice(0, 10),
       })
       .select("id")
       .single();

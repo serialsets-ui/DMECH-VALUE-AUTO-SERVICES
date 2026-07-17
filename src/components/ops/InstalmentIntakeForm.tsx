@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatNaira } from "@/lib/money";
-import type { InstalmentPlanType } from "@/types";
+import type { InstalmentPlanType, PaymentMethod } from "@/types";
 
 interface VehicleOption {
   id: string;
@@ -30,6 +30,7 @@ export function InstalmentIntakeForm({ customers, vehicles, defaultDepositPct, d
   const [tenorMonths, setTenorMonths] = useState(String(defaultTenorMonths));
   const [adminFeePct, setAdminFeePct] = useState(String(defaultAdminFeePct));
   const [depositPaid, setDepositPaid] = useState(false);
+  const [depositPaymentMethod, setDepositPaymentMethod] = useState<PaymentMethod>("bank_transfer");
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +63,7 @@ export function InstalmentIntakeForm({ customers, vehicles, defaultDepositPct, d
           tenor_months: parseInt(tenorMonths, 10),
           admin_fee_pct: planType === "dmech_direct" ? parseFloat(adminFeePct) : null,
           deposit_paid: depositPaid,
+          deposit_payment_method: depositPaid ? depositPaymentMethod : null,
         }),
       });
       const json = await res.json();
@@ -130,10 +132,26 @@ export function InstalmentIntakeForm({ customers, vehicles, defaultDepositPct, d
         </>
       )}
 
-      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, fontSize: 13.5, color: "var(--text)" }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: depositPaid ? 8 : 16, fontSize: 13.5, color: "var(--text)" }}>
         <input type="checkbox" checked={depositPaid} onChange={(e) => setDepositPaid(e.target.checked)} />
         Deposit already collected
       </label>
+      {depositPaid && (
+        <>
+          <label className="ops-field-label" htmlFor="ni-deposit-method">Deposit Payment Method</label>
+          <select
+            id="ni-deposit-method"
+            className="ops-input"
+            value={depositPaymentMethod}
+            onChange={(e) => setDepositPaymentMethod(e.target.value as PaymentMethod)}
+          >
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="paystack">Paystack</option>
+            <option value="pos">POS</option>
+            <option value="cash">Cash</option>
+          </select>
+        </>
+      )}
 
       {preview && (
         <div className="ops-panel" style={{ background: "var(--card2)", padding: 14, marginBottom: 16 }}>

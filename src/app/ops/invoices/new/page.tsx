@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
-import { InvoiceCreateForm } from "@/components/ops/InvoiceCreateForm";
+import { InvoiceForm } from "@/components/ops/InvoiceForm";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import type { StaffRole } from "@/types";
@@ -40,7 +40,7 @@ export default async function NewInvoicePage() {
     <>
       <TopBar title="New Invoice" />
       <div className="ops-content">
-        <InvoiceCreateForm customers={customersRes.data ?? []} vehicles={vehiclesRes.data ?? []} />
+        <InvoiceForm customers={customersRes.data ?? []} vehicles={vehiclesRes.data ?? []} />
       </div>
     </>
   );

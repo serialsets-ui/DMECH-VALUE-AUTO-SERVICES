@@ -572,6 +572,9 @@ export interface Invoice {
   // cash sales, and manually-marked-paid invoices have no payments row.
   payment_method: PaymentMethod | null;
   paid_date: string | null;
+  // Set only on an invoice with no receipt issued against it yet -- see
+  // migration 017's comment on why this is a soft-delete, not a hard one.
+  voided_at: string | null;
   issue_date: string;
   line_items: InvoiceLineItem[];
   subtotal_kobo: number;

@@ -26,24 +26,38 @@ interface CustomerOption {
   tin: string | null;
 }
 
+export interface EditingInvoice {
+  id: string;
+  customerId: string;
+  customerTin: string;
+  vehicleId: string;
+  vatExempt: boolean;
+  notes: string;
+  items: LineItemDraft[];
+}
+
 interface Props {
   customers: CustomerOption[];
   vehicles: VehicleOption[];
+  // Present only when editing an already-created invoice -- switches the
+  // form to PATCH mode, hides the Document Type selector (only invoices,
+  // never receipts, are ever editable -- see api/invoices/[id]/route.ts).
+  editing?: EditingInvoice;
 }
 
 function emptyItem(): LineItemDraft {
   return { description: "", quantity: "1", unitPriceNaira: "", hsnCode: "" };
 }
 
-export function InvoiceCreateForm({ customers, vehicles }: Props) {
+export function InvoiceForm({ customers, vehicles, editing }: Props) {
   const router = useRouter();
   const [docType, setDocType] = useState<InvoiceDocType>("invoice");
-  const [customerId, setCustomerId] = useState("");
-  const [customerTin, setCustomerTin] = useState("");
-  const [vehicleId, setVehicleId] = useState("");
-  const [vatExempt, setVatExempt] = useState(true);
-  const [notes, setNotes] = useState("");
-  const [items, setItems] = useState<LineItemDraft[]>([emptyItem()]);
+  const [customerId, setCustomerId] = useState(editing?.customerId ?? "");
+  const [customerTin, setCustomerTin] = useState(editing?.customerTin ?? "");
+  const [vehicleId, setVehicleId] = useState(editing?.vehicleId ?? "");
+  const [vatExempt, setVatExempt] = useState(editing?.vatExempt ?? true);
+  const [notes, setNotes] = useState(editing?.notes ?? "");
+  const [items, setItems] = useState<LineItemDraft[]>(editing?.items?.length ? editing.items : [emptyItem()]);
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -96,8 +110,8 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
     setStatus("saving");
     setError(null);
     try {
-      const res = await fetch("/api/invoices", {
-        method: "POST",
+      const res = await fetch(editing ? `/api/invoices/${editing.id}` : "/api/invoices", {
+        method: editing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           doc_type: docType,
@@ -134,16 +148,18 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
 
   return (
     <div className="ops-panel" style={{ maxWidth: 720 }}>
-      <div className="ops-panel-title">New {docType === "receipt" ? "Receipt" : "Invoice"}</div>
+      <div className="ops-panel-title">{editing ? "Edit Invoice" : `New ${docType === "receipt" ? "Receipt" : "Invoice"}`}</div>
 
       <div className="ops-form-grid">
-        <div>
-          <label className="ops-field-label" htmlFor="inv-type">Document Type</label>
-          <select id="inv-type" className="ops-input" value={docType} onChange={(e) => setDocType(e.target.value as InvoiceDocType)}>
-            <option value="invoice">Invoice (bill for payment)</option>
-            <option value="receipt">Receipt (payment already received)</option>
-          </select>
-        </div>
+        {!editing && (
+          <div>
+            <label className="ops-field-label" htmlFor="inv-type">Document Type</label>
+            <select id="inv-type" className="ops-input" value={docType} onChange={(e) => setDocType(e.target.value as InvoiceDocType)}>
+              <option value="invoice">Invoice (bill for payment)</option>
+              <option value="receipt">Receipt (payment already received)</option>
+            </select>
+          </div>
+        )}
         <div>
           <label className="ops-field-label" htmlFor="inv-customer">Customer</label>
           <select id="inv-customer" className="ops-input" value={customerId} onChange={(e) => selectCustomer(e.target.value)}>
@@ -253,7 +269,7 @@ export function InvoiceCreateForm({ customers, vehicles }: Props) {
 
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button className="ops-btn" onClick={submit} disabled={status === "saving" || !canSubmit}>
-          {status === "saving" ? "Creating..." : `Create ${docType === "receipt" ? "Receipt" : "Invoice"}`}
+          {status === "saving" ? "Saving..." : editing ? "Save Changes" : `Create ${docType === "receipt" ? "Receipt" : "Invoice"}`}
         </button>
         {error && <span style={{ color: "var(--red)", fontSize: 12 }}>{error}</span>}
       </div>

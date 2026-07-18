@@ -37,7 +37,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   const supabase = createServiceClient();
-  const { data: before } = await supabase.from("users").select("role, is_active").eq("id", id).maybeSingle();
+  const { data: before } = await supabase.from("users").select("role, is_active, auth_user_id").eq("id", id).maybeSingle();
 
   const { data, error } = await supabase
     .from("users")
@@ -48,6 +48,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   if (error) {
     return NextResponse.json({ error: "Could not update staff record." }, { status: 500 });
+  }
+
+  // Deactivating a staff account (e.g. incident response on a suspected
+  // compromise) must not just be gated at the app layer -- staffGuard()
+  // rejecting is_active=false on the next request is already effective, but
+  // that still leaves their existing Supabase session able to hit
+  // unauthenticated endpoints or simply outlive this check somewhere it
+  // wasn't applied. Banning at the auth layer too kills the session/refresh
+  // token outright. Reactivating clears the ban the same way.
+  if ("is_active" in updates && before?.auth_user_id) {
+    await supabase.auth.admin.updateUserById(before.auth_user_id, {
+      ban_duration: updates.is_active ? "none" : "876000h",
+    });
   }
 
   await logAudit({ userId: staff.id, action: "update", tableName: "users", recordId: id, oldValue: before, newValue: updates });

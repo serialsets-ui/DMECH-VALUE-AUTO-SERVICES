@@ -1,16 +1,28 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = ["/ops", "/portal"];
+// (portal) is a route GROUP -- its pages render at /dashboard, /documents,
+// /payments with no "/portal" URL segment at all, so that's what has to be
+// listed here, not the folder name. (Customer portal data still can't leak
+// even while this was wrong: (portal)/layout.tsx runs its own customerGuard()
+// redirect server-side regardless of what middleware does -- this fixes a
+// dead/no-op entry and restores the intended defense-in-depth + the
+// avoided-render perf benefit, not a live data exposure.)
+const PROTECTED_PREFIXES = ["/ops", "/dashboard", "/documents", "/payments"];
 
 // Session refresh + coarse route gating, mirroring justra-web's middleware:
-// redirect unauthenticated visitors away from /ops and /portal before the
+// redirect unauthenticated visitors away from protected sections before the
 // request reaches a Server Component. Fine-grained role checks (which staff
 // role can see which module) happen per-page via src/lib/guards.ts — this
 // only answers "is there a session at all".
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const isProtected = PROTECTED_PREFIXES.some((prefix) => path.startsWith(prefix));
+  // Path-segment aware, not a raw substring match -- `"/ops".startsWith` on
+  // its own would also match /ops-manifest.json and /ops-sw.js (the PWA's
+  // public manifest/service-worker files, which must always be fetchable
+  // unauthenticated per the Web spec), incorrectly routing them through the
+  // auth redirect instead of serving them.
+  const isProtected = PROTECTED_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
 
   // Public routes (the marketing site, above all) never touch Supabase here.
   // This matters in practice, not just for perf: Phase 1's whole point is

@@ -4,6 +4,7 @@ import { CustomsEditForm } from "@/components/ops/CustomsEditForm";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import { customsStatusBadgeClass } from "@/lib/ops/customs-status";
 import type { CustomsEntry, StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager"];
@@ -47,7 +48,7 @@ export default async function CustomsDetailPage({
             </div>
             <div className="ops-info-row">
               <span className="ops-info-label">Status</span>
-              <span className="ops-info-value">{entry.status}</span>
+              <span className={`ops-badge ${customsStatusBadgeClass(entry.status)}`}>{entry.status}</span>
             </div>
             <div className="ops-info-row">
               <span className="ops-info-label">Duty Estimated</span>

@@ -3,6 +3,7 @@ import { TopBar } from "@/components/ops/TopBar";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import { MonthlyBarChart } from "@/components/ops/charts";
 import type { WarrantyReserveLedgerEntry } from "@/types";
 
 interface MonthRow {
@@ -64,28 +65,37 @@ export default async function ReserveFundReportPage() {
             No reserve fund activity yet — this fills in as certified vehicles sell.
           </div>
         ) : (
-          <div className="ops-table-wrap">
-            <table className="ops-table">
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>Accrued</th>
-                  <th>Paid Out</th>
-                  <th>Net</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...byMonth.values()].map((row) => (
-                  <tr key={row.month}>
-                    <td>{row.month}</td>
-                    <td>{formatNaira(row.accrued)}</td>
-                    <td>{formatNaira(row.paidOut)}</td>
-                    <td>{formatNaira(row.accrued - row.paidOut)}</td>
+          <>
+            <div className="ops-panel" style={{ marginBottom: 24, paddingBottom: 36 }}>
+              <div className="ops-panel-title">Accrued vs. Paid Out by Month</div>
+              <MonthlyBarChart
+                data={[...byMonth.values()].map((r) => ({ month: r.month, accrued: r.accrued, paidOut: r.paidOut }))}
+                formatValue={formatNaira}
+              />
+            </div>
+            <div className="ops-table-wrap">
+              <table className="ops-table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Accrued</th>
+                    <th>Paid Out</th>
+                    <th>Net</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {[...byMonth.values()].map((row) => (
+                    <tr key={row.month}>
+                      <td>{row.month}</td>
+                      <td>{formatNaira(row.accrued)}</td>
+                      <td>{formatNaira(row.paidOut)}</td>
+                      <td>{formatNaira(row.accrued - row.paidOut)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { ShipmentEditForm } from "@/components/ops/ShipmentEditForm";
+import { ProgressMeter } from "@/components/ops/charts";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { stageLabel, stageBadgeClass } from "@/lib/ops/vehicle-stage";
@@ -64,7 +65,7 @@ export default async function ShipmentDetailPage({
             </div>
             <div className="ops-info-row">
               <span className="ops-info-label">Progress</span>
-              <span className="ops-info-value">{shipment.progress_pct}%</span>
+              <ProgressMeter pct={shipment.progress_pct} />
             </div>
             <div className="ops-info-row">
               <span className="ops-info-label">Vessel</span>

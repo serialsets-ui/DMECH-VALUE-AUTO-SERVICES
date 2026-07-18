@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { ClickableRow } from "@/components/ops/ClickableRow";
+import { ProgressMeter } from "@/components/ops/charts";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import type { Shipment } from "@/types";
@@ -42,7 +43,7 @@ export default async function OpsShipmentsPage() {
                       {s.origin} → {s.destination}
                     </td>
                     <td>{s.eta ? new Date(s.eta).toLocaleDateString("en-NG", { month: "short", day: "numeric" }) : "—"}</td>
-                    <td>{s.progress_pct}%</td>
+                    <td><ProgressMeter pct={s.progress_pct} size="sm" /></td>
                     <td>{s.vessel_name ?? "—"}</td>
                   </ClickableRow>
                 ))}

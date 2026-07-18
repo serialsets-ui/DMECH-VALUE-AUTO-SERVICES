@@ -5,6 +5,21 @@ import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
 import { LIFECYCLE_STAGES, type LifecycleStage } from "@/types";
 import { stageLabel } from "@/lib/ops/vehicle-stage";
+import { HorizontalBarChart, DonutChart, CHART_PALETTE } from "@/components/ops/charts";
+
+const CUSTOMER_STATUS_COLOR: Record<string, string> = {
+  pending: "--amber",
+  stage2_docs: "--blue",
+  approved: "--green",
+  declined: "--red",
+};
+
+const CUSTOMER_STATUS_LABEL: Record<string, string> = {
+  pending: "Pending",
+  stage2_docs: "Stage 2 Docs",
+  approved: "Approved",
+  declined: "Declined",
+};
 
 // Same fetch-then-reduce convention as the Dashboard and Reserve Fund report
 // — no SQL views in this project, aggregates computed here instead.
@@ -44,6 +59,10 @@ export default async function ReportsPage() {
   const totalDueKobo = payments.reduce((sum, p) => sum + p.amount_kobo, 0);
   const totalCollectedKobo = payments.reduce((sum, p) => sum + (p.amount_paid_kobo ?? 0), 0);
   const totalOverdueKobo = payments.filter((p) => p.status === "overdue").reduce((sum, p) => sum + p.amount_kobo, 0);
+  // Illustrative split for the donut only -- the three stat cards above stay
+  // the exact source of truth; "remaining" here is a rough not-yet-collected,
+  // not-yet-overdue bucket, not a maintained ledger figure.
+  const remainingKobo = Math.max(0, totalDueKobo - totalCollectedKobo - totalOverdueKobo);
 
   const customerStatusCounts = new Map<string, number>();
   for (const c of customersRes.data ?? []) {
@@ -89,50 +108,87 @@ export default async function ReportsPage() {
             <div className="ops-stat-label">Overdue</div>
           </div>
         </div>
+        {totalDueKobo > 0 && (
+          <div className="ops-panel" style={{ marginBottom: 24 }}>
+            <DonutChart
+              data={[
+                { label: "Collected", value: totalCollectedKobo, colorVar: "--green" },
+                { label: "Overdue", value: totalOverdueKobo, colorVar: "--red" },
+                { label: "Remaining", value: remainingKobo, colorVar: "--blue" },
+              ]}
+              formatValue={formatNaira}
+              centerLabel={formatNaira(totalDueKobo)}
+            />
+          </div>
+        )}
 
         <div className="ops-panel-title" style={{ marginBottom: 12 }}>Inventory by Stage</div>
-        <div className="ops-table-wrap" style={{ marginBottom: 24 }}>
-          <table className="ops-table">
-            <thead>
-              <tr>
-                <th>Stage</th>
-                <th>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {LIFECYCLE_STAGES.filter((s) => (stageCounts.get(s) ?? 0) > 0).map((s) => (
-                <tr key={s}>
-                  <td>{stageLabel(s)}</td>
-                  <td>{stageCounts.get(s)}</td>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+          <div className="ops-panel">
+            <HorizontalBarChart
+              data={LIFECYCLE_STAGES.filter((s) => (stageCounts.get(s) ?? 0) > 0).map((s, i) => ({
+                label: stageLabel(s),
+                value: stageCounts.get(s) ?? 0,
+                colorVar: CHART_PALETTE[i % CHART_PALETTE.length],
+              }))}
+            />
+          </div>
+          <div className="ops-table-wrap">
+            <table className="ops-table">
+              <thead>
+                <tr>
+                  <th>Stage</th>
+                  <th>Count</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {LIFECYCLE_STAGES.filter((s) => (stageCounts.get(s) ?? 0) > 0).map((s) => (
+                  <tr key={s}>
+                    <td>{stageLabel(s)}</td>
+                    <td>{stageCounts.get(s)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="ops-panel-title" style={{ marginBottom: 12 }}>Customers by Status</div>
-        <div className="ops-table-wrap">
-          <table className="ops-table">
-            <thead>
-              <tr>
-                <th>Status</th>
-                <th>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...customerStatusCounts.entries()].map(([statusKey, count]) => (
-                <tr key={statusKey}>
-                  <td style={{ textTransform: "capitalize" }}>{statusKey}</td>
-                  <td>{count}</td>
-                </tr>
-              ))}
-              {customerStatusCounts.size === 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          {customerStatusCounts.size > 0 && (
+            <div className="ops-panel">
+              <DonutChart
+                data={[...customerStatusCounts.entries()].map(([statusKey, count]) => ({
+                  label: CUSTOMER_STATUS_LABEL[statusKey] ?? statusKey,
+                  value: count,
+                  colorVar: CUSTOMER_STATUS_COLOR[statusKey] ?? "--subtle",
+                }))}
+              />
+            </div>
+          )}
+          <div className="ops-table-wrap">
+            <table className="ops-table">
+              <thead>
                 <tr>
-                  <td colSpan={2} style={{ color: "var(--muted)" }}>No customers registered yet.</td>
+                  <th>Status</th>
+                  <th>Count</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {[...customerStatusCounts.entries()].map(([statusKey, count]) => (
+                  <tr key={statusKey}>
+                    <td style={{ textTransform: "capitalize" }}>{CUSTOMER_STATUS_LABEL[statusKey] ?? statusKey}</td>
+                    <td>{count}</td>
+                  </tr>
+                ))}
+                {customerStatusCounts.size === 0 && (
+                  <tr>
+                    <td colSpan={2} style={{ color: "var(--muted)" }}>No customers registered yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>

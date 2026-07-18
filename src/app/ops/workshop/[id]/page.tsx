@@ -4,6 +4,7 @@ import { JobCardEditForm } from "@/components/ops/JobCardEditForm";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import { PRIORITY_CLASS, PRIORITY_LABEL } from "@/lib/ops/job-card";
 import type { JobCard, StaffRole } from "@/types";
 
 const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "ops_manager", "workshop_lead"];
@@ -50,6 +51,10 @@ export default async function JobCardDetailPage({ params }: { params: Promise<{ 
           <div className="ops-info-row">
             <span className="ops-info-label">Specialist</span>
             <span className="ops-info-value">{jobCard.specialists?.name ?? "Unassigned"}</span>
+          </div>
+          <div className="ops-info-row">
+            <span className="ops-info-label">Priority</span>
+            <span className={`ops-badge ${PRIORITY_CLASS[jobCard.priority]}`}>{PRIORITY_LABEL[jobCard.priority]}</span>
           </div>
           <div className="ops-info-row">
             <span className="ops-info-label">Service Type</span>

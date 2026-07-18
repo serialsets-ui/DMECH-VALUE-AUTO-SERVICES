@@ -4,6 +4,9 @@ import { TopBar } from "@/components/ops/TopBar";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import { HorizontalBarChart } from "@/components/ops/charts";
+import { LIFECYCLE_STAGES, type LifecycleStage } from "@/types";
+import { stageLabel } from "@/lib/ops/vehicle-stage";
 
 const STATUS_CLASS: Record<string, string> = {
   pending: "ops-badge-blue",
@@ -38,6 +41,7 @@ interface DashboardData {
   totalFinancedKobo: number;
   recentLeads: RecentLead[];
   upcomingPayments: UpcomingPayment[];
+  stageCounts: Map<LifecycleStage, number>;
 }
 
 const EMPTY_DASHBOARD: DashboardData = {
@@ -49,6 +53,7 @@ const EMPTY_DASHBOARD: DashboardData = {
   totalFinancedKobo: 0,
   recentLeads: [],
   upcomingPayments: [],
+  stageCounts: new Map(),
 };
 
 // Same fail-soft convention as getPublicVehicles() on the marketing site —
@@ -67,6 +72,7 @@ async function getDashboardData(): Promise<DashboardData> {
       instalmentTotals,
       recentLeads,
       upcomingPayments,
+      stageRows,
     ] = await Promise.all([
       supabase.from("vehicles").select("*", { count: "exact", head: true }).is("deleted_at", null),
       supabase
@@ -100,6 +106,10 @@ async function getDashboardData(): Promise<DashboardData> {
         .in("status", ["pending", "overdue", "partial"])
         .order("due_date", { ascending: true })
         .limit(8),
+      // Same fetch-then-reduce idiom as Business Reports' "Inventory by
+      // Stage" table -- reused here so the Dashboard gets a chart view of
+      // the identical breakdown, not a second source of truth for it.
+      supabase.from("vehicles").select("lifecycle_stage").is("deleted_at", null),
     ]);
 
     const totalFinancedKobo = (instalmentTotals.data ?? []).reduce(
@@ -121,6 +131,12 @@ async function getDashboardData(): Promise<DashboardData> {
       }
     }
 
+    const stageCounts = new Map<LifecycleStage, number>();
+    for (const row of stageRows.data ?? []) {
+      const stage = row.lifecycle_stage as LifecycleStage;
+      stageCounts.set(stage, (stageCounts.get(stage) ?? 0) + 1);
+    }
+
     return {
       totalVehicles: totalVehicles.count ?? 0,
       availableVehicles: availableVehicles.count ?? 0,
@@ -133,6 +149,7 @@ async function getDashboardData(): Promise<DashboardData> {
         ...p,
         invoiceId: invoiceIdByInstalmentId.get(p.instalment_id) ?? null,
       })),
+      stageCounts,
     };
   } catch {
     return EMPTY_DASHBOARD;
@@ -191,6 +208,21 @@ export default async function OpsDashboard() {
             <div className="ops-stat-value">{formatNaira(data.totalFinancedKobo)}</div>
             <div className="ops-stat-label">Total Financed</div>
           </div>
+        </div>
+
+        <div className="ops-panel" style={{ marginTop: 24 }}>
+          <div className="ops-panel-title">Inventory Pipeline</div>
+          {data.stageCounts.size === 0 ? (
+            <div style={{ color: "var(--muted)", fontSize: 13 }}>No vehicles on record yet.</div>
+          ) : (
+            <HorizontalBarChart
+              data={LIFECYCLE_STAGES.filter((s) => (data.stageCounts.get(s) ?? 0) > 0).map((s) => ({
+                label: stageLabel(s),
+                value: data.stageCounts.get(s) ?? 0,
+                colorVar: s === "available" ? "--green" : s === "reserved" ? "--amber" : PIPELINE_STAGES.includes(s) ? "--blue" : "--subtle",
+              }))}
+            />
+          )}
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 24 }}>

@@ -4,6 +4,7 @@ import { ClickableRow } from "@/components/ops/ClickableRow";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import { customsStatusBadgeClass } from "@/lib/ops/customs-status";
 import type { CustomsEntry } from "@/types";
 
 interface CustomsRow extends CustomsEntry {
@@ -49,9 +50,7 @@ export default async function OpsCustomsPage() {
                     <td>{c.vehicles ? `${c.vehicles.make} ${c.vehicles.model} ${c.vehicles.year}` : "—"}</td>
                     <td>{c.agent ?? "—"}</td>
                     <td>
-                      <span className={`ops-badge ${c.status === "cleared" ? "ops-badge-green" : "ops-badge-blue"}`}>
-                        {c.status}
-                      </span>
+                      <span className={`ops-badge ${customsStatusBadgeClass(c.status)}`}>{c.status}</span>
                     </td>
                     <td>{c.duty_estimated_kobo ? formatNaira(c.duty_estimated_kobo) : "—"}</td>
                     <td>{c.duty_paid_kobo ? formatNaira(c.duty_paid_kobo) : "—"}</td>

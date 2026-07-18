@@ -101,6 +101,7 @@
 .ops-badge-blue{background:var(--blue-d);color:var(--blue)}
 .ops-badge-green{background:var(--green-d);color:var(--green)}
 .ops-badge-amber{background:var(--amber-d);color:var(--amber)}
+.ops-badge-red{background:var(--red-d);color:var(--red)}
 
 /* Vehicle detail lifecycle stepper */
 .ops-stage-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:24px}
@@ -158,6 +159,44 @@
   .ops-sidebar-footer{border-top:none;border-left:1px solid var(--border);flex-shrink:0}
   .ops-content{padding:16px}
 }
+
+/* Chart primitives (src/components/ops/charts.tsx) — hand-rolled, no
+   charting library. Colours are drawn from the existing --blue/--orange/
+   --green/--amber/--red tokens, never invented. */
+.ops-hbar-chart{display:flex;flex-direction:column;gap:12px}
+.ops-hbar-row{display:flex;align-items:center;gap:12px}
+.ops-hbar-label{width:120px;flex-shrink:0;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ops-hbar-track{flex:1;height:9px;background:var(--card2);border-radius:5px;overflow:hidden}
+.ops-hbar-fill{display:block;height:100%;border-radius:5px;transition:width .3s ease}
+.ops-hbar-value{width:64px;flex-shrink:0;text-align:right;font-size:12.5px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+
+.ops-donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.ops-donut-svg-wrap{position:relative;flex-shrink:0}
+.ops-donut-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px}
+.ops-donut-center-value{font-family:var(--font-heading);font-size:14px;font-weight:700;color:var(--text);line-height:1.2}
+.ops-donut-legend{display:flex;flex-direction:column;gap:8px;min-width:140px}
+.ops-donut-legend-row{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.ops-donut-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ops-donut-legend-label{flex:1;color:var(--muted)}
+.ops-donut-legend-value{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+
+.ops-monthly-chart{display:flex;align-items:flex-end;gap:14px;height:160px;padding-top:8px}
+.ops-monthly-col{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;height:100%}
+.ops-monthly-bars{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;max-width:36px}
+.ops-monthly-bar{flex:1;border-radius:3px 3px 0 0;min-height:2px;transition:height .3s ease}
+.ops-monthly-bar-accrued{background:var(--green)}
+.ops-monthly-bar-paid{background:var(--red)}
+.ops-monthly-label{font-size:11px;color:var(--subtle);white-space:nowrap}
+.ops-monthly-legend{display:flex;gap:16px;position:absolute}
+.ops-monthly-chart{position:relative}
+.ops-monthly-legend{bottom:-28px;left:0}
+.ops-monthly-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+
+.ops-progress-meter{display:inline-flex;align-items:center;gap:8px;min-width:110px}
+.ops-progress-meter-sm{min-width:80px}
+.ops-progress-track{flex:1;height:7px;background:var(--card2);border-radius:4px;overflow:hidden}
+.ops-progress-fill{display:block;height:100%;border-radius:4px;transition:width .3s ease}
+.ops-progress-pct{font-size:12px;font-weight:700;color:var(--text);width:36px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* Route loading state (src/app/ops/loading.tsx) — a spinning wheel, shown
    inside <main class="ops-main"> (the sidebar stays put) while a

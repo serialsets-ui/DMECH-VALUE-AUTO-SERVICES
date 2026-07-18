@@ -4,6 +4,7 @@ import { ClickableRow } from "@/components/ops/ClickableRow";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+import { PRIORITY_CLASS, PRIORITY_LABEL } from "@/lib/ops/job-card";
 import type { JobCard, JobCardStage } from "@/types";
 
 interface JobCardRow extends JobCard {
@@ -70,7 +71,9 @@ export default async function OpsWorkshopPage() {
                     <td>
                       <span className={`ops-badge ${STAGE_CLASS[j.stage]}`}>{STAGE_LABEL[j.stage]}</span>
                     </td>
-                    <td>{j.priority}</td>
+                    <td>
+                      <span className={`ops-badge ${PRIORITY_CLASS[j.priority]}`}>{PRIORITY_LABEL[j.priority]}</span>
+                    </td>
                     <td>{j.customers?.full_name ?? "—"}</td>
                     <td>{j.quote_kobo ? formatNaira(j.quote_kobo) : "—"}</td>
                   </ClickableRow>

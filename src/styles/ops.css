@@ -192,6 +192,39 @@
 .ops-monthly-legend{bottom:-28px;left:0}
 .ops-monthly-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 
+/* Dashboard hero row -- sparkline stat cards + Spotlight Vehicle
+   (src/app/ops/dashboard/page.tsx). The glow reuses the exact radial-gradient
+   recipe already on the login/splash screen (.splash::before), just brought
+   into the dashboard itself. */
+.ops-hero-wrap{position:relative}
+.ops-hero-wrap::before{content:'';position:absolute;inset:-30px -16px auto -16px;height:260px;background:radial-gradient(ellipse 480px 280px at 20% 30%,rgba(24,153,231,.09),transparent 70%),radial-gradient(ellipse 420px 260px at 82% 55%,rgba(230,141,76,.07),transparent 70%);pointer-events:none;z-index:0}
+.ops-hero-stat-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ops-hero-stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+.ops-hero-stat-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ops-hero-stat-label{font-size:12.5px;color:var(--muted);font-weight:600}
+.ops-hero-stat-value{font-family:var(--font-heading);font-size:30px;font-weight:700;color:var(--text);margin-top:6px}
+.ops-hero-stat-sparkline{margin:14px 0 6px;line-height:0}
+.ops-hero-stat-caption{font-size:11.5px;color:var(--subtle)}
+
+.ops-trend-pill{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.ops-trend-up{background:var(--green-d);color:var(--green)}
+.ops-trend-down{background:var(--red-d);color:var(--red)}
+
+.ops-spotlight-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;height:100%}
+.ops-spotlight-photo{width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;color:var(--subtle)}
+.ops-spotlight-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ops-spotlight-body{margin-top:14px;flex:1;display:flex;flex-direction:column}
+.ops-spotlight-title{font-family:var(--font-heading);font-size:16px;font-weight:700;color:var(--text)}
+.ops-spotlight-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.ops-spotlight-price{font-size:14px;color:var(--blue);font-weight:700;margin-top:6px}
+.ops-spotlight-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ops-spotlight-spec{background:var(--card2);border-radius:10px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:var(--blue)}
+.ops-spotlight-spec-label{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+@media(max-width:900px){
+  .ops-hero-stat-grid{grid-template-columns:1fr}
+}
+
 .ops-progress-meter{display:inline-flex;align-items:center;gap:8px;min-width:110px}
 .ops-progress-meter-sm{min-width:80px}
 .ops-progress-track{flex:1;height:7px;background:var(--card2);border-radius:4px;overflow:hidden}

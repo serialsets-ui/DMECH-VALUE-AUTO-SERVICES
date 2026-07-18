@@ -57,48 +57,68 @@ export function BusinessProfileForm({ profile }: { profile: BusinessProfile }) {
   }
 
   return (
-    <div className="ops-panel" style={{ maxWidth: 560 }}>
-      <div className="ops-panel-title">Business &amp; Tax Details</div>
+    <div style={{ maxWidth: 700 }}>
       <p style={{ fontSize: 12, color: "var(--muted)", marginBottom: 16 }}>
         Shown on every generated invoice and receipt. Nigeria&apos;s NRS e-invoicing mandate (MBS)
         isn&apos;t enforced until July 2027 — until then, these fields keep documents correctly
         formatted with real TIN/VAT details, not submitted anywhere automatically.
       </p>
 
-      <label className="ops-field-label" htmlFor="biz-legal-name">Registered Legal Name</label>
-      <input id="biz-legal-name" className="ops-input" value={legalName} onChange={(e) => setLegalName(e.target.value)} />
+      <div className="ops-panel">
+        <div className="ops-panel-title">Company Identity</div>
+        <label className="ops-field-label" htmlFor="biz-legal-name">Registered Legal Name</label>
+        <input id="biz-legal-name" className="ops-input" value={legalName} onChange={(e) => setLegalName(e.target.value)} />
 
-      <label className="ops-field-label" htmlFor="biz-tin">TIN (Tax Identification Number)</label>
-      <input id="biz-tin" className="ops-input" value={tin} onChange={(e) => setTin(e.target.value)} />
+        <div className="ops-form-grid">
+          <div>
+            <label className="ops-field-label" htmlFor="biz-tin">TIN (Tax Identification Number)</label>
+            <input id="biz-tin" className="ops-input" value={tin} onChange={(e) => setTin(e.target.value)} />
+          </div>
+          <div>
+            <label className="ops-field-label" htmlFor="biz-rc">CAC / RC Number</label>
+            <input id="biz-rc" className="ops-input" value={rcNumber} onChange={(e) => setRcNumber(e.target.value)} />
+          </div>
+        </div>
+        <label className="ops-field-label" htmlFor="biz-vat">VAT Registration Number (optional)</label>
+        <input id="biz-vat" className="ops-input" value={vatNumber} onChange={(e) => setVatNumber(e.target.value)} />
+      </div>
 
-      <label className="ops-field-label" htmlFor="biz-rc">CAC / RC Number</label>
-      <input id="biz-rc" className="ops-input" value={rcNumber} onChange={(e) => setRcNumber(e.target.value)} />
+      <div className="ops-panel">
+        <div className="ops-panel-title">Contact Details</div>
+        <label className="ops-field-label" htmlFor="biz-address">Registered Address</label>
+        <textarea id="biz-address" className="ops-input" rows={2} value={address} onChange={(e) => setAddress(e.target.value)} />
 
-      <label className="ops-field-label" htmlFor="biz-vat">VAT Registration Number (optional)</label>
-      <input id="biz-vat" className="ops-input" value={vatNumber} onChange={(e) => setVatNumber(e.target.value)} />
+        <div className="ops-form-grid">
+          <div>
+            <label className="ops-field-label" htmlFor="biz-phone">Phone (optional)</label>
+            <input id="biz-phone" className="ops-input" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+          <div>
+            <label className="ops-field-label" htmlFor="biz-email">Email (optional)</label>
+            <input id="biz-email" type="email" className="ops-input" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+        </div>
+        <label className="ops-field-label" htmlFor="biz-website">Website (optional)</label>
+        <input id="biz-website" className="ops-input" placeholder="dmechservices.ng" value={website} onChange={(e) => setWebsite(e.target.value)} />
+      </div>
 
-      <label className="ops-field-label" htmlFor="biz-address">Registered Address</label>
-      <textarea id="biz-address" className="ops-input" rows={2} value={address} onChange={(e) => setAddress(e.target.value)} />
+      <div className="ops-panel">
+        <div className="ops-panel-title">Banking Details</div>
+        <div className="ops-form-grid">
+          <div>
+            <label className="ops-field-label" htmlFor="biz-bank-name">Bank Name</label>
+            <input id="biz-bank-name" className="ops-input" value={bankName} onChange={(e) => setBankName(e.target.value)} />
+          </div>
+          <div>
+            <label className="ops-field-label" htmlFor="biz-bank-acct">Bank Account Number</label>
+            <input id="biz-bank-acct" className="ops-input" value={bankAccountNumber} onChange={(e) => setBankAccountNumber(e.target.value)} />
+          </div>
+        </div>
+        <label className="ops-field-label" htmlFor="biz-bank-acct-name">Bank Account Name</label>
+        <input id="biz-bank-acct-name" className="ops-input" value={bankAccountName} onChange={(e) => setBankAccountName(e.target.value)} />
+      </div>
 
-      <label className="ops-field-label" htmlFor="biz-phone">Phone (optional)</label>
-      <input id="biz-phone" className="ops-input" value={phone} onChange={(e) => setPhone(e.target.value)} />
-
-      <label className="ops-field-label" htmlFor="biz-email">Email (optional)</label>
-      <input id="biz-email" type="email" className="ops-input" value={email} onChange={(e) => setEmail(e.target.value)} />
-
-      <label className="ops-field-label" htmlFor="biz-website">Website (optional)</label>
-      <input id="biz-website" className="ops-input" placeholder="dmechservices.ng" value={website} onChange={(e) => setWebsite(e.target.value)} />
-
-      <label className="ops-field-label" htmlFor="biz-bank-name">Bank Name</label>
-      <input id="biz-bank-name" className="ops-input" value={bankName} onChange={(e) => setBankName(e.target.value)} />
-
-      <label className="ops-field-label" htmlFor="biz-bank-acct">Bank Account Number</label>
-      <input id="biz-bank-acct" className="ops-input" value={bankAccountNumber} onChange={(e) => setBankAccountNumber(e.target.value)} />
-
-      <label className="ops-field-label" htmlFor="biz-bank-acct-name">Bank Account Name</label>
-      <input id="biz-bank-acct-name" className="ops-input" value={bankAccountName} onChange={(e) => setBankAccountName(e.target.value)} />
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button className="ops-btn" onClick={save} disabled={status === "saving"}>
           {status === "saving" ? "Saving..." : "Save Changes"}
         </button>

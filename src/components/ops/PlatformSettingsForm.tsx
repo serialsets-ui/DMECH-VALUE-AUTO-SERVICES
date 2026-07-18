@@ -83,76 +83,86 @@ export function PlatformSettingsForm(props: Props) {
   }
 
   return (
-    <div className="ops-panel" style={{ maxWidth: 620 }}>
-      <div className="ops-panel-title">Financial Defaults</div>
-      <div className="ops-form-grid">
-        <div>
-          <label className="ops-field-label" htmlFor="ps-ngn">NGN/USD Rate</label>
-          <input id="ps-ngn" className="ops-input" type="number" value={ngnUsdRate} onChange={(e) => setNgnUsdRate(e.target.value)} />
+    <div style={{ maxWidth: 980 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="ops-panel">
+          <div className="ops-panel-title">Financial Defaults</div>
+          <div className="ops-form-grid">
+            <div>
+              <label className="ops-field-label" htmlFor="ps-ngn">NGN/USD Rate</label>
+              <input id="ps-ngn" className="ops-input" type="number" value={ngnUsdRate} onChange={(e) => setNgnUsdRate(e.target.value)} />
+            </div>
+            <div>
+              <label className="ops-field-label" htmlFor="ps-fee">DMECH Service Fee (%)</label>
+              <input id="ps-fee" className="ops-input" type="number" value={serviceFeePct} onChange={(e) => setServiceFeePct(e.target.value)} />
+            </div>
+            <div>
+              <label className="ops-field-label" htmlFor="ps-deposit">Default Deposit (%)</label>
+              <input id="ps-deposit" className="ops-input" type="number" value={depositPct} onChange={(e) => setDepositPct(e.target.value)} />
+            </div>
+            <div>
+              <label className="ops-field-label" htmlFor="ps-tenor">Default Tenor (months)</label>
+              <input id="ps-tenor" className="ops-input" type="number" value={tenorMonths} onChange={(e) => setTenorMonths(e.target.value)} />
+            </div>
+          </div>
+          <label className="ops-field-label" htmlFor="ps-max-finance">Max Self-Finance (₦)</label>
+          <input id="ps-max-finance" className="ops-input" type="number" value={maxSelfFinanceNaira} onChange={(e) => setMaxSelfFinanceNaira(e.target.value)} />
         </div>
-        <div>
-          <label className="ops-field-label" htmlFor="ps-fee">DMECH Service Fee (%)</label>
-          <input id="ps-fee" className="ops-input" type="number" value={serviceFeePct} onChange={(e) => setServiceFeePct(e.target.value)} />
+
+        <div className="ops-panel">
+          <div className="ops-panel-title">Operations &amp; Reminders</div>
+          <div className="ops-form-grid">
+            <div>
+              <label className="ops-field-label" htmlFor="ps-hold">Reservation Hold (hours)</label>
+              <input id="ps-hold" className="ops-input" type="number" value={holdHours} onChange={(e) => setHoldHours(e.target.value)} />
+            </div>
+            <div>
+              <label className="ops-field-label" htmlFor="ps-reserve">Warranty Reserve Contribution (%)</label>
+              <input id="ps-reserve" className="ops-input" type="number" value={reservePct} onChange={(e) => setReservePct(e.target.value)} />
+            </div>
+          </div>
+          <label className="ops-field-label" htmlFor="ps-reminders">Payment Reminder Days (comma-separated)</label>
+          <input id="ps-reminders" className="ops-input" value={reminderDays} onChange={(e) => setReminderDays(e.target.value)} />
         </div>
-        <div>
-          <label className="ops-field-label" htmlFor="ps-deposit">Default Deposit (%)</label>
-          <input id="ps-deposit" className="ops-input" type="number" value={depositPct} onChange={(e) => setDepositPct(e.target.value)} />
+
+        <div className="ops-panel">
+          <div className="ops-panel-title">Customer Approval Tiers (₦)</div>
+          <p style={{ fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>
+            Requested credit at or below Tier 1&apos;s value needs one staff approval; above Tier
+            2&apos;s value needs two.
+          </p>
+          <div className="ops-form-grid">
+            <div>
+              <label className="ops-field-label" htmlFor="ps-tier1">Tier 1 Max</label>
+              <input id="ps-tier1" className="ops-input" type="number" value={tier1Naira} onChange={(e) => setTier1Naira(e.target.value)} />
+            </div>
+            <div>
+              <label className="ops-field-label" htmlFor="ps-tier2">Tier 2 Max</label>
+              <input id="ps-tier2" className="ops-input" type="number" value={tier2Naira} onChange={(e) => setTier2Naira(e.target.value)} />
+            </div>
+          </div>
+          <label className="ops-field-label" htmlFor="ps-tier3">Tier 3 Max (above this is Tier 4)</label>
+          <input id="ps-tier3" className="ops-input" type="number" value={tier3Naira} onChange={(e) => setTier3Naira(e.target.value)} />
         </div>
-        <div>
-          <label className="ops-field-label" htmlFor="ps-tenor">Default Tenor (months)</label>
-          <input id="ps-tenor" className="ops-input" type="number" value={tenorMonths} onChange={(e) => setTenorMonths(e.target.value)} />
+
+        <div className="ops-panel">
+          <div className="ops-panel-title">Parts Credit Limits (₦)</div>
+          <div className="ops-form-grid">
+            <div>
+              <label className="ops-field-label" htmlFor="ps-retail">Retail</label>
+              <input id="ps-retail" className="ops-input" type="number" value={retailNaira} onChange={(e) => setRetailNaira(e.target.value)} />
+            </div>
+            <div>
+              <label className="ops-field-label" htmlFor="ps-wholesale-auto">Wholesale (Auto)</label>
+              <input id="ps-wholesale-auto" className="ops-input" type="number" value={wholesaleAutoNaira} onChange={(e) => setWholesaleAutoNaira(e.target.value)} />
+            </div>
+          </div>
+          <label className="ops-field-label" htmlFor="ps-wholesale-manual">Wholesale (Manual Review)</label>
+          <input id="ps-wholesale-manual" className="ops-input" type="number" value={wholesaleManualNaira} onChange={(e) => setWholesaleManualNaira(e.target.value)} />
         </div>
       </div>
-      <label className="ops-field-label" htmlFor="ps-max-finance">Max Self-Finance (₦)</label>
-      <input id="ps-max-finance" className="ops-input" type="number" value={maxSelfFinanceNaira} onChange={(e) => setMaxSelfFinanceNaira(e.target.value)} />
 
-      <div className="ops-panel-title" style={{ marginTop: 20 }}>Operations</div>
-      <div className="ops-form-grid">
-        <div>
-          <label className="ops-field-label" htmlFor="ps-hold">Reservation Hold (hours)</label>
-          <input id="ps-hold" className="ops-input" type="number" value={holdHours} onChange={(e) => setHoldHours(e.target.value)} />
-        </div>
-        <div>
-          <label className="ops-field-label" htmlFor="ps-reserve">Warranty Reserve Contribution (%)</label>
-          <input id="ps-reserve" className="ops-input" type="number" value={reservePct} onChange={(e) => setReservePct(e.target.value)} />
-        </div>
-      </div>
-      <label className="ops-field-label" htmlFor="ps-reminders">Payment Reminder Days (comma-separated)</label>
-      <input id="ps-reminders" className="ops-input" value={reminderDays} onChange={(e) => setReminderDays(e.target.value)} />
-
-      <div className="ops-panel-title" style={{ marginTop: 20 }}>Customer Approval Tiers (₦)</div>
-      <p style={{ fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>
-        Requested credit at or below Tier 1&apos;s value needs one staff approval; above Tier
-        2&apos;s value needs two.
-      </p>
-      <div className="ops-form-grid">
-        <div>
-          <label className="ops-field-label" htmlFor="ps-tier1">Tier 1 Max</label>
-          <input id="ps-tier1" className="ops-input" type="number" value={tier1Naira} onChange={(e) => setTier1Naira(e.target.value)} />
-        </div>
-        <div>
-          <label className="ops-field-label" htmlFor="ps-tier2">Tier 2 Max</label>
-          <input id="ps-tier2" className="ops-input" type="number" value={tier2Naira} onChange={(e) => setTier2Naira(e.target.value)} />
-        </div>
-      </div>
-      <label className="ops-field-label" htmlFor="ps-tier3">Tier 3 Max (above this is Tier 4)</label>
-      <input id="ps-tier3" className="ops-input" type="number" value={tier3Naira} onChange={(e) => setTier3Naira(e.target.value)} />
-
-      <div className="ops-panel-title" style={{ marginTop: 20 }}>Parts Credit Limits (₦)</div>
-      <div className="ops-form-grid">
-        <div>
-          <label className="ops-field-label" htmlFor="ps-retail">Retail</label>
-          <input id="ps-retail" className="ops-input" type="number" value={retailNaira} onChange={(e) => setRetailNaira(e.target.value)} />
-        </div>
-        <div>
-          <label className="ops-field-label" htmlFor="ps-wholesale-auto">Wholesale (Auto)</label>
-          <input id="ps-wholesale-auto" className="ops-input" type="number" value={wholesaleAutoNaira} onChange={(e) => setWholesaleAutoNaira(e.target.value)} />
-        </div>
-      </div>
-      <label className="ops-field-label" htmlFor="ps-wholesale-manual">Wholesale (Manual Review)</label>
-      <input id="ps-wholesale-manual" className="ops-input" type="number" value={wholesaleManualNaira} onChange={(e) => setWholesaleManualNaira(e.target.value)} />
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 4 }}>
         <button className="ops-btn" onClick={save} disabled={status === "saving"}>
           {status === "saving" ? "Saving..." : "Save Changes"}
         </button>

@@ -98,13 +98,54 @@ export async function POST(request: Request) {
     );
   }
 
+  const description = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.vin ? ` (VIN: ${vehicle.vin})` : ""}`;
+  const { data: customer } = await supabase.from("customers").select("tin").eq("id", customerId).maybeSingle();
+
+  // The master invoice for the whole purchase -- previously an instalment
+  // plan never got one at all, only the deposit (and later each monthly
+  // payment) ever generated a receipt. The instalment/payment schedule and
+  // every receipt issued against it now hang off this one document (see
+  // ops/invoices/[id]/page.tsx).
+  const { data: invoice, error: invoiceError } = await supabase
+    .from("invoices")
+    .insert({
+      doc_type: "invoice",
+      vehicle_id: vehicleId,
+      customer_id: customerId,
+      instalment_id: instalment.id,
+      line_items: [
+        {
+          description,
+          quantity: 1,
+          unit_price_kobo: totalPriceKobo,
+          amount_kobo: totalPriceKobo,
+          hsn_code: "8703",
+        },
+      ],
+      subtotal_kobo: totalPriceKobo,
+      vat_exempt: true,
+      vat_amount_kobo: 0,
+      total_kobo: totalPriceKobo,
+      customer_tin: customer?.tin ?? null,
+      invoice_type_code: customer?.tin ? "B2B" : "B2C",
+      payment_means_code: "ZZZ",
+    })
+    .select("id")
+    .single();
+
+  if (invoiceError || !invoice) {
+    return NextResponse.json(
+      { error: "Instalment created, but the invoice failed to generate." },
+      { status: 500 },
+    );
+  }
+
   // Deposit receipt -- distinguished from a regular instalment-payment
   // receipt by having instalment_id set but payment_id null (there's no
   // `payments` row for a deposit, it's collected at intake, not scheduled).
   let depositReceiptId: string | null = null;
   if (depositPaid && depositAmountKobo > 0) {
-    const description = `Deposit — ${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.vin ? ` (VIN: ${vehicle.vin})` : ""}`;
-    const { data: customer } = await supabase.from("customers").select("tin").eq("id", customerId).maybeSingle();
+    const depositDescription = `Deposit — ${description}`;
     const { data: receipt } = await supabase
       .from("invoices")
       .insert({
@@ -112,7 +153,7 @@ export async function POST(request: Request) {
         vehicle_id: vehicleId,
         customer_id: customerId,
         instalment_id: instalment.id,
-        line_items: [{ description, quantity: 1, unit_price_kobo: depositAmountKobo, amount_kobo: depositAmountKobo }],
+        line_items: [{ description: depositDescription, quantity: 1, unit_price_kobo: depositAmountKobo, amount_kobo: depositAmountKobo }],
         subtotal_kobo: depositAmountKobo,
         vat_exempt: true,
         vat_amount_kobo: 0,
@@ -128,5 +169,5 @@ export async function POST(request: Request) {
     depositReceiptId = receipt?.id ?? null;
   }
 
-  return NextResponse.json({ instalment, depositReceiptId });
+  return NextResponse.json({ instalment, invoiceId: invoice.id, depositReceiptId });
 }

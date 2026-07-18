@@ -1,8 +1,15 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
+
+const STATUS_CLASS: Record<string, string> = {
+  pending: "ops-badge-blue",
+  overdue: "ops-badge-amber",
+  partial: "ops-badge-muted",
+};
 
 const PIPELINE_STAGES = ["shipped", "in_transit", "at_port", "customs", "cleared"];
 
@@ -10,6 +17,16 @@ interface RecentLead {
   phone: string;
   source: string;
   created_at: string;
+}
+
+interface UpcomingPayment {
+  id: string;
+  instalment_id: string;
+  amount_kobo: number;
+  due_date: string;
+  status: string;
+  invoiceId: string | null;
+  customers: { full_name: string } | null;
 }
 
 interface DashboardData {
@@ -20,6 +37,7 @@ interface DashboardData {
   activeInstalments: number;
   totalFinancedKobo: number;
   recentLeads: RecentLead[];
+  upcomingPayments: UpcomingPayment[];
 }
 
 const EMPTY_DASHBOARD: DashboardData = {
@@ -30,6 +48,7 @@ const EMPTY_DASHBOARD: DashboardData = {
   activeInstalments: 0,
   totalFinancedKobo: 0,
   recentLeads: [],
+  upcomingPayments: [],
 };
 
 // Same fail-soft convention as getPublicVehicles() on the marketing site —
@@ -47,6 +66,7 @@ async function getDashboardData(): Promise<DashboardData> {
       activeInstalments,
       instalmentTotals,
       recentLeads,
+      upcomingPayments,
     ] = await Promise.all([
       supabase.from("vehicles").select("*", { count: "exact", head: true }).is("deleted_at", null),
       supabase
@@ -71,12 +91,35 @@ async function getDashboardData(): Promise<DashboardData> {
         .select("phone, source, created_at")
         .order("created_at", { ascending: false })
         .limit(5),
+      // Cross-customer "what's due soon" visibility -- the standalone
+      // Payments list this replaced was the only place staff could see this
+      // across every instalment at once; this panel is where that lives now.
+      supabase
+        .from("payments")
+        .select("id, instalment_id, amount_kobo, due_date, status, customers(full_name)")
+        .in("status", ["pending", "overdue", "partial"])
+        .order("due_date", { ascending: true })
+        .limit(8),
     ]);
 
     const totalFinancedKobo = (instalmentTotals.data ?? []).reduce(
       (sum, row) => sum + (row.total_price_kobo ?? 0),
       0,
     );
+
+    const rawUpcomingPayments = (upcomingPayments.data as unknown as UpcomingPayment[] | null) ?? [];
+    const instalmentIds = [...new Set(rawUpcomingPayments.map((p) => p.instalment_id))];
+    const invoiceIdByInstalmentId = new Map<string, string>();
+    if (instalmentIds.length > 0) {
+      const { data: masterInvoices } = await supabase
+        .from("invoices")
+        .select("id, instalment_id")
+        .eq("doc_type", "invoice")
+        .in("instalment_id", instalmentIds);
+      for (const inv of masterInvoices ?? []) {
+        if (inv.instalment_id) invoiceIdByInstalmentId.set(inv.instalment_id, inv.id);
+      }
+    }
 
     return {
       totalVehicles: totalVehicles.count ?? 0,
@@ -86,6 +129,10 @@ async function getDashboardData(): Promise<DashboardData> {
       activeInstalments: activeInstalments.count ?? 0,
       totalFinancedKobo,
       recentLeads: (recentLeads.data as RecentLead[] | null) ?? [],
+      upcomingPayments: rawUpcomingPayments.map((p) => ({
+        ...p,
+        invoiceId: invoiceIdByInstalmentId.get(p.instalment_id) ?? null,
+      })),
     };
   } catch {
     return EMPTY_DASHBOARD;
@@ -146,25 +193,58 @@ export default async function OpsDashboard() {
           </div>
         </div>
 
-        <div className="ops-panel" style={{ marginTop: 24, maxWidth: 520 }}>
-          <div className="ops-panel-title">Recent Leads</div>
-          {data.recentLeads.length === 0 ? (
-            <div style={{ color: "var(--muted)", fontSize: 13 }}>No leads yet.</div>
-          ) : (
-            data.recentLeads.map((lead, i) => (
-              <div className="ops-info-row" key={i}>
-                <span className="ops-info-label">
-                  {lead.phone} · {lead.source}
-                </span>
-                <span style={{ color: "var(--subtle)", fontSize: 12 }}>
-                  {new Date(lead.created_at).toLocaleDateString("en-NG", {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-            ))
-          )}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 24 }}>
+          <div className="ops-panel">
+            <div className="ops-panel-title">Recent Leads</div>
+            {data.recentLeads.length === 0 ? (
+              <div style={{ color: "var(--muted)", fontSize: 13 }}>No leads yet.</div>
+            ) : (
+              data.recentLeads.map((lead, i) => (
+                <div className="ops-info-row" key={i}>
+                  <span className="ops-info-label">
+                    {lead.phone} · {lead.source}
+                  </span>
+                  <span style={{ color: "var(--subtle)", fontSize: 12 }}>
+                    {new Date(lead.created_at).toLocaleDateString("en-NG", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="ops-panel">
+            <div className="ops-panel-title">Payments Due Soon</div>
+            {data.upcomingPayments.length === 0 ? (
+              <div style={{ color: "var(--muted)", fontSize: 13 }}>Nothing due — every instalment is paid up.</div>
+            ) : (
+              data.upcomingPayments.map((p) => {
+                const row = (
+                  <>
+                    <span className="ops-info-label">
+                      {p.customers?.full_name ?? "—"} ·{" "}
+                      {new Date(p.due_date).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}
+                    </span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span className="ops-info-value">{formatNaira(p.amount_kobo)}</span>
+                      <span className={`ops-badge ${STATUS_CLASS[p.status] ?? "ops-badge-muted"}`}>{p.status}</span>
+                    </span>
+                  </>
+                );
+                return p.invoiceId ? (
+                  <Link key={p.id} href={`/ops/invoices/${p.invoiceId}`} className="ops-info-row" style={{ textDecoration: "none", color: "inherit" }}>
+                    {row}
+                  </Link>
+                ) : (
+                  <div className="ops-info-row" key={p.id}>
+                    {row}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </>

@@ -10,7 +10,6 @@ import {
   Package,
   Wrench,
   HardHat,
-  Wallet,
   Ship,
   FileCheck,
   UserCog,
@@ -69,9 +68,8 @@ const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "Finance",
     items: [
-      { href: "/ops/instalments", label: "Instalments", icon: Wallet, roles: ALL_ROLES },
-      { href: "/ops/payments", label: "Payments", icon: CircleDollarSign, roles: ALL_ROLES },
       { href: "/ops/invoices", label: "Invoices", icon: Receipt, roles: ALL_ROLES },
+      { href: "/ops/receipts", label: "Receipts", icon: CircleDollarSign, roles: ALL_ROLES },
     ],
   },
   {

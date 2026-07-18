@@ -72,7 +72,7 @@ export function InstalmentIntakeForm({ customers, vehicles, defaultDepositPct, d
         setStatus("error");
         return;
       }
-      router.push(`/ops/instalments/${json.instalment.id}`);
+      router.push(`/ops/invoices/${json.invoiceId}`);
     } catch {
       setError("Something went wrong.");
       setStatus("error");

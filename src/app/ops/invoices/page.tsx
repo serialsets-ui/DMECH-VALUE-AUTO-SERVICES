@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TopBar } from "@/components/ops/TopBar";
-import { MarkInvoicePaidAction } from "@/components/ops/MarkInvoicePaidAction";
-import { VoidInvoiceAction } from "@/components/ops/VoidInvoiceAction";
+import { ClickableRow } from "@/components/ops/ClickableRow";
 import { staffGuard } from "@/lib/guards";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/money";
@@ -27,19 +26,22 @@ const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
 
 interface InvoiceRow {
   id: string;
-  doc_type: "invoice" | "receipt";
   invoice_number: string;
   issue_date: string;
   total_kobo: number;
+  instalment_id: string | null;
   related_invoice_id: string | null;
   payment_method: PaymentMethod | null;
-  paid_date: string | null;
   voided_at: string | null;
-  fetch_transmission_status: string;
   vehicles: { make: string; model: string; year: number } | null;
   customers: { full_name: string } | null;
 }
 
+// Only invoices (bills) live here now -- receipts (proof of payment) have
+// their own page, /ops/receipts. Instalments and the standalone Payments
+// list are gone too: an instalment-financed sale now always has a master
+// invoice (see api/instalments/route.ts), and its payment schedule/history
+// lives on that invoice's own detail page instead of a separate module.
 export default async function OpsInvoicesPage() {
   const staff = await staffGuard();
   if (!staff) redirect("/login");
@@ -48,22 +50,28 @@ export default async function OpsInvoicesPage() {
   const { data } = await supabase
     .from("invoices")
     .select(
-      "id, doc_type, invoice_number, issue_date, total_kobo, related_invoice_id, payment_method, paid_date, voided_at, fetch_transmission_status, vehicles(make,model,year), customers(full_name)",
+      "id, invoice_number, issue_date, total_kobo, instalment_id, related_invoice_id, payment_method, voided_at, vehicles(make,model,year), customers(full_name)",
     )
+    .eq("doc_type", "invoice")
     .order("created_at", { ascending: false });
 
   // Supabase's generic types infer every embed as an array regardless of
   // cardinality — both FKs here are many-to-one, so cast to the real shape.
   const invoices = (data ?? []) as unknown as InvoiceRow[];
   const canManage = EDIT_ROLES.includes(staff.role as StaffRole);
-  // Which invoice ids already have a receipt generated against them, and
-  // that receipt's own payment details -- so the list shows how/when an
-  // invoice was actually paid without a click through to the PDF.
-  const receiptByInvoiceId = new Map(
-    invoices
-      .filter((inv) => inv.related_invoice_id)
-      .map((inv) => [inv.related_invoice_id as string, inv]),
-  );
+
+  // Which of these (non-instalment) invoices already have a receipt.
+  const relatedIds = invoices.filter((inv) => !inv.instalment_id).map((inv) => inv.id);
+  const paidInvoiceIds = new Set<string>();
+  if (relatedIds.length > 0) {
+    const { data: receipts } = await supabase
+      .from("invoices")
+      .select("related_invoice_id")
+      .in("related_invoice_id", relatedIds);
+    for (const r of receipts ?? []) {
+      if (r.related_invoice_id) paidInvoiceIds.add(r.related_invoice_id);
+    }
+  }
 
   return (
     <>
@@ -71,17 +79,22 @@ export default async function OpsInvoicesPage() {
         title="Invoices"
         actions={
           canManage ? (
-            <Link href="/ops/invoices/new" className="ops-btn" style={{ textDecoration: "none" }}>
-              + New Invoice
-            </Link>
+            <span style={{ display: "flex", gap: 10 }}>
+              <Link href="/ops/instalments/new" className="ops-btn" style={{ background: "var(--card2)", color: "var(--text)", textDecoration: "none" }}>
+                + New Instalment Plan
+              </Link>
+              <Link href="/ops/invoices/new" className="ops-btn" style={{ textDecoration: "none" }}>
+                + New Invoice
+              </Link>
+            </span>
           ) : undefined
         }
       />
       <div className="ops-content">
         {invoices.length === 0 ? (
           <div className="ops-panel" style={{ color: "var(--muted)", fontSize: 14 }}>
-            No invoices yet — one is generated automatically for every vehicle sale and payment
-            received, or create one directly above for a car sale, workshop job, or parts order.
+            No invoices yet — one is generated automatically for every vehicle sale and instalment
+            plan, or create one directly above for a workshop job or parts order.
           </div>
         ) : (
           <div className="ops-table-wrap">
@@ -89,25 +102,19 @@ export default async function OpsInvoicesPage() {
               <thead>
                 <tr>
                   <th>Number</th>
-                  <th>Type</th>
                   <th>Vehicle</th>
                   <th>Customer</th>
                   <th>Amount</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.map((inv) => {
-                  const receipt = receiptByInvoiceId.get(inv.id) ?? null;
-                  // Editable up until NRS transmission, not just until
-                  // payment -- see api/invoices/[id]/route.ts's comment.
-                  const isEditable = inv.doc_type === "invoice" && !inv.voided_at && inv.fetch_transmission_status !== "Sent";
+                  const isPaid = paidInvoiceIds.has(inv.id);
                   return (
-                    <tr key={inv.id} style={inv.voided_at ? { opacity: 0.55 } : undefined}>
+                    <ClickableRow key={inv.id} href={`/ops/invoices/${inv.id}`}>
                       <td>{inv.invoice_number}</td>
-                      <td style={{ textTransform: "capitalize" }}>{inv.doc_type}</td>
                       <td>{inv.vehicles ? `${inv.vehicles.year} ${inv.vehicles.make} ${inv.vehicles.model}` : "—"}</td>
                       <td>{inv.customers?.full_name ?? "—"}</td>
                       <td>{formatNaira(inv.total_kobo)}</td>
@@ -115,39 +122,17 @@ export default async function OpsInvoicesPage() {
                       <td>
                         {inv.voided_at ? (
                           <span className="ops-badge ops-badge-muted">Voided</span>
-                        ) : inv.doc_type === "receipt" ? (
+                        ) : inv.instalment_id ? (
+                          <span className="ops-badge ops-badge-blue">Financed</span>
+                        ) : isPaid ? (
                           <span className="ops-badge ops-badge-green">
                             Paid{inv.payment_method ? ` — ${PAYMENT_METHOD_LABEL[inv.payment_method]}` : ""}
                           </span>
-                        ) : receipt ? (
-                          <a href={`/api/invoices/${receipt.id}/pdf`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)" }}>
-                            <span className="ops-badge ops-badge-green">
-                              Paid{receipt.payment_method ? ` — ${PAYMENT_METHOD_LABEL[receipt.payment_method]}` : ""}
-                              {receipt.paid_date ? ` (${new Date(receipt.paid_date).toLocaleDateString("en-NG", { month: "short", day: "numeric" })})` : ""}
-                            </span>
-                          </a>
-                        ) : canManage ? (
-                          <MarkInvoicePaidAction invoiceId={inv.id} />
                         ) : (
                           <span className="ops-badge ops-badge-amber">Unpaid</span>
                         )}
                       </td>
-                      <td>
-                        <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <a href={`/api/invoices/${inv.id}/pdf`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--blue)" }}>
-                            View PDF →
-                          </a>
-                          {canManage && isEditable && (
-                            <>
-                              <Link href={`/ops/invoices/${inv.id}/edit`} style={{ color: "var(--blue)", fontSize: 12 }}>
-                                Edit
-                              </Link>
-                              <VoidInvoiceAction invoiceId={inv.id} />
-                            </>
-                          )}
-                        </span>
-                      </td>
-                    </tr>
+                    </ClickableRow>
                   );
                 })}
               </tbody>

@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image, Svg, Polygon, StyleSheet } from "@react-pdf/renderer";
 import { fromKobo } from "@/lib/money";
 import type { BusinessProfile, Invoice, PaymentMethod } from "@/types";
 
@@ -37,21 +37,41 @@ function safe(text: string): string {
   return text.replace(/₦/g, "NGN ");
 }
 
+// Header is full-bleed (no page padding at the top) so the diagonal
+// accent genuinely touches the page edge -- everything below it lives in
+// s.content, which carries the padding s.page used to have directly.
+// Tall enough for headerRight's stacked content (doc type/number/date +
+// the photo frame below it) plus paddingVertical -- confirmed live: a
+// shorter height combined with overflow:"hidden" silently clipped the
+// bottom of the photo frame instead of erroring.
+const HEADER_HEIGHT = 152;
 const s = StyleSheet.create({
-  page: { fontFamily: "Helvetica", fontSize: 10, color: "#111111", padding: 40, backgroundColor: "#ffffff" },
-  header: {
+  page: { fontFamily: "Helvetica", fontSize: 10, color: "#111111", backgroundColor: "#ffffff" },
+  content: { padding: 40, paddingTop: 24 },
+  headerBand: {
+    height: HEADER_HEIGHT,
+    backgroundColor: "#EEF1F5",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 24,
-    paddingBottom: 16,
-    borderBottomWidth: 2,
-    borderBottomColor: "#0B2038",
+    alignItems: "flex-start",
+    paddingVertical: 18,
+    paddingRight: 40,
+    position: "relative",
+    overflow: "hidden",
   },
-  headerLeft: { flex: 1 },
+  headerAccent: { position: "absolute", top: 0, left: 0, height: HEADER_HEIGHT, width: 78 },
+  headerLeft: { flex: 1, paddingLeft: 92 },
   // 718x190 source — fixed height keeps the wordmark crisp instead of
   // relying on objectFit to shrink-and-center it inside a square box.
-  logo: { width: 170, height: 45, marginBottom: 8 },
-  headerRight: { textAlign: "right" },
+  logo: { width: 150, height: 40, marginBottom: 8 },
+  headerRight: { alignItems: "flex-end", width: 170 },
+  photoFrame: { marginTop: 10, width: 120, height: 50, backgroundColor: "#0B2038", padding: 3, flexShrink: 0, overflow: "hidden" },
+  // NOT objectFit — confirmed live (rendered and visually inspected) that
+  // @react-pdf/renderer 4.5.1's objectFit, combined with explicit
+  // width/height on the same Image, ignores the declared box and lets the
+  // image's own intrinsic size drive layout instead, spilling it past the
+  // page edge entirely. Plain fixed dimensions render correctly.
+  photoImage: { width: 114, height: 44 },
   bizMeta: { fontSize: 9, color: "#666666", marginTop: 2 },
   docType: { fontSize: 20, fontFamily: "Helvetica-Bold", color: "#1899E7" },
   docNumber: { fontSize: 12, fontFamily: "Helvetica-Bold", color: "#0B2038", marginTop: 3 },
@@ -97,15 +117,25 @@ interface Props {
   business: BusinessProfile;
   customer: InvoiceCustomer | null;
   logoDataUri: string | null;
+  vehiclePhotoDataUri: string | null;
 }
 
-export function InvoicePDF({ invoice, business, customer, logoDataUri }: Props) {
+export function InvoicePDF({ invoice, business, customer, logoDataUri, vehiclePhotoDataUri }: Props) {
   const isReceipt = invoice.doc_type === "receipt";
 
   return (
     <Document>
       <Page size="A4" style={s.page}>
-        <View style={s.header}>
+        <View style={s.headerBand}>
+          {/* Diagonal accent, DMECH's own navy/orange rather than a copied
+              palette -- two overlapping angled polygons standing in for a
+              clip-path cut, which react-pdf's layout engine doesn't support. */}
+          <View style={s.headerAccent}>
+            <Svg width={78} height={HEADER_HEIGHT} viewBox={`0 0 78 ${HEADER_HEIGHT}`}>
+              <Polygon points={`0,0 78,0 40,${HEADER_HEIGHT} 0,${HEADER_HEIGHT}`} fill="#0B2038" />
+              <Polygon points={`0,0 52,0 22,${HEADER_HEIGHT} 0,${HEADER_HEIGHT}`} fill="#E68D4C" />
+            </Svg>
+          </View>
           <View style={s.headerLeft}>
             {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer's Image is a PDF drawing primitive, not a DOM <img>; it has no alt prop. */}
             {logoDataUri && <Image src={logoDataUri} style={s.logo} />}
@@ -128,9 +158,16 @@ export function InvoicePDF({ invoice, business, customer, logoDataUri }: Props) 
             <Text style={s.docType}>{isReceipt ? "RECEIPT" : "INVOICE"}</Text>
             <Text style={s.docNumber}>{invoice.invoice_number}</Text>
             <Text style={s.docMeta}>Issue Date: {invoice.issue_date}</Text>
+            {vehiclePhotoDataUri && (
+              <View style={s.photoFrame}>
+                {/* eslint-disable-next-line jsx-a11y/alt-text -- see the logo Image above. */}
+                <Image src={vehiclePhotoDataUri} style={s.photoImage} />
+              </View>
+            )}
           </View>
         </View>
 
+        <View style={s.content}>
         <View style={s.billRow}>
           <View style={s.billCol}>
             <Text style={s.sectionLabel}>Bill To</Text>
@@ -219,6 +256,7 @@ export function InvoicePDF({ invoice, business, customer, logoDataUri }: Props) 
             )}
           </View>
         )}
+        </View>
 
         <Text style={s.footer} fixed>
           {business.legal_name || "DMECH Value Auto Services"} · Generated {new Date().toISOString().slice(0, 10)}

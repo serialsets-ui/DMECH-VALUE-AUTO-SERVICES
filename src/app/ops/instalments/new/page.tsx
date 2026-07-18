@@ -11,7 +11,7 @@ const EDIT_ROLES: StaffRole[] = ["super_admin", "managing_partner", "accountant"
 export default async function NewInstalmentPage() {
   const staff = await staffGuard();
   if (!staff) redirect("/login");
-  if (!EDIT_ROLES.includes(staff.role as StaffRole)) redirect("/ops/instalments");
+  if (!EDIT_ROLES.includes(staff.role as StaffRole)) redirect("/ops/invoices");
 
   const supabase = await createClient();
   const [customersRes, vehiclesRes, depositPct, tenorMonths, adminFeePct] = await Promise.all([

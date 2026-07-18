@@ -108,7 +108,7 @@ export default async function VehicleDetailPage({
           ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="ops-grid-2">
           <div className="ops-panel">
             <div className="ops-panel-title">Specs</div>
             <div className="ops-info-row">

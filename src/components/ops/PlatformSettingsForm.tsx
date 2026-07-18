@@ -84,7 +84,7 @@ export function PlatformSettingsForm(props: Props) {
 
   return (
     <div style={{ maxWidth: 980 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="ops-grid-2">
         <div className="ops-panel">
           <div className="ops-panel-title">Financial Defaults</div>
           <div className="ops-form-grid">

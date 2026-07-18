@@ -347,7 +347,7 @@ export default async function OpsDashboard() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 16, marginTop: 24 }}>
+        <div className="ops-grid-2-wide" style={{ marginTop: 24 }}>
           <div className="ops-panel">
             <div className="ops-panel-title">Inventory Pipeline</div>
             {data.stageCounts.size === 0 ? (
@@ -420,7 +420,7 @@ export default async function OpsDashboard() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 24 }}>
+        <div className="ops-grid-2" style={{ marginTop: 24 }}>
           <div className="ops-panel">
             <div className="ops-panel-title">Recent Leads</div>
             {data.recentLeads.length === 0 ? (

@@ -1,0 +1,16 @@
+{
+  "name": "DMECH Ops",
+  "short_name": "DMECH Ops",
+  "description": "DMECH Value Auto Services — internal operations platform",
+  "start_url": "/ops/dashboard",
+  "scope": "/ops",
+  "id": "/ops/dashboard",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0c1017",
+  "theme_color": "#0c1017",
+  "icons": [
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/apple-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

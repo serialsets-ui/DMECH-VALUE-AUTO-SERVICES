@@ -196,46 +196,48 @@ export function InvoiceForm({ customers, vehicles, editing }: Props) {
       <div style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", marginBottom: 8, marginTop: 8 }}>
         Line Items
       </div>
-      {items.map((item, i) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 90px 70px 120px 120px auto", gap: 8, marginBottom: 8, alignItems: "center" }}>
-          <input
-            className="ops-input"
-            style={{ marginBottom: 0 }}
-            placeholder="Description"
-            value={item.description}
-            onChange={(e) => updateItem(i, "description", e.target.value)}
-          />
-          <input
-            className="ops-input"
-            style={{ marginBottom: 0 }}
-            placeholder="HSN code"
-            value={item.hsnCode}
-            onChange={(e) => updateItem(i, "hsnCode", e.target.value)}
-          />
-          <input
-            className="ops-input"
-            style={{ marginBottom: 0 }}
-            type="number"
-            min="1"
-            placeholder="Qty"
-            value={item.quantity}
-            onChange={(e) => updateItem(i, "quantity", e.target.value)}
-          />
-          <input
-            className="ops-input"
-            style={{ marginBottom: 0 }}
-            type="number"
-            min="0"
-            placeholder="Unit Price (₦)"
-            value={item.unitPriceNaira}
-            onChange={(e) => updateItem(i, "unitPriceNaira", e.target.value)}
-          />
-          <span style={{ fontSize: 13, color: "var(--muted)", textAlign: "right" }}>
-            {formatNaira(toKobo((Number(item.quantity) || 0) * (Number(item.unitPriceNaira) || 0)))}
-          </span>
-          <button type="button" className="ops-logout-btn" onClick={() => removeItem(i)} disabled={items.length === 1}>✕</button>
-        </div>
-      ))}
+      <div style={{ overflowX: "auto" }}>
+        {items.map((item, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 90px 70px 120px 120px auto", gap: 8, marginBottom: 8, alignItems: "center", minWidth: 640 }}>
+            <input
+              className="ops-input"
+              style={{ marginBottom: 0 }}
+              placeholder="Description"
+              value={item.description}
+              onChange={(e) => updateItem(i, "description", e.target.value)}
+            />
+            <input
+              className="ops-input"
+              style={{ marginBottom: 0 }}
+              placeholder="HSN code"
+              value={item.hsnCode}
+              onChange={(e) => updateItem(i, "hsnCode", e.target.value)}
+            />
+            <input
+              className="ops-input"
+              style={{ marginBottom: 0 }}
+              type="number"
+              min="1"
+              placeholder="Qty"
+              value={item.quantity}
+              onChange={(e) => updateItem(i, "quantity", e.target.value)}
+            />
+            <input
+              className="ops-input"
+              style={{ marginBottom: 0 }}
+              type="number"
+              min="0"
+              placeholder="Unit Price (₦)"
+              value={item.unitPriceNaira}
+              onChange={(e) => updateItem(i, "unitPriceNaira", e.target.value)}
+            />
+            <span style={{ fontSize: 13, color: "var(--muted)", textAlign: "right" }}>
+              {formatNaira(toKobo((Number(item.quantity) || 0) * (Number(item.unitPriceNaira) || 0)))}
+            </span>
+            <button type="button" className="ops-logout-btn" onClick={() => removeItem(i)} disabled={items.length === 1}>✕</button>
+          </div>
+        ))}
+      </div>
       <p style={{ fontSize: 11, color: "var(--muted)", marginTop: -4, marginBottom: 16 }}>
         HSN code is optional — common ones: 8703 (motor vehicles), 8708 (vehicle parts). Leave
         blank for workshop labor or anything without a goods classification.

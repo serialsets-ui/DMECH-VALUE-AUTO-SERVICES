@@ -116,18 +116,20 @@ export function InspectionPanel({
       <div style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", marginBottom: 8 }}>
         Condition Report
       </div>
-      {conditions.map((c, i) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 120px 1fr auto", gap: 8, marginBottom: 8, alignItems: "center" }}>
-          <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Area (e.g. Engine)" value={c.area} onChange={(e) => updateCondition(i, "area", e.target.value)} />
-          <select className="ops-input" style={{ marginBottom: 0 }} value={c.score} onChange={(e) => updateCondition(i, "score", e.target.value)}>
-            <option value="Excellent">Excellent</option>
-            <option value="Good">Good</option>
-            <option value="Fair">Fair</option>
-          </select>
-          <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Notes" value={c.notes} onChange={(e) => updateCondition(i, "notes", e.target.value)} />
-          <button type="button" className="ops-logout-btn" onClick={() => removeCondition(i)}>✕</button>
-        </div>
-      ))}
+      <div style={{ overflowX: "auto" }}>
+        {conditions.map((c, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 120px 1fr auto", gap: 8, marginBottom: 8, alignItems: "center", minWidth: 520 }}>
+            <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Area (e.g. Engine)" value={c.area} onChange={(e) => updateCondition(i, "area", e.target.value)} />
+            <select className="ops-input" style={{ marginBottom: 0 }} value={c.score} onChange={(e) => updateCondition(i, "score", e.target.value)}>
+              <option value="Excellent">Excellent</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+            </select>
+            <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Notes" value={c.notes} onChange={(e) => updateCondition(i, "notes", e.target.value)} />
+            <button type="button" className="ops-logout-btn" onClick={() => removeCondition(i)}>✕</button>
+          </div>
+        ))}
+      </div>
       <button type="button" className="ops-btn" style={{ background: "var(--card2)", color: "var(--text)", marginBottom: 20 }} onClick={addCondition}>
         + Add Item
       </button>
@@ -135,18 +137,20 @@ export function InspectionPanel({
       <div style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", textTransform: "uppercase", marginBottom: 8 }}>
         Title Verification
       </div>
-      {checks.map((c, i) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 120px 1fr auto", gap: 8, marginBottom: 8, alignItems: "center" }}>
-          <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Check (e.g. Lien search)" value={c.check} onChange={(e) => updateCheck(i, "check", e.target.value)} />
-          <select className="ops-input" style={{ marginBottom: 0 }} value={c.status} onChange={(e) => updateCheck(i, "status", e.target.value)}>
-            <option value="pending">Pending</option>
-            <option value="pass">Pass</option>
-            <option value="fail">Fail</option>
-          </select>
-          <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Notes" value={c.notes ?? ""} onChange={(e) => updateCheck(i, "notes", e.target.value)} />
-          <button type="button" className="ops-logout-btn" onClick={() => removeCheck(i)}>✕</button>
-        </div>
-      ))}
+      <div style={{ overflowX: "auto" }}>
+        {checks.map((c, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 120px 1fr auto", gap: 8, marginBottom: 8, alignItems: "center", minWidth: 520 }}>
+            <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Check (e.g. Lien search)" value={c.check} onChange={(e) => updateCheck(i, "check", e.target.value)} />
+            <select className="ops-input" style={{ marginBottom: 0 }} value={c.status} onChange={(e) => updateCheck(i, "status", e.target.value)}>
+              <option value="pending">Pending</option>
+              <option value="pass">Pass</option>
+              <option value="fail">Fail</option>
+            </select>
+            <input className="ops-input" style={{ marginBottom: 0 }} placeholder="Notes" value={c.notes ?? ""} onChange={(e) => updateCheck(i, "notes", e.target.value)} />
+            <button type="button" className="ops-logout-btn" onClick={() => removeCheck(i)}>✕</button>
+          </div>
+        ))}
+      </div>
       <button type="button" className="ops-btn" style={{ background: "var(--card2)", color: "var(--text)", marginBottom: 20 }} onClick={addCheck}>
         + Add Check
       </button>

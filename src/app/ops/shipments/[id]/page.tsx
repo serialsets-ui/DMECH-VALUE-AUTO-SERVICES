@@ -34,7 +34,7 @@ export default async function ShipmentDetailPage({
     <>
       <TopBar title={shipment.reference} />
       <div className="ops-content">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="ops-grid-2">
           <div className="ops-panel">
             <div className="ops-panel-title">Details</div>
             <div className="ops-info-row">

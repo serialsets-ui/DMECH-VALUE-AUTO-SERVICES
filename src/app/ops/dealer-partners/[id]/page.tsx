@@ -34,7 +34,7 @@ export default async function DealerPartnerDetailPage({
     <>
       <TopBar title={dealer.full_name} />
       <div className="ops-content">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="ops-grid-2">
           <div className="ops-panel">
             <div className="ops-panel-title">Business Details</div>
             <div className="ops-info-row">

@@ -123,7 +123,7 @@ export default async function ReportsPage() {
         )}
 
         <div className="ops-panel-title" style={{ marginBottom: 12 }}>Inventory by Stage</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+        <div className="ops-grid-2" style={{ marginBottom: 24 }}>
           <div className="ops-panel">
             <HorizontalBarChart
               data={LIFECYCLE_STAGES.filter((s) => (stageCounts.get(s) ?? 0) > 0).map((s, i) => ({
@@ -154,7 +154,7 @@ export default async function ReportsPage() {
         </div>
 
         <div className="ops-panel-title" style={{ marginBottom: 12 }}>Customers by Status</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="ops-grid-2">
           {customerStatusCounts.size > 0 && (
             <div className="ops-panel">
               <DonutChart

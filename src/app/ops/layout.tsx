@@ -1,9 +1,27 @@
+import type { Metadata, Viewport } from "next";
 import { redirect } from "next/navigation";
 import "@/styles/ops.css";
 import { OpsShell } from "@/components/ops/OpsShell";
 import { Sidebar } from "@/components/ops/Sidebar";
+import { PwaRegister } from "@/components/ops/PwaRegister";
 import { staffGuard } from "@/lib/guards";
 import { getMfaStatus } from "@/lib/mfa";
+
+// Scoped to this layout (not the root) so only /ops/* offers install/PWA
+// behavior -- the public marketing site and customer portal aren't part of
+// this app and shouldn't prompt "Add to Home Screen".
+export const metadata: Metadata = {
+  manifest: "/ops-manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "DMECH Ops",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0c1017",
+};
 
 // Redundant with middleware's coarse "is there a session" check by design —
 // middleware only confirms a session exists, not that it belongs to an
@@ -26,6 +44,7 @@ export default async function OpsLayout({ children }: { children: React.ReactNod
 
   return (
     <div data-theme="dark">
+      <PwaRegister />
       <OpsShell>
         <div className="ops-layout">
           <Sidebar staff={staff} />

@@ -168,6 +168,28 @@
   .ops-content{padding:16px}
 }
 
+/* Two-column detail-page layout -- the same inline style was repeated as
+   `style={{display:"grid",gridTemplateColumns:"1fr 1fr",...}}` across ~10
+   list/detail pages (Dashboard, Reports, Shipments/Customs/Invoices/
+   Customers/Dealer Partners detail, Platform Settings). Inline styles can't
+   be overridden by a media query, so none of those collapsed on a phone --
+   replacing them with these two classes fixes every one of them at once. */
+.ops-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ops-grid-2-wide{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media(max-width:900px){
+  .ops-grid-2,.ops-grid-2-wide{grid-template-columns:1fr}
+}
+
+@media(max-width:480px){
+  .ops-topbar{padding:0 16px}
+  .ops-hero-stat-value{font-size:25px}
+  .ops-spotlight-specs{grid-template-columns:repeat(2,1fr)}
+  .ops-hbar-label{width:88px}
+  .ops-hbar-value{width:50px}
+  .ops-filter-bar .ops-input{min-width:0;width:100%}
+  .ops-filter-field{width:100%}
+}
+
 /* Chart primitives (src/components/ops/charts.tsx) — hand-rolled, no
    charting library. Colours are drawn from the existing --blue/--orange/
    --green/--amber/--red tokens, never invented. */
@@ -188,16 +210,14 @@
 .ops-donut-legend-label{flex:1;color:var(--muted)}
 .ops-donut-legend-value{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
 
-.ops-monthly-chart{display:flex;align-items:flex-end;gap:14px;height:160px;padding-top:8px}
-.ops-monthly-col{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;height:100%}
+.ops-monthly-chart{position:relative;display:flex;align-items:flex-end;gap:14px;height:160px;padding-top:8px;overflow-x:auto}
+.ops-monthly-col{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1 0 40px;height:100%}
 .ops-monthly-bars{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;max-width:36px}
 .ops-monthly-bar{flex:1;border-radius:3px 3px 0 0;min-height:2px;transition:height .3s ease}
 .ops-monthly-bar-accrued{background:var(--green)}
 .ops-monthly-bar-paid{background:var(--red)}
 .ops-monthly-label{font-size:11px;color:var(--subtle);white-space:nowrap}
-.ops-monthly-legend{display:flex;gap:16px;position:absolute}
-.ops-monthly-chart{position:relative}
-.ops-monthly-legend{bottom:-28px;left:0}
+.ops-monthly-legend{display:flex;gap:16px;position:absolute;bottom:-28px;left:0}
 .ops-monthly-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 
 /* Dashboard hero row -- sparkline stat cards + Spotlight Vehicle
